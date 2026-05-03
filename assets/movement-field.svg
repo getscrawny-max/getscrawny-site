@@ -1,0 +1,27 @@
+<svg width="960" height="960" viewBox="0 0 960 960" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Purposeful movement field</title>
+  <desc id="desc">Layered paths and points converging toward a warm center.</desc>
+  <rect width="960" height="960" rx="20" fill="#FFFDF4"/>
+  <path d="M822 228C744 164 641 126 526 126C312 126 138 260 138 426C138 592 312 726 526 726C618 726 704 701 771 659" stroke="#D8DED6" stroke-width="3"/>
+  <path d="M806 694C726 780 604 834 468 834C269 834 108 720 108 580C108 440 269 326 468 326C610 326 733 384 792 468" stroke="#D8DED6" stroke-width="3"/>
+  <path d="M716 128C807 232 854 364 824 491C779 682 563 787 342 726C180 681 64 570 44 444" stroke="#126C67" stroke-width="12" stroke-linecap="round"/>
+  <path d="M155 770C74 671 42 546 78 428C137 236 363 141 584 216C739 269 847 381 862 506" stroke="#D86E55" stroke-width="12" stroke-linecap="round"/>
+  <path d="M836 347C726 347 645 380 594 446C528 533 423 558 278 521" stroke="#DCAE45" stroke-width="12" stroke-linecap="round"/>
+  <path d="M202 236C275 376 372 430 493 398C596 371 695 420 790 546" stroke="#0E514D" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="480" cy="480" r="116" fill="#DBE8DC"/>
+  <circle cx="480" cy="480" r="76" fill="#FFFDF4" stroke="#17211F" stroke-width="10"/>
+  <circle cx="480" cy="480" r="24" fill="#D86E55"/>
+  <circle cx="716" cy="128" r="22" fill="#126C67"/>
+  <circle cx="155" cy="770" r="22" fill="#DCAE45"/>
+  <circle cx="836" cy="347" r="18" fill="#D86E55"/>
+  <circle cx="202" cy="236" r="18" fill="#0E514D"/>
+  <circle cx="278" cy="521" r="16" fill="#DCAE45"/>
+  <circle cx="790" cy="546" r="16" fill="#126C67"/>
+  <g opacity=".45">
+    <circle cx="196" cy="426" r="8" fill="#17211F"/>
+    <circle cx="662" cy="721" r="8" fill="#17211F"/>
+    <circle cx="350" cy="162" r="8" fill="#17211F"/>
+    <circle cx="873" cy="612" r="8" fill="#17211F"/>
+    <circle cx="92" cy="612" r="8" fill="#17211F"/>
+  </g>
+</svg>

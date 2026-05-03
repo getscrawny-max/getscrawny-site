@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Scrawny's Library | Get Scrawny</title>
+    <meta
+      name="description"
+      content="Scrawny's Library hosts Speller's Method and S2C lesson templates from Get Scrawny."
+    >
+    <link rel="preload" href="styles.css" as="style">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header" data-header>
+      <a class="brand" href="index.html#top" aria-label="Get Scrawny home">
+        <span class="brand-wordmark" aria-hidden="true">
+          <img src="assets/get-scrawny-logo-white.jpeg" alt="">
+        </span>
+        <span class="brand-subtitle">Motor Coaching</span>
+      </a>
+
+      <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" data-nav-toggle>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="site-nav" aria-label="Primary navigation" data-nav>
+        <a href="index.html#approach">Approach</a>
+        <a href="index.html#services">Services</a>
+        <a href="index.html#coach">Meet Your Coach</a>
+        <a href="index.html#contact">Contact</a>
+        <a href="lessons.html" aria-current="page">Library</a>
+      </nav>
+
+      <button class="theme-toggle" type="button" aria-label="Switch to light mode" data-theme-toggle>
+        <span aria-hidden="true"></span>
+      </button>
+    </header>
+
+    <main class="lessons-page">
+      <section class="lessons-hero" aria-labelledby="lessons-title">
+        <div class="library-hero-inner">
+          <p class="eyebrow">Speller's Method / S2C Lessons</p>
+          <div class="library-globe-wrap" aria-hidden="true">
+            <svg class="library-globe" viewBox="0 0 360 360" focusable="false">
+              <circle class="globe-ring" cx="180" cy="180" r="140"></circle>
+              <g class="globe-spin">
+                <ellipse class="globe-line globe-meridian" cx="180" cy="180" rx="42" ry="140"></ellipse>
+                <ellipse class="globe-line globe-meridian" cx="180" cy="180" rx="78" ry="140"></ellipse>
+                <ellipse class="globe-line globe-meridian" cx="180" cy="180" rx="112" ry="140"></ellipse>
+              </g>
+              <ellipse class="globe-line globe-equator" cx="180" cy="180" rx="140" ry="38"></ellipse>
+              <path class="globe-line" d="M56 134c62 28 186 28 248 0"></path>
+              <path class="globe-line" d="M42 180c72 32 204 32 276 0"></path>
+              <path class="globe-line" d="M56 226c62-28 186-28 248 0"></path>
+            </svg>
+          </div>
+          <h1 id="lessons-title" class="library-title">Scrawny's Library</h1>
+          <p class="hero-text">
+            Free lesson resources for nonspeaking, minimally speaking, and unreliably speaking spellers building access to communication through purposeful motor practice.
+          </p>
+          <p class="library-intro">
+            These lessons are designed for learners whose speech may not reliably show what they know. Each template supports spelling or typing as communication, presumes competence, and gives practitioners and families a structured way to pair rich content with regulation, motor planning, and meaningful response.
+          </p>
+        </div>
+      </section>
+
+      <section class="lesson-web" aria-labelledby="lesson-library-title">
+        <div class="section-heading">
+          <p class="eyebrow">Lesson web</p>
+          <h2 id="lesson-library-title">Lessons for communication, fluency, and autonomy.</h2>
+          <p>
+            Use the library as a starting point for letterboard, stencil, keyboard, or typed-response practice. The goal is not performance for its own sake; it is access to thought, education, relationship, and self-directed participation.
+          </p>
+        </div>
+
+        <div class="lesson-toolbar" aria-label="Library controls">
+          <label>
+            Sort
+            <select data-lesson-sort>
+              <option value="date-desc">Date Added - Newest First</option>
+              <option value="date-asc">Date Added - Oldest First</option>
+              <option value="alpha-asc">Alphabetical</option>
+              <option value="pages-asc">Page Length - Low to High</option>
+              <option value="pages-desc">Page Length - High to Low</option>
+            </select>
+          </label>
+          <label>
+            Search titles or hashtags
+            <input data-lesson-search type="search" placeholder="eminem, #space, lucid dreams">
+          </label>
+          <button class="button secondary submit-library" type="button" data-lesson-submit>Submit</button>
+          <button class="button secondary clear-library" type="button" data-lesson-clear>Clear</button>
+        </div>
+
+        <p class="lesson-count" data-lesson-count aria-live="polite"></p>
+
+        <section class="hashtag-bank" aria-labelledby="hashtag-bank-title">
+          <div>
+            <p class="eyebrow">Hashtag bank</p>
+            <h3 id="hashtag-bank-title">Browse by topic.</h3>
+            <button class="tag-bank-clear" type="button" data-tag-clear>Clear selection</button>
+          </div>
+          <div class="hashtag-filter" aria-label="Filter lessons by hashtag" data-hashtag-filter></div>
+        </section>
+
+        <div class="lesson-map" data-lesson-map>
+          <article class="lesson-card" data-lesson-card data-title="White Rappers and Their Place in Hip-Hop Culture" data-added="2026-05-02T19:29:24" data-pages="9" data-tags="hip-hop,culture,identity,eminem,music,respect,discussion">
+            <div class="pdf-preview pdf-preview-image">
+              <img src="assets/lessons/white-rappers-hip-hop-culture.pdf.png" alt="Preview of White Rappers and Their Place in Hip-Hop Culture PDF">
+              <span>PDF</span>
+            </div>
+            <p class="lesson-type">Culture</p>
+            <h3>White Rappers and Their Place in Hip-Hop Culture</h3>
+            <p class="lesson-meta">9 pages</p>
+            <p>A discussion-based lesson exploring identity, influence, and participation in hip-hop.</p>
+            <div class="lesson-tags" aria-label="Lesson hashtags">
+              <span>#hip-hop</span><span>#culture</span><span>#identity</span><span>#music</span>
+            </div>
+            <a href="assets/lessons/white-rappers-hip-hop-culture.pdf" aria-label="Open White Rappers and Their Place in Hip-Hop Culture PDF">Open PDF</a>
+          </article>
+
+          <article class="lesson-card" data-lesson-card data-title="W: The Birth of a Star" data-added="2026-05-02T19:29:24" data-pages="6" data-tags="space,astronomy,stars,science,gravity,universe,reflection">
+            <div class="pdf-preview pdf-preview-image">
+              <img src="assets/lessons/w-birth-of-a-star.pdf.png" alt="Preview of W: The Birth of a Star PDF">
+              <span>PDF</span>
+            </div>
+            <p class="lesson-type">Music</p>
+            <h3>W: The Birth of a Star</h3>
+            <p class="lesson-meta">6 pages</p>
+            <p>A lesson template centered on story, artistry, and reflection through guided prompts.</p>
+            <div class="lesson-tags" aria-label="Lesson hashtags">
+              <span>#space</span><span>#astronomy</span><span>#stars</span><span>#science</span>
+            </div>
+            <a href="assets/lessons/w-birth-of-a-star.pdf" aria-label="Open W: The Birth of a Star PDF">Open PDF</a>
+          </article>
+
+          <article class="lesson-card" data-lesson-card data-title="The Fascinating World of Lucid Dreams" data-added="2026-05-02T19:29:25" data-pages="4" data-tags="lucid-dreams,consciousness,sleep,creativity,journaling,meditation,science">
+            <div class="pdf-preview pdf-preview-image">
+              <img src="assets/lessons/lucid-dreams-friday-am.pdf.png" alt="Preview of The Fascinating World of Lucid Dreams PDF">
+              <span>PDF</span>
+            </div>
+            <p class="lesson-type">Science</p>
+            <h3>The Fascinating World of Lucid Dreams</h3>
+            <p class="lesson-meta">4 pages</p>
+            <p>A lesson on awareness, sleep, imagination, and metacognition with room for response.</p>
+            <div class="lesson-tags" aria-label="Lesson hashtags">
+              <span>#lucid-dreams</span><span>#sleep</span><span>#creativity</span><span>#science</span>
+            </div>
+            <a href="assets/lessons/lucid-dreams-friday-am.pdf" aria-label="Open The Fascinating World of Lucid Dreams PDF">Open PDF</a>
+          </article>
+
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Get Scrawny LLC</p>
+      <p>Scrawny's Library for Speller's Method / S2C lessons.</p>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
