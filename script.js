@@ -14,7 +14,8 @@ const tagClear = document.querySelector("[data-tag-clear]");
 const lessonCount = document.querySelector("[data-lesson-count]");
 const storedTheme = localStorage.getItem("get-scrawny-theme");
 const defaultTheme = document.querySelector(".lessons-page") ? "dark" : "light";
-const initialTheme = storedTheme || defaultTheme;
+const themes = ["light", "dark"];
+const initialTheme = themes.includes(storedTheme) ? storedTheme : defaultTheme;
 let activeTag = "";
 let submittedTerms = [];
 
@@ -22,9 +23,10 @@ document.documentElement.dataset.theme = initialTheme;
 
 const syncThemeToggle = () => {
   if (!themeToggle) return;
-  const isDark = document.documentElement.dataset.theme === "dark";
-  themeToggle.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
-  themeToggle.setAttribute("aria-pressed", String(isDark));
+  const currentTheme = document.documentElement.dataset.theme;
+  const nextTheme = themes[(themes.indexOf(currentTheme) + 1) % themes.length];
+  themeToggle.setAttribute("aria-label", "Switch to " + nextTheme + " mode");
+  themeToggle.setAttribute("aria-pressed", currentTheme !== "light" ? "true" : "false");
 };
 
 syncThemeToggle();
@@ -33,22 +35,63 @@ if (navToggle && nav) {
   navToggle.addEventListener("click", () => {
     const isOpen = navToggle.getAttribute("aria-expanded") === "true";
     navToggle.setAttribute("aria-expanded", String(!isOpen));
-    navToggle.setAttribute("aria-label", isOpen ? "Open menu" : "Close menu");
+    navToggle.setAttribute("aria-label", isOpen ? "Open page directory" : "Close page directory");
     nav.classList.toggle("is-open", !isOpen);
   });
 
   nav.addEventListener("click", (event) => {
     if (event.target instanceof HTMLAnchorElement) {
       navToggle.setAttribute("aria-expanded", "false");
-      navToggle.setAttribute("aria-label", "Open menu");
+      navToggle.setAttribute("aria-label", "Open page directory");
       nav.classList.remove("is-open");
     }
   });
 }
 
+let clickAudioContext;
+
+const playThemeClick = () => {
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextClass) return;
+  clickAudioContext ||= new AudioContextClass();
+  const now = clickAudioContext.currentTime;
+  const oscillator = clickAudioContext.createOscillator();
+  const clickGain = clickAudioContext.createGain();
+  const buffer = clickAudioContext.createBuffer(1, clickAudioContext.sampleRate * 0.028, clickAudioContext.sampleRate);
+  const data = buffer.getChannelData(0);
+  const noise = clickAudioContext.createBufferSource();
+  const noiseGain = clickAudioContext.createGain();
+
+  for (let index = 0; index < data.length; index += 1) {
+    data[index] = (Math.random() * 2 - 1) * (1 - index / data.length);
+  }
+
+  oscillator.type = "square";
+  oscillator.frequency.setValueAtTime(940, now);
+  oscillator.frequency.exponentialRampToValueAtTime(180, now + 0.032);
+  clickGain.gain.setValueAtTime(0.0001, now);
+  clickGain.gain.exponentialRampToValueAtTime(0.038, now + 0.003);
+  clickGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.038);
+
+  noise.buffer = buffer;
+  noiseGain.gain.setValueAtTime(0.025, now);
+  noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.028);
+
+  oscillator.connect(clickGain);
+  clickGain.connect(clickAudioContext.destination);
+  noise.connect(noiseGain);
+  noiseGain.connect(clickAudioContext.destination);
+  oscillator.start(now);
+  noise.start(now);
+  oscillator.stop(now + 0.04);
+  noise.stop(now + 0.03);
+};
+
 if (themeToggle) {
   themeToggle.addEventListener("click", () => {
-    const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    playThemeClick();
+    const currentTheme = document.documentElement.dataset.theme;
+    const nextTheme = themes[(themes.indexOf(currentTheme) + 1) % themes.length];
     document.documentElement.dataset.theme = nextTheme;
     localStorage.setItem("get-scrawny-theme", nextTheme);
     syncThemeToggle();
