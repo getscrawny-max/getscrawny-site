@@ -35,14 +35,14 @@ if (navToggle && nav) {
   navToggle.addEventListener("click", () => {
     const isOpen = navToggle.getAttribute("aria-expanded") === "true";
     navToggle.setAttribute("aria-expanded", String(!isOpen));
-    navToggle.setAttribute("aria-label", isOpen ? "Open page directory" : "Close page directory");
+    navToggle.setAttribute("aria-label", isOpen ? "Open home page directory" : "Close home page directory");
     nav.classList.toggle("is-open", !isOpen);
   });
 
   nav.addEventListener("click", (event) => {
     if (event.target instanceof HTMLAnchorElement) {
       navToggle.setAttribute("aria-expanded", "false");
-      navToggle.setAttribute("aria-label", "Open page directory");
+      navToggle.setAttribute("aria-label", "Open home page directory");
       nav.classList.remove("is-open");
     }
   });
@@ -236,7 +236,26 @@ if (lessonMap && lessonCards.length) {
 }
 
 if (form && formNote) {
-  form.addEventListener("submit", () => {
-    formNote.textContent = "Opening your email app with this inquiry.";
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const formData = new FormData(form);
+    const name = String(formData.get("name") || "").trim();
+    const email = String(formData.get("email") || "").trim();
+    const relationship = String(formData.get("relationship") || "").trim();
+    const message = String(formData.get("message") || "").trim();
+    const subjectName = name || "Get Scrawny inquiry";
+    const body = [
+      "New Get Scrawny inquiry",
+      "",
+      "Name: " + name,
+      "Email: " + email,
+      "Reaching out as: " + relationship,
+      "",
+      "Message:",
+      message,
+    ].join("\n");
+    const mailto = "mailto:getscrawny@gmail.com?subject=" + encodeURIComponent("Get Scrawny inquiry from " + subjectName) + "&body=" + encodeURIComponent(body);
+    formNote.textContent = "Opening your email app with a formatted inquiry.";
+    window.location.href = mailto;
   });
 }

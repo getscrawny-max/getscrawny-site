@@ -17,20 +17,24 @@
         <span class="brand-wordmark" aria-hidden="true">
           <img src="assets/get-scrawny-logo-white.jpeg" alt="">
         </span>
-        <span class="brand-subtitle">Motor Coaching</span>
+        <span class="brand-subtitle" aria-hidden="true"><img src="assets/motor-coaching-wordmark.jpeg" alt=""></span>
       </a>
 
-      <button class="nav-toggle" type="button" aria-label="Open page directory" aria-expanded="false" data-nav-toggle>
-        <span></span>
-        <span></span>
-      </button>
-
-      <nav class="site-nav" aria-label="Page directory" data-nav>
-        <a href="#approach">Approach</a>
-        <a href="#services">Services</a>
-        <a href="#coach">Meet Your Coach</a>
-        <a href="#contact">Contact</a>
-      </nav>
+      <div class="page-menu">
+        <div class="page-menu-control">
+          <a class="home-link" href="#top">Home</a>
+          <button class="page-menu-toggle" type="button" aria-label="Open home page directory" aria-expanded="false" data-nav-toggle>
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+        <nav class="site-nav" aria-label="Home page directory" data-nav>
+          <a href="#approach">Approach</a>
+          <a href="#services">Services</a>
+          <a href="#who">Who We Serve</a>
+          <a href="#coach">Meet Your Coach</a>
+          <a href="#contact">Contact</a>
+        </nav>
+      </div>
 
       <a class="library-link" href="lessons.html">Library</a>
 
@@ -71,11 +75,38 @@
         </div>
         <div class="prose">
           <p>
-            We start with regulation, trust, and consent. From there, each session supports the motor loop: noticing an intention, preparing the body, initiating movement, adjusting in real time, and completing the action.
+            Apraxia can interrupt the bridge between intention and action. A person may understand the task, want to participate, and still need the movement broken down in a way the body can access.
           </p>
           <p>
-            The work can support communication access, daily living tasks, recreation, learning, fitness, and greater independence. Progress is measured by meaningful participation, not by looking typical.
+            We slow the task down, model what is unfamiliar, and coach the part of the body that needs information. The goal is not to command an outcome; it is to help the body learn the path toward that outcome.
           </p>
+        </div>
+      </section>
+
+      <section class="section education-panel" aria-labelledby="motor-title">
+        <div class="section-heading">
+          <p class="eyebrow">How it works</p>
+          <h2 id="motor-title">The body learns when the movement is made visible.</h2>
+          <p>
+            Purposeful motor coaching turns a vague request into a sequence the body can practice. Instead of only saying, "do a curl," coaching might name the arm position, grip, muscle action, pacing, and direction of travel.
+          </p>
+        </div>
+        <div class="education-grid" aria-label="Motor coaching principles">
+          <article>
+            <span>01</span>
+            <h3>Familiarize</h3>
+            <p>New tasks are introduced through modeling, rhythm, and clear body-based language before independence is expected.</p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>Coach the body</h3>
+            <p>Prompts focus on the part doing the work: hand, elbow, shoulder, trunk, feet, breath, grip, or timing.</p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>Build strength through access</h3>
+            <p>Practice stays patient and respectful while the movement becomes more familiar, organized, and reliable.</p>
+          </article>
         </div>
       </section>
 
@@ -166,17 +197,17 @@
           <article>
             <span>01</span>
             <h3>Settle</h3>
-            <p>Begin with the body, environment, and communication supports that make participation possible.</p>
+            <p>Orient the body, establish regulation, and show the movement before asking for performance.</p>
           </article>
           <article>
             <span>02</span>
-            <h3>Choose</h3>
-            <p>Identify a meaningful action, task, or movement goal with the person and their support team.</p>
+            <h3>Coach</h3>
+            <p>Name what the working body part is doing so the path is clearer than the final result.</p>
           </article>
           <article>
             <span>03</span>
             <h3>Practice</h3>
-            <p>Use clear rhythm, pacing, modeling, and feedback to build reliable access over time.</p>
+            <p>Repeat with rhythm, patience, and feedback so unfamiliar movement becomes more available over time.</p>
           </article>
         </div>
       </section>
@@ -189,7 +220,7 @@
             Share a little about the person, their exercise or movement goals, and what you hope coaching can support day to day.
           </p>
         </div>
-        <form class="contact-form" action="mailto:getscrawny@gmail.com" method="post" enctype="text/plain" data-contact-form>
+        <form class="contact-form" action="mailto:getscrawny@gmail.com" method="post" data-contact-form>
           <label>
             Name
             <input name="name" type="text" autocomplete="name" required>
