@@ -2901,3 +2901,459 @@ a:focus-visible {
     inset 0 3px 8px rgba(0, 0, 0, 0.72),
     0 0 10px rgba(123, 214, 111, 0.1);
 }
+
+
+/* Final game title, mute, and locked lives polish */
+.game-hero > div {
+  width: 100%;
+  display: grid;
+  justify-items: center;
+}
+
+.game-hero h1 {
+  width: min(100%, 1280px);
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.game-hero h1 span {
+  margin-inline: auto;
+  text-align: center;
+}
+
+.flight-actionbar {
+  grid-template-columns: repeat(9, minmax(104px, 1fr));
+}
+
+.hud-select-tile select:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
+}
+
+.game-mute {
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  min-height: 46px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.game-mute span {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  color: #f7fbff;
+  font-size: 1.08rem;
+  line-height: 1;
+  text-shadow: 0 0 10px rgba(189, 247, 180, 0.6);
+}
+
+.game-mute[aria-pressed="true"] span {
+  color: rgba(247, 251, 255, 0.62);
+  text-shadow: none;
+}
+
+@media (max-width: 1180px) {
+  .flight-actionbar {
+    grid-template-columns: repeat(5, minmax(108px, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .flight-actionbar {
+    grid-template-columns: repeat(2, minmax(118px, 1fr));
+  }
+}
+
+
+/* Compact Alien Alphabet HUD */
+.flight-actionbar {
+  grid-template-columns: repeat(9, minmax(76px, auto));
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.flight-stats .hud-tile,
+.game-controls .button,
+.game-controls .button.primary,
+.game-controls .button.secondary {
+  min-height: 42px;
+  height: 42px;
+  width: auto;
+  min-width: 76px;
+  padding: 6px 10px;
+  gap: 6px;
+  font-size: clamp(0.78rem, 0.9vw, 0.9rem);
+}
+
+.flight-stats .hud-tile {
+  justify-content: center;
+}
+
+.hud-select-tile {
+  min-width: 104px;
+}
+
+.hud-select-tile select {
+  max-width: 62px;
+  padding: 2px 4px;
+  font-size: 0.86em;
+}
+
+.game-controls .button,
+.game-controls .button.primary,
+.game-controls .button.secondary {
+  min-width: 92px;
+}
+
+.space-game-shell .game-mute {
+  top: 14px;
+  right: 14px;
+}
+
+.game-mute {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  min-height: 42px;
+}
+
+@media (max-width: 1180px) {
+  .flight-actionbar {
+    grid-template-columns: repeat(5, minmax(84px, auto));
+  }
+}
+
+@media (max-width: 720px) {
+  .flight-actionbar {
+    grid-template-columns: repeat(3, minmax(84px, 1fr));
+  }
+
+  .game-controls .button,
+  .game-controls .button.primary,
+  .game-controls .button.secondary,
+  .flight-stats .hud-tile {
+    width: 100%;
+  }
+}
+
+
+/* Single-line Alien Alphabet HUD */
+.flight-actionbar {
+  grid-template-columns: 104px repeat(4, 94px) repeat(4, 96px);
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  overflow-x: auto;
+  padding: 0 2px 4px;
+  scrollbar-width: thin;
+}
+
+.flight-stats .hud-tile,
+.game-controls .button,
+.game-controls .button.primary,
+.game-controls .button.secondary {
+  min-height: 42px;
+  height: 42px;
+  min-width: 0;
+  width: 100%;
+  padding: 6px 8px;
+  font-size: clamp(0.94rem, 1.08vw, 1.06rem);
+  font-weight: 850;
+}
+
+.hud-select-tile {
+  min-width: 0;
+}
+
+.hud-select-tile select {
+  max-width: 54px;
+  font-size: 0.86rem;
+}
+
+.game-controls .button,
+.game-controls .button.primary,
+.game-controls .button.secondary {
+  min-width: 0;
+}
+
+@media (max-width: 1040px) {
+  .flight-actionbar {
+    grid-template-columns: repeat(5, minmax(94px, 1fr));
+    overflow-x: visible;
+  }
+}
+
+@media (max-width: 640px) {
+  .flight-actionbar {
+    grid-template-columns: repeat(2, minmax(118px, 1fr));
+  }
+}
+
+
+/* Flattened one-row HUD */
+.flight-actionbar {
+  grid-template-columns: 104px repeat(4, 98px) repeat(4, 104px);
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 0 4px 6px;
+}
+
+.flight-actionbar > .hud-tile,
+.flight-actionbar > .button,
+.flight-actionbar > .button.primary,
+.flight-actionbar > .button.secondary {
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin: 0;
+  padding: 6px 8px;
+  font-size: clamp(0.96rem, 1vw, 1.08rem);
+  font-weight: 850;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.flight-actionbar > .button,
+.flight-actionbar > .button.primary,
+.flight-actionbar > .button.secondary {
+  border-color: rgba(123, 214, 111, 0.58);
+  background:
+    radial-gradient(circle at 18% 18%, rgba(189, 247, 180, 0.24), transparent 22%),
+    radial-gradient(circle at 84% 22%, rgba(123, 214, 111, 0.16), transparent 24%),
+    radial-gradient(circle at 50% 100%, rgba(123, 214, 111, 0.13), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(102, 187, 92, 0.12) 24%, rgba(4, 9, 8, 0.96) 60%, #000 100%),
+    #050806;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.74),
+    0 3px 0 rgba(1, 28, 9, 0.8),
+    -10px 0 22px rgba(123, 214, 111, 0.08),
+    10px 0 22px rgba(123, 214, 111, 0.08),
+    0 0 20px rgba(123, 214, 111, 0.18);
+}
+
+@media (max-width: 1040px) {
+  .flight-actionbar {
+    grid-template-columns: repeat(5, minmax(98px, 1fr));
+    overflow-x: visible;
+  }
+}
+
+@media (max-width: 640px) {
+  .flight-actionbar {
+    grid-template-columns: repeat(2, minmax(118px, 1fr));
+  }
+}
+
+
+/* Keep Alien Alphabet HUD in one row longer */
+.flight-actionbar {
+  grid-template-columns: 88px 74px 82px 82px 96px 86px 86px 86px 106px;
+  gap: 6px;
+  justify-content: center;
+  overflow-x: auto;
+}
+
+.flight-actionbar > .hud-tile,
+.flight-actionbar > .button,
+.flight-actionbar > .button.primary,
+.flight-actionbar > .button.secondary {
+  min-height: 42px;
+  height: 42px;
+  padding: 6px 7px;
+  font-size: clamp(0.92rem, 1vw, 1.06rem);
+}
+
+.hud-select-tile select {
+  max-width: 48px;
+}
+
+@media (max-width: 1040px) {
+  .flight-actionbar {
+    grid-template-columns: 88px 74px 82px 82px 96px 86px 86px 86px 106px;
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 860px) {
+  .flight-actionbar {
+    grid-template-columns: repeat(3, minmax(92px, 1fr));
+    overflow-x: visible;
+  }
+}
+
+@media (max-width: 560px) {
+  .flight-actionbar {
+    grid-template-columns: repeat(2, minmax(118px, 1fr));
+  }
+}
+
+
+/* Lives select readability */
+.flight-actionbar {
+  grid-template-columns: 104px 74px 82px 82px 96px 86px 86px 86px 106px;
+}
+
+.hud-select-tile select {
+  width: 56px;
+  max-width: 56px;
+}
+
+@media (max-width: 1040px) {
+  .flight-actionbar {
+    grid-template-columns: 104px 74px 82px 82px 96px 86px 86px 86px 106px;
+  }
+}
+
+
+/* Content-sized Alien Alphabet HUD and game orbs */
+.flight-actionbar {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 0 4px 8px;
+}
+
+.flight-actionbar > .hud-tile,
+.flight-actionbar > .button,
+.flight-actionbar > .button.primary,
+.flight-actionbar > .button.secondary {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 0;
+  min-height: 40px;
+  height: 40px;
+  padding: 6px 12px;
+  font-size: clamp(0.96rem, 1vw, 1.08rem);
+  font-weight: 850;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.flight-actionbar > .button,
+.flight-actionbar > .button.primary,
+.flight-actionbar > .button.secondary {
+  min-width: 84px;
+}
+
+.flight-actionbar > .hud-select-tile {
+  padding-right: 8px;
+}
+
+.hud-select-tile select {
+  width: 44px;
+  max-width: 44px;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.game-life-orb,
+.space-game-shell .game-mute {
+  position: absolute;
+  z-index: 4;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  color: #f7fbff;
+  background:
+    radial-gradient(circle at 25% 18%, rgba(255, 255, 255, 0.32), transparent 30%),
+    radial-gradient(circle at 72% 78%, rgba(123, 214, 111, 0.22), transparent 38%),
+    linear-gradient(180deg, rgba(15, 38, 20, 0.98), #010301 74%);
+  border: 1px solid rgba(123, 214, 111, 0.68);
+  border-radius: 50%;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -4px 0 rgba(0, 0, 0, 0.7),
+    0 0 20px rgba(123, 214, 111, 0.24);
+}
+
+.game-life-orb {
+  top: 14px;
+  left: 14px;
+  font-size: 1.08rem;
+  font-weight: 900;
+}
+
+.space-game-shell .game-mute {
+  top: 14px;
+  right: 14px;
+}
+
+.game-mute[aria-pressed="true"]::after {
+  position: absolute;
+  inset: 10px 21px;
+  content: "";
+  width: 3px;
+  border-radius: 999px;
+  background: #ff5b5b;
+  box-shadow: 0 0 10px rgba(255, 91, 91, 0.72);
+  transform: rotate(45deg);
+}
+
+.game-mute[aria-pressed="true"] span {
+  color: rgba(247, 251, 255, 0.8);
+}
+
+@media (max-width: 760px) {
+  .flight-actionbar {
+    flex-wrap: wrap;
+  }
+}
+
+
+/* Boxed compact Alien Alphabet stats */
+.flight-actionbar > .hud-tile {
+  border: 1px solid rgba(123, 214, 111, 0.44);
+  background:
+    radial-gradient(circle at 22% 18%, rgba(189, 247, 180, 0.12), transparent 34%),
+    linear-gradient(180deg, rgba(123, 214, 111, 0.12), rgba(123, 214, 111, 0.04));
+  color: rgba(255, 255, 255, 0.88);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.13),
+    0 0 14px rgba(123, 214, 111, 0.08);
+}
+
+.flight-actionbar > .hud-tile strong {
+  color: #ffffff;
+}
+
+
+/* Horizontal game rules and life orb sync polish */
+.game-rules {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.game-rules span {
+  flex: 0 0 auto;
+  min-width: auto;
+}
+
+@media (max-width: 560px) {
+  .game-rules {
+    flex-wrap: wrap;
+  }
+}

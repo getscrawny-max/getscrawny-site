@@ -379,7 +379,8 @@ if (gameCanvas) {
   const syncMuteButton = () => {
     if (!gameMute) return;
     gameMute.setAttribute("aria-pressed", String(gameMuted));
-    gameMute.textContent = gameMuted ? "Muted" : "Sound on";
+    gameMute.setAttribute("aria-label", gameMuted ? "Turn game sounds on" : "Mute game sounds");
+    gameMute.innerHTML = '<span aria-hidden="true">♪</span>';
   };
 
   const playAudioFile = (audio) => {
@@ -487,6 +488,7 @@ if (gameCanvas) {
   };
 
   const resetGame = () => {
+    if (lifeSelect) lifeSelect.disabled = false;
     readLifeSetting();
     lives = infiniteLives ? Infinity : startingLives;
     score = 0;
@@ -815,7 +817,7 @@ if (gameCanvas) {
   };
 
   const loseLife = (missedObstacle) => {
-    if (!infiniteLives) lives -= 1;
+    if (!infiniteLives) lives = Math.max(0, lives - 1);
     streak = 0;
     ufoShake = missedObstacle && missedObstacle.code.length > 1 ? 0.48 : 0.28;
     updateStats();
@@ -861,6 +863,7 @@ if (gameCanvas) {
   const startGame = () => {
     if (ended) resetGame();
     if (running) return;
+    if (lifeSelect) lifeSelect.disabled = true;
     playUfoStartSound();
     running = true;
     lastTime = 0;
@@ -942,7 +945,10 @@ if (gameCanvas) {
     localStorage.setItem("alienAlphabetMuted", String(gameMuted));
     syncMuteButton();
   });
-  lifeSelect?.addEventListener("change", resetGame);
+  lifeSelect?.addEventListener("change", () => {
+    resetGame();
+    updateStats();
+  });
   syncMuteButton();
   updateFullscreenButton();
   resizeGame();

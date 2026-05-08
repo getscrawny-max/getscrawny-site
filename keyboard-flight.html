@@ -58,30 +58,27 @@
       </section>
 
       <section class="flight-deck" aria-label="Alien Alphabet game">
-        <button class="game-mute" type="button" aria-pressed="false" data-game-mute>Sound on</button>
-        <div class="flight-actionbar">
-          <div class="flight-stats" aria-label="Game stats">
-            <label class="hud-tile hud-select-tile">Lives
-              <select data-life-select aria-label="Lives per round">
-                <option value="0">0</option>
-                <option value="5" selected>5</option>
-                <option value="10">10</option>
-                <option value="infinite">Infinite</option>
-              </select>
-            </label>
-            <span class="hud-tile">Score <strong data-game-score>0</strong></span>
-            <span class="hud-tile">Streak <strong data-game-streak>0</strong></span>
-            <span class="hud-tile">Misfires <strong data-game-misfires>0</strong></span>
-          </div>
-          <div class="game-controls" aria-label="Game controls">
-            <button class="button primary" type="button" data-game-start>Start</button>
-            <button class="button secondary" type="button" data-game-pause>Pause</button>
-            <button class="button secondary" type="button" data-game-reset>Reset</button>
-            <button class="button secondary" type="button" data-game-fullscreen>Fullscreen</button>
-          </div>
+        <div class="flight-actionbar" aria-label="Game stats and controls">
+          <label class="hud-tile hud-select-tile">Lives
+            <select data-life-select aria-label="Lives per round">
+              <option value="0">0</option>
+              <option value="5" selected>5</option>
+              <option value="10">10</option>
+              <option value="infinite">∞</option>
+            </select>
+          </label>
+          <span class="hud-tile">Score <strong data-game-score>0</strong></span>
+          <span class="hud-tile">Streak <strong data-game-streak>0</strong></span>
+          <span class="hud-tile">Misfires <strong data-game-misfires>0</strong></span>
+          <button class="button primary" type="button" data-game-start>Start</button>
+          <button class="button secondary" type="button" data-game-pause>Pause</button>
+          <button class="button secondary" type="button" data-game-reset>Reset</button>
+          <button class="button secondary" type="button" data-game-fullscreen>Fullscreen</button>
         </div>
 
         <div class="space-game-shell">
+          <div class="game-life-orb" aria-label="Lives remaining"><strong data-game-lives>5</strong></div>
+          <button class="game-mute" type="button" aria-pressed="false" aria-label="Mute game sounds" data-game-mute><span aria-hidden="true">♪</span></button>
           <canvas class="space-game" width="1280" height="360" aria-label="Alien Alphabet game area" data-game-canvas></canvas>
           <div class="game-overlay" data-game-overlay>
             <p class="eyebrow">Ready</p>
