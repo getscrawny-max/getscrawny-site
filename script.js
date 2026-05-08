@@ -318,6 +318,9 @@ const gameScore = document.querySelector("[data-game-score]");
 const gameStreak = document.querySelector("[data-game-streak]");
 const gameStatus = document.querySelector("[data-game-status]");
 const gameOverlay = document.querySelector("[data-game-overlay]");
+const gameMute = document.querySelector("[data-game-mute]");
+const startAudio = document.querySelector("[data-start-audio]");
+const gameOverAudio = document.querySelector("[data-game-over-audio]");
 
 if (gameCanvas) {
   const ctx = gameCanvas.getContext("2d");
@@ -348,6 +351,7 @@ if (gameCanvas) {
   let stars = [];
   let wisps = [];
   let ufoShake = 0;
+  let gameMuted = localStorage.getItem("alienAlphabetMuted") === "true";
   const encouragements = [
     "Great key targeting.",
     "Nice calm timing.",
@@ -372,7 +376,25 @@ if (gameCanvas) {
 
   const randomEncouragement = () => encouragements[Math.floor(Math.random() * encouragements.length)];
 
+  const syncMuteButton = () => {
+    if (!gameMute) return;
+    gameMute.setAttribute("aria-pressed", String(gameMuted));
+    gameMute.textContent = gameMuted ? "Muted" : "Sound on";
+  };
+
+  const playAudioFile = (audio) => {
+    if (gameMuted || !audio) return;
+    audio.currentTime = 0;
+    audio.volume = 0.42;
+    audio.play().catch(() => {});
+  };
+
   const playUfoStartSound = () => {
+    if (startAudio) {
+      playAudioFile(startAudio);
+      return;
+    }
+    if (gameMuted) return;
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
     if (!AudioContextClass) return;
     clickAudioContext ||= new AudioContextClass();
@@ -805,6 +827,7 @@ if (gameCanvas) {
     if (lives <= 0) {
       running = false;
       ended = true;
+      playAudioFile(gameOverAudio);
       setOverlay(true, "Game over", "Score " + score + ". Misfires " + misfires + ". Press Reset to try another flight.");
     }
   };
@@ -914,7 +937,13 @@ if (gameCanvas) {
   gamePause?.addEventListener("click", pauseGame);
   gameReset?.addEventListener("click", resetGame);
   gameFullscreen?.addEventListener("click", toggleFullscreen);
+  gameMute?.addEventListener("click", () => {
+    gameMuted = !gameMuted;
+    localStorage.setItem("alienAlphabetMuted", String(gameMuted));
+    syncMuteButton();
+  });
   lifeSelect?.addEventListener("change", resetGame);
+  syncMuteButton();
   updateFullscreenButton();
   resizeGame();
   resetGame();

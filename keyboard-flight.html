@@ -58,6 +58,7 @@
       </section>
 
       <section class="flight-deck" aria-label="Alien Alphabet game">
+        <button class="game-mute" type="button" aria-pressed="false" data-game-mute>Sound on</button>
         <div class="flight-actionbar">
           <div class="flight-stats" aria-label="Game stats">
             <label class="hud-tile hud-select-tile">Lives
@@ -89,6 +90,8 @@
         </div>
 
         <p class="game-status" data-game-status aria-live="polite">Press the letter shown on each falling object. Multi-letter objects can be cleared in any order.</p>
+        <audio data-start-audio preload="auto" src="assets/spaceship-startup.mp3"></audio>
+        <audio data-game-over-audio preload="auto" src="assets/game-over.mp3"></audio>
 </section>
     </main>
 
