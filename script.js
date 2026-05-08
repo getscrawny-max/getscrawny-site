@@ -12,7 +12,33 @@ const lessonClear = document.querySelector("[data-lesson-clear]");
 const hashtagFilter = document.querySelector("[data-hashtag-filter]");
 const tagClear = document.querySelector("[data-tag-clear]");
 const lessonCount = document.querySelector("[data-lesson-count]");
-const storedTheme = localStorage.getItem("get-scrawny-theme");
+const readStoredTheme = () => {
+  const fromUrl = new URLSearchParams(window.location.search).get("theme");
+  if (fromUrl) return fromUrl;
+
+  try {
+    const fromStorage = localStorage.getItem("get-scrawny-theme") || sessionStorage.getItem("get-scrawny-theme");
+    if (fromStorage) return fromStorage;
+  } catch {
+    // Keep going; local file previews can be picky about storage.
+  }
+
+  const cookieTheme = document.cookie
+    .split("; ")
+    .find((item) => item.startsWith("get-scrawny-theme="))
+    ?.split("=")[1];
+  return cookieTheme ? decodeURIComponent(cookieTheme) : null;
+};
+const writeStoredTheme = (theme) => {
+  try {
+    localStorage.setItem("get-scrawny-theme", theme);
+    sessionStorage.setItem("get-scrawny-theme", theme);
+  } catch {
+    // Theme still updates for the current page even when storage is unavailable.
+  }
+  document.cookie = "get-scrawny-theme=" + encodeURIComponent(theme) + "; path=/; max-age=31536000; SameSite=Lax";
+};
+const storedTheme = readStoredTheme();
 const defaultTheme = document.querySelector(".lessons-page") ? "dark" : "light";
 const themes = ["light", "dark"];
 const initialTheme = themes.includes(storedTheme) ? storedTheme : defaultTheme;
@@ -20,6 +46,18 @@ let activeTag = "";
 let submittedTerms = [];
 
 document.documentElement.dataset.theme = initialTheme;
+writeStoredTheme(initialTheme);
+
+const syncThemeLinks = () => {
+  const currentTheme = document.documentElement.dataset.theme;
+  document.querySelectorAll('a[href^="index.html"], a[href^="lessons.html"]').forEach((link) => {
+    const rawHref = link.getAttribute("href");
+    if (!rawHref || rawHref.includes("assets/")) return;
+    const url = new URL(rawHref, window.location.href);
+    url.searchParams.set("theme", currentTheme);
+    link.setAttribute("href", url.pathname.split("/").pop() + url.search + url.hash);
+  });
+};
 
 const syncThemeToggle = () => {
   if (!themeToggle) return;
@@ -30,6 +68,7 @@ const syncThemeToggle = () => {
 };
 
 syncThemeToggle();
+syncThemeLinks();
 
 if (navToggle && nav) {
   navToggle.addEventListener("click", () => {
@@ -50,14 +89,14 @@ if (navToggle && nav) {
 
 let clickAudioContext;
 
-const playThemeClick = () => {
+const playMechanicalClick = () => {
   const AudioContextClass = window.AudioContext || window.webkitAudioContext;
   if (!AudioContextClass) return;
   clickAudioContext ||= new AudioContextClass();
   const now = clickAudioContext.currentTime;
   const oscillator = clickAudioContext.createOscillator();
   const clickGain = clickAudioContext.createGain();
-  const buffer = clickAudioContext.createBuffer(1, clickAudioContext.sampleRate * 0.028, clickAudioContext.sampleRate);
+  const buffer = clickAudioContext.createBuffer(1, Math.floor(clickAudioContext.sampleRate * 0.045), clickAudioContext.sampleRate);
   const data = buffer.getChannelData(0);
   const noise = clickAudioContext.createBufferSource();
   const noiseGain = clickAudioContext.createGain();
@@ -67,15 +106,15 @@ const playThemeClick = () => {
   }
 
   oscillator.type = "square";
-  oscillator.frequency.setValueAtTime(940, now);
-  oscillator.frequency.exponentialRampToValueAtTime(180, now + 0.032);
+  oscillator.frequency.setValueAtTime(1180, now);
+  oscillator.frequency.exponentialRampToValueAtTime(260, now + 0.024);
   clickGain.gain.setValueAtTime(0.0001, now);
-  clickGain.gain.exponentialRampToValueAtTime(0.038, now + 0.003);
-  clickGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.038);
+  clickGain.gain.exponentialRampToValueAtTime(0.052, now + 0.002);
+  clickGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.046);
 
   noise.buffer = buffer;
-  noiseGain.gain.setValueAtTime(0.025, now);
-  noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.028);
+  noiseGain.gain.setValueAtTime(0.04, now);
+  noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.036);
 
   oscillator.connect(clickGain);
   clickGain.connect(clickAudioContext.destination);
@@ -83,18 +122,22 @@ const playThemeClick = () => {
   noiseGain.connect(clickAudioContext.destination);
   oscillator.start(now);
   noise.start(now);
-  oscillator.stop(now + 0.04);
-  noise.stop(now + 0.03);
+  oscillator.stop(now + 0.05);
+  noise.stop(now + 0.04);
 };
+
+document.querySelectorAll(".page-menu-control a, .page-menu-toggle, .site-nav a, .library-link, .theme-toggle").forEach((control) => {
+  control.addEventListener("pointerdown", () => playMechanicalClick());
+});
 
 if (themeToggle) {
   themeToggle.addEventListener("click", () => {
-    playThemeClick();
     const currentTheme = document.documentElement.dataset.theme;
     const nextTheme = themes[(themes.indexOf(currentTheme) + 1) % themes.length];
     document.documentElement.dataset.theme = nextTheme;
-    localStorage.setItem("get-scrawny-theme", nextTheme);
+    writeStoredTheme(nextTheme);
     syncThemeToggle();
+    syncThemeLinks();
   });
 }
 

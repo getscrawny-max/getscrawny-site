@@ -97,7 +97,8 @@ body {
   color: var(--ink);
   background:
     radial-gradient(circle at 12% 8%, var(--blue-wash), transparent 28rem),
-    radial-gradient(circle at 88% 32%, var(--accent-soft), transparent 34rem),
+    radial-gradient(circle at 88% 32%, rgba(143, 181, 208, 0.18), transparent 34rem),
+    linear-gradient(135deg, rgba(83, 106, 124, 0.08), transparent 34%),
     linear-gradient(var(--paper), var(--paper));
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   line-height: 1.5;
@@ -143,42 +144,28 @@ textarea {
   border-bottom-color: var(--line);
 }
 
-[data-theme="dark"] .brand-wordmark img,
-[data-theme="dark"] .brand-subtitle img {
+[data-theme="dark"] .brand-combined img {
   filter: invert(1);
 }
 
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: clamp(10px, 1.4vw, 18px);
   min-width: max-content;
 }
 
-.brand-wordmark {
-  width: clamp(154px, 19vw, 232px);
-  height: 46px;
+.brand-combined {
+  width: clamp(286px, 35vw, 486px);
+  height: clamp(42px, 5vw, 64px);
   display: grid;
   place-items: center;
 }
 
-.brand-wordmark img {
+.brand-combined img {
   width: 100%;
   height: 100%;
   object-fit: contain;
-}
-
-.brand-subtitle {
-  width: clamp(180px, 23vw, 330px);
-  height: 42px;
-  display: grid;
-  place-items: center;
-}
-
-.brand-subtitle img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+  object-position: left center;
 }
 
 .page-menu {
@@ -409,8 +396,9 @@ textarea {
   padding: clamp(58px, 8vw, 96px) clamp(20px, 5vw, 72px) clamp(58px, 8vw, 96px);
   overflow: hidden;
   background:
-    radial-gradient(circle at 84% 16%, var(--blue-wash), transparent 24rem),
-    linear-gradient(transparent, transparent);
+    radial-gradient(circle at 82% 12%, rgba(143, 181, 208, 0.3), transparent 25rem),
+    radial-gradient(circle at 15% 85%, rgba(83, 106, 124, 0.14), transparent 28rem),
+    linear-gradient(135deg, rgba(83, 106, 124, 0.1), transparent 42%);
 }
 
 .section-wave {
@@ -489,6 +477,22 @@ h3 {
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 34px;
+  padding: 8px;
+  width: fit-content;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.56), rgba(185, 201, 213, 0.22)),
+    rgba(83, 106, 124, 0.1);
+  border: 1px solid rgba(83, 106, 124, 0.2);
+  border-radius: 10px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.68), 0 18px 42px rgba(23, 33, 31, 0.08);
+}
+
+[data-theme="dark"] .hero-actions {
+  background:
+    linear-gradient(180deg, rgba(143, 181, 208, 0.14), rgba(4, 7, 9, 0.5)),
+    rgba(143, 181, 208, 0.06);
+  border-color: rgba(143, 181, 208, 0.22);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 18px 48px rgba(0, 0, 0, 0.28);
 }
 
 .button {
@@ -498,19 +502,29 @@ h3 {
   min-height: 48px;
   padding: 13px 20px;
   border: 1px solid transparent;
+  border-radius: 4px;
   font-weight: 730;
-  transition: transform 160ms ease, color 160ms ease, background 160ms ease, border-color 160ms ease;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), inset 0 -2px 0 rgba(0, 0, 0, 0.22), 0 8px 18px rgba(8, 8, 8, 0.12);
+  transition: transform 120ms ease, color 160ms ease, background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
 }
 
 .button:hover,
 .button:focus-visible {
   transform: translateY(-1px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 -2px 0 rgba(0, 0, 0, 0.24), 0 10px 24px rgba(83, 106, 124, 0.2);
+}
+
+.button:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.26), inset 0 -1px 0 rgba(255, 255, 255, 0.12), 0 2px 6px rgba(8, 8, 8, 0.12);
 }
 
 .button.primary {
   color: var(--inverted-ink);
-  background: var(--inverted-bg);
-  border-color: var(--inverted-bg);
+  background:
+    linear-gradient(180deg, rgba(143, 181, 208, 0.2), transparent 58%),
+    var(--inverted-bg);
+  border-color: rgba(83, 106, 124, 0.72);
 }
 
 .button.primary:hover,
@@ -543,8 +557,10 @@ h3 {
 
 .hero-actions .button.secondary {
   color: var(--inverted-ink);
-  background: var(--inverted-bg);
-  border-color: var(--inverted-bg);
+  background:
+    linear-gradient(180deg, rgba(143, 181, 208, 0.2), transparent 58%),
+    var(--inverted-bg);
+  border-color: rgba(83, 106, 124, 0.72);
 }
 
 .hero-actions .button.secondary:hover,
@@ -1419,18 +1435,12 @@ a:focus-visible {
   }
 
   .brand {
-    gap: 10px;
     margin-right: auto;
   }
 
-  .brand-wordmark {
-    width: 136px;
-    height: 40px;
-  }
-
-  .brand-subtitle {
-    width: 154px;
-    height: 32px;
+  .brand-combined {
+    width: clamp(222px, 42vw, 340px);
+    height: 44px;
   }
 
   .page-menu {
@@ -1556,13 +1566,9 @@ a:focus-visible {
     padding: 12px 14px;
   }
 
-  .brand-wordmark {
-    width: 118px;
+  .brand-combined {
+    width: clamp(174px, 46vw, 240px);
     height: 36px;
-  }
-
-  .brand-subtitle {
-    display: none;
   }
 
   .page-menu-control {
@@ -1595,4 +1601,207 @@ a:focus-visible {
     width: 24px;
     height: 24px;
   }
+}
+
+
+/* Docked plastic header controls */
+:root {
+  --dock-bg: linear-gradient(180deg, rgba(196, 208, 216, 0.72), rgba(246, 249, 250, 0.92));
+  --dock-shadow: inset 0 2px 5px rgba(47, 63, 74, 0.18), inset 0 -1px 0 rgba(255, 255, 255, 0.7), 0 1px 0 rgba(255, 255, 255, 0.7);
+  --button-plastic: linear-gradient(180deg, #ffffff 0%, #f2f6f8 48%, #dbe5eb 100%);
+  --button-plastic-active: linear-gradient(180deg, #cbd7df 0%, #e8eef2 52%, #f8fafb 100%);
+  --button-rim: rgba(93, 113, 126, 0.38);
+  --button-top-glint: rgba(255, 255, 255, 0.68);
+  --button-raised-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.94), inset 0 -2px 1px rgba(34, 50, 62, 0.14), 0 2px 0 rgba(88, 108, 121, 0.34), 0 8px 16px rgba(45, 60, 70, 0.16);
+  --button-pressed-shadow: inset 0 3px 8px rgba(22, 35, 44, 0.28), inset 0 -1px 0 rgba(255, 255, 255, 0.42), 0 1px 0 rgba(255, 255, 255, 0.58);
+}
+
+[data-theme="dark"] {
+  --dock-bg: linear-gradient(180deg, rgba(4, 7, 9, 0.98), rgba(24, 32, 38, 0.94));
+  --dock-shadow: inset 0 2px 7px rgba(0, 0, 0, 0.82), inset 0 -1px 0 rgba(255, 255, 255, 0.08), 0 1px 0 rgba(255, 255, 255, 0.04);
+  --button-plastic: linear-gradient(180deg, #26323b 0%, #11181e 52%, #050708 100%);
+  --button-plastic-active: linear-gradient(180deg, #020304 0%, #10171d 54%, #24313b 100%);
+  --button-rim: rgba(143, 181, 208, 0.34);
+  --button-top-glint: rgba(255, 255, 255, 0.14);
+  --button-raised-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), inset 0 -2px 1px rgba(0, 0, 0, 0.68), 0 2px 0 rgba(0, 0, 0, 0.74), 0 8px 18px rgba(0, 0, 0, 0.48);
+  --button-pressed-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.86), inset 0 -1px 0 rgba(255, 255, 255, 0.08), 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.page-menu-control,
+.library-link,
+.theme-toggle {
+  border-color: rgba(82, 102, 116, 0.26);
+  background: var(--dock-bg);
+  box-shadow: var(--dock-shadow);
+  transform: none;
+  transition: border-color 120ms ease, box-shadow 120ms ease, background 120ms ease, color 120ms ease;
+}
+
+.page-menu-control {
+  position: relative;
+  gap: 3px;
+  padding: 3px;
+}
+
+.home-link,
+.page-menu-toggle,
+.library-link::before,
+.theme-toggle::before {
+  background: var(--button-plastic);
+  border: 1px solid var(--button-rim);
+  box-shadow: var(--button-raised-shadow);
+}
+
+.home-link,
+.page-menu-toggle {
+  position: relative;
+  z-index: 1;
+}
+
+.home-link {
+  border-radius: 999px 5px 5px 999px;
+  min-height: 30px;
+  padding: 5px 10px 5px 12px;
+}
+
+.page-menu-toggle {
+  width: 28px;
+  min-height: 30px;
+  border-left: 1px solid var(--button-rim);
+  border-radius: 5px 999px 999px 5px;
+}
+
+.library-link,
+.theme-toggle {
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.library-link {
+  min-height: 38px;
+  padding: 4px 5px;
+  border-radius: 999px;
+}
+
+.library-link::before,
+.theme-toggle::before {
+  position: absolute;
+  inset: 3px;
+  z-index: -1;
+  content: "";
+  border-radius: inherit;
+}
+
+.library-link::after {
+  z-index: 1;
+  bottom: 8px;
+}
+
+.library-link {
+  min-width: 92px;
+}
+
+.theme-toggle {
+  padding: 4px;
+}
+
+.theme-toggle span {
+  z-index: 1;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.38), 0 1px 1px rgba(0, 0, 0, 0.24);
+}
+
+.page-menu-control::after,
+.library-link::before,
+.theme-toggle::before {
+  pointer-events: none;
+}
+
+.home-link::after,
+.page-menu-toggle::after,
+.library-link::before,
+.theme-toggle::before {
+  pointer-events: none;
+}
+
+.home-link::before,
+.page-menu-toggle::before,
+.library-link span::before,
+.theme-toggle span::before {
+  pointer-events: none;
+}
+
+.home-link[aria-current="page"],
+.page-menu:has(.page-menu-toggle[aria-expanded="true"]) .home-link,
+.page-menu:has(.page-menu-toggle[aria-expanded="true"]) .page-menu-toggle,
+.library-link[aria-current="page"]::before,
+.theme-toggle[aria-pressed="true"]::before {
+  background: var(--button-plastic-active);
+  box-shadow: var(--button-pressed-shadow);
+  transform: translateY(1px);
+}
+
+.home-link:active,
+.page-menu-toggle:active,
+.library-link:active::before,
+.theme-toggle:active::before {
+  background: var(--button-plastic-active);
+  box-shadow: var(--button-pressed-shadow);
+  transform: translateY(1px);
+}
+
+.home-link:hover,
+.page-menu-toggle:hover,
+.library-link:hover::before,
+.theme-toggle:hover::before,
+.home-link:focus-visible,
+.page-menu-toggle:focus-visible,
+.library-link:focus-visible::before,
+.theme-toggle:focus-visible::before {
+  border-color: var(--accent);
+}
+
+.home-link[aria-current="page"],
+.library-link[aria-current="page"] {
+  color: var(--ink);
+}
+
+[data-theme="dark"] .home-link[aria-current="page"],
+[data-theme="dark"] .library-link[aria-current="page"],
+[data-theme="dark"] .theme-toggle[aria-pressed="true"] {
+  color: var(--accent);
+}
+
+.theme-toggle[aria-pressed="true"] span {
+  background: var(--accent);
+  color: var(--black);
+  transform: scale(0.94);
+}
+
+[data-theme="dark"] .site-header {
+  background: var(--header-bg);
+}
+
+
+/* Keep the dock buttons mechanically still on hover; only the inner surface clicks in. */
+.page-menu-control:hover,
+.page-menu-control:focus-within,
+.library-link:hover,
+.library-link:focus-visible,
+.theme-toggle:hover,
+.theme-toggle:focus-visible,
+.theme-toggle:active {
+  background: var(--dock-bg);
+  border-color: rgba(82, 102, 116, 0.26);
+  box-shadow: var(--dock-shadow);
+  transform: none;
+}
+
+[data-theme="dark"] .page-menu-control:hover,
+[data-theme="dark"] .page-menu-control:focus-within,
+[data-theme="dark"] .library-link:hover,
+[data-theme="dark"] .library-link:focus-visible,
+[data-theme="dark"] .theme-toggle:hover,
+[data-theme="dark"] .theme-toggle:focus-visible,
+[data-theme="dark"] .theme-toggle:active {
+  border-color: rgba(143, 181, 208, 0.28);
 }
