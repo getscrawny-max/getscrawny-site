@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Alien Alphabet | Get Scrawny</title>
+    <meta name="description" content="Alien Alphabet is a simple keyboard accuracy game from Get Scrawny for practicing letter targeting and motor timing.">
+    <link rel="preload" href="styles.css" as="style">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header" data-header>
+      <a class="brand" href="index.html#top" aria-label="Get Scrawny home">
+        <span class="brand-combined brand-wordmark" aria-hidden="true">Get Scrawny Motor Coaching</span>
+      </a>
+
+      <div class="page-menu">
+        <div class="page-menu-control">
+          <a class="home-link" href="index.html#top">Home</a>
+          <button class="page-menu-toggle" type="button" aria-label="Open home page directory" aria-expanded="false" data-nav-toggle>
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+        <nav class="site-nav" aria-label="Home page directory" data-nav>
+          <a href="index.html#approach">Approach</a>
+          <a href="index.html#services">Services</a>
+          <a href="index.html#who">Who We Serve</a>
+          <a href="index.html#coach">Meet Your Coach</a>
+          <a href="index.html#contact">Contact</a>
+        </nav>
+      </div>
+
+      <a class="library-link" href="lessons.html" aria-current="page">Library</a>
+
+      <button class="theme-toggle" type="button" aria-label="Switch theme" data-theme-toggle>
+        <span aria-hidden="true"></span>
+      </button>
+    </header>
+
+    <main class="game-page">
+      <section class="game-hero" aria-labelledby="game-title">
+        <div>
+          <p class="eyebrow">Keyboard motor practice</p>
+          <h1 id="game-title"><span>Alien</span><span>Alphabet</span></h1>
+          <p class="hero-text">Press the falling letters to clear the lane before they reach your UFO. Start simple, then build toward faster two- and three-key targets.</p>
+        </div>
+        <div class="game-rules" aria-label="Game rules">
+          <span>5 lives</span>
+          <span>Random letters</span>
+          <span>Accuracy focused</span>
+        </div>
+      </section>
+
+      <section class="game-instructions" aria-labelledby="flight-deck-title">
+        <p class="eyebrow">Training lane</p>
+        <h2 id="flight-deck-title">Defend the landing lane.</h2>
+        <p>Single letters arrive first. Doubles and triples join as the round heats up, so the challenge builds without becoming a visual guessing game.</p>
+      </section>
+
+      <section class="flight-deck" aria-label="Alien Alphabet game">
+        <div class="flight-actionbar">
+          <div class="flight-stats" aria-label="Game stats">
+            <label class="hud-tile hud-select-tile">Lives
+              <select data-life-select aria-label="Lives per round">
+                <option value="0">0</option>
+                <option value="5" selected>5</option>
+                <option value="10">10</option>
+                <option value="infinite">Infinite</option>
+              </select>
+            </label>
+            <span class="hud-tile">Score <strong data-game-score>0</strong></span>
+            <span class="hud-tile">Streak <strong data-game-streak>0</strong></span>
+            <span class="hud-tile">Misfires <strong data-game-misfires>0</strong></span>
+          </div>
+          <div class="game-controls" aria-label="Game controls">
+            <button class="button primary" type="button" data-game-start>Start</button>
+            <button class="button secondary" type="button" data-game-pause>Pause</button>
+            <button class="button secondary" type="button" data-game-reset>Reset</button>
+            <button class="button secondary" type="button" data-game-fullscreen>Fullscreen</button>
+          </div>
+        </div>
+
+        <div class="space-game-shell">
+          <canvas class="space-game" width="1280" height="360" aria-label="Alien Alphabet game area" data-game-canvas></canvas>
+          <div class="game-overlay" data-game-overlay>
+            <p class="eyebrow">Ready</p>
+            <h3>Click Start, then use your keyboard.</h3>
+          </div>
+        </div>
+
+        <p class="game-status" data-game-status aria-live="polite">Press the letter shown on each falling object. Multi-letter objects can be cleared in any order.</p>
+</section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Get Scrawny LLC</p>
+      <p>Alien Alphabet for motor planning and key targeting practice.</p>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
