@@ -137,7 +137,7 @@ const playMechanicalClick = () => {
   noise.stop(now + 0.04);
 };
 
-document.querySelectorAll(".page-menu-control a, .page-menu-toggle, .site-nav a, .library-link, .library-menu-toggle, .theme-toggle, .game-controls button, .flight-actionbar button, .hero-actions a").forEach((control) => {
+document.querySelectorAll('a[href], button:not([disabled]), select, input[type="submit"], input[type="button"], .hashtag-filter button, .tag-bank-clear').forEach((control) => {
   control.addEventListener("pointerdown", () => playMechanicalClick());
 });
 
@@ -329,7 +329,8 @@ const gameScore = document.querySelector("[data-game-score]");
 const gameStreak = document.querySelector("[data-game-streak]");
 const gameStatus = document.querySelector("[data-game-status]");
 const gameOverlay = document.querySelector("[data-game-overlay]");
-const gameMute = document.querySelector("[data-game-mute]");
+const musicToggle = document.querySelector("[data-music-toggle]");
+const fxToggle = document.querySelector("[data-fx-toggle]");
 const virtualKeyboard = document.querySelector("[data-virtual-keyboard]");
 const startAudio = document.querySelector("[data-start-audio]");
 const musicAudio = document.querySelector("[data-music-audio]");
@@ -337,6 +338,9 @@ const gameOverAudio = document.querySelector("[data-game-over-audio]");
 
 if (gameCanvas) {
   const ctx = gameCanvas.getContext("2d");
+  const deepSpaceImage = new Image();
+  deepSpaceImage.src = "assets/deep-space-stars-hd.jpg";
+  deepSpaceImage.addEventListener("load", () => draw());
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const columns = [0.16, 0.3, 0.44, 0.58, 0.72, 0.86];
   const types = [
@@ -364,7 +368,8 @@ if (gameCanvas) {
   let stars = [];
   let wisps = [];
   let ufoShake = 0;
-  let gameMuted = localStorage.getItem("alienAlphabetMuted") === "true";
+  let musicMuted = localStorage.getItem("alienAlphabetMusicMuted") === "true";
+  let fxMuted = localStorage.getItem("alienAlphabetFxMuted") === "true";
   const isMobileGameLayout = () => window.matchMedia("(max-width: 760px), (pointer: coarse)").matches;
   const encouragements = [
     "Great key targeting.",
@@ -390,15 +395,21 @@ if (gameCanvas) {
 
   const randomEncouragement = () => encouragements[Math.floor(Math.random() * encouragements.length)];
 
-  const syncMuteButton = () => {
-    if (!gameMute) return;
-    gameMute.setAttribute("aria-pressed", String(gameMuted));
-    gameMute.setAttribute("aria-label", gameMuted ? "Turn game sounds on" : "Mute game sounds");
-    gameMute.innerHTML = '<span aria-hidden="true">♪</span>';
+  const syncAudioButtons = () => {
+    if (musicToggle) {
+      musicToggle.setAttribute("aria-pressed", String(musicMuted));
+      musicToggle.setAttribute("aria-label", musicMuted ? "Turn music on" : "Mute music");
+      musicToggle.innerHTML = '<span aria-hidden="true">♪</span>';
+    }
+    if (fxToggle) {
+      fxToggle.setAttribute("aria-pressed", String(fxMuted));
+      fxToggle.setAttribute("aria-label", fxMuted ? "Turn sound effects on" : "Mute sound effects");
+      fxToggle.innerHTML = '<span aria-hidden="true">FX</span>';
+    }
   };
 
   const playAudioFile = (audio) => {
-    if (gameMuted || !audio) return;
+    if (fxMuted || !audio) return;
     audio.currentTime = 0;
     audio.volume = 0.42;
     audio.play().catch(() => {});
@@ -407,7 +418,7 @@ if (gameCanvas) {
   const syncGameMusic = () => {
     if (!musicAudio) return;
     musicAudio.volume = 0.28;
-    if (running && !gameMuted && !ended) {
+    if (running && !musicMuted && !ended) {
       musicAudio.play().catch(() => {});
       return;
     }
@@ -420,12 +431,60 @@ if (gameCanvas) {
     musicAudio.currentTime = 0;
   };
 
+  const playSynthFx = (kind) => {
+    if (fxMuted) return;
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return;
+    clickAudioContext ||= new AudioContextClass();
+    const now = clickAudioContext.currentTime;
+    const gain = clickAudioContext.createGain();
+    const osc = clickAudioContext.createOscillator();
+    const noiseBuffer = clickAudioContext.createBuffer(1, Math.floor(clickAudioContext.sampleRate * 0.16), clickAudioContext.sampleRate);
+    const data = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < data.length; i += 1) data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
+    const noise = clickAudioContext.createBufferSource();
+    const noiseGain = clickAudioContext.createGain();
+    noise.buffer = noiseBuffer;
+    gain.connect(clickAudioContext.destination);
+    noise.connect(noiseGain);
+    noiseGain.connect(gain);
+    osc.connect(gain);
+    if (kind === "damage") {
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(130, now);
+      osc.frequency.exponentialRampToValueAtTime(52, now + 0.22);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.12, now + 0.018);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.26);
+      noiseGain.gain.setValueAtTime(0.05, now);
+      noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
+      osc.start(now);
+      noise.start(now);
+      osc.stop(now + 0.28);
+      noise.stop(now + 0.18);
+      return;
+    }
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(420, now);
+    osc.frequency.exponentialRampToValueAtTime(1220, now + 0.06);
+    osc.frequency.exponentialRampToValueAtTime(210, now + 0.16);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.1, now + 0.012);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
+    noiseGain.gain.setValueAtTime(0.032, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.11);
+    osc.start(now);
+    noise.start(now);
+    osc.stop(now + 0.2);
+    noise.stop(now + 0.12);
+  };
+
   const playUfoStartSound = () => {
     if (startAudio) {
       playAudioFile(startAudio);
       return;
     }
-    if (gameMuted) return;
+    if (fxMuted) return;
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
     if (!AudioContextClass) return;
     clickAudioContext ||= new AudioContextClass();
@@ -564,9 +623,34 @@ if (gameCanvas) {
     nextSpawn = Math.max(0.82, 2.45 - score * 0.0035 - getStage() * 0.16 - Math.random() * 0.36);
   };
 
-  const drawStars = (delta = 0) => {
-    ctx.fillStyle = "#03050a";
+  const drawDeepSpaceBackground = () => {
+    if (!deepSpaceImage.complete || !deepSpaceImage.naturalWidth) {
+      ctx.fillStyle = "#03050a";
+      ctx.fillRect(0, 0, width, height);
+      return;
+    }
+    const imageRatio = deepSpaceImage.naturalWidth / deepSpaceImage.naturalHeight;
+    const canvasRatio = width / height;
+    let drawWidth = width;
+    let drawHeight = height;
+    let drawX = 0;
+    let drawY = 0;
+    if (imageRatio > canvasRatio) {
+      drawHeight = height;
+      drawWidth = height * imageRatio;
+      drawX = (width - drawWidth) / 2;
+    } else {
+      drawWidth = width;
+      drawHeight = width / imageRatio;
+      drawY = (height - drawHeight) / 2;
+    }
+    ctx.drawImage(deepSpaceImage, drawX, drawY, drawWidth, drawHeight);
+    ctx.fillStyle = "rgba(0, 0, 0, 0.18)";
     ctx.fillRect(0, 0, width, height);
+  };
+
+  const drawStars = (delta = 0) => {
+    drawDeepSpaceBackground();
     const deepGlow = ctx.createRadialGradient(width * 0.5, height * 0.74, 0, width * 0.5, height * 0.74, width * 0.72);
     deepGlow.addColorStop(0, "rgba(83, 106, 124, 0.2)");
     deepGlow.addColorStop(1, "rgba(3, 5, 10, 0)");
@@ -854,6 +938,7 @@ if (gameCanvas) {
   };
 
   const loseLife = (missedObstacle) => {
+    playSynthFx("damage");
     if (!infiniteLives) lives = Math.max(0, lives - 1);
     streak = 0;
     ufoShake = missedObstacle && missedObstacle.code.length > 1 ? 0.48 : 0.28;
@@ -960,6 +1045,7 @@ if (gameCanvas) {
     target.hitFlash = 0.22;
     if (!target.code) {
       obstacles = obstacles.filter((obstacle) => obstacle !== target);
+      playSynthFx("clear");
       const progress = Math.min(Math.max(target.y / (height - 70), 0), 1);
       const timingMultiplier = 1.35 - progress * 0.75;
       const baseScore = target.letters * 14 + 8;
@@ -1005,17 +1091,22 @@ if (gameCanvas) {
     window.setTimeout(() => button.classList.remove("is-hit"), 130);
     pressGameKey(button.dataset.key || "");
   });
-  gameMute?.addEventListener("click", () => {
-    gameMuted = !gameMuted;
-    localStorage.setItem("alienAlphabetMuted", String(gameMuted));
-    syncMuteButton();
+  musicToggle?.addEventListener("click", () => {
+    musicMuted = !musicMuted;
+    localStorage.setItem("alienAlphabetMusicMuted", String(musicMuted));
+    syncAudioButtons();
     syncGameMusic();
+  });
+  fxToggle?.addEventListener("click", () => {
+    fxMuted = !fxMuted;
+    localStorage.setItem("alienAlphabetFxMuted", String(fxMuted));
+    syncAudioButtons();
   });
   lifeSelect?.addEventListener("change", () => {
     resetGame();
     updateStats();
   });
-  syncMuteButton();
+  syncAudioButtons();
   updateFullscreenButton();
   resizeGame();
   resetGame();

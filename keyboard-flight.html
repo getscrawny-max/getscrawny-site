@@ -89,7 +89,10 @@
 
         <div class="space-game-shell">
           <div class="game-life-orb" aria-label="Lives remaining"><strong data-game-lives>5</strong></div>
-          <button class="game-mute" type="button" aria-pressed="false" aria-label="Mute game sounds" data-game-mute><span aria-hidden="true">♪</span></button>
+          <div class="game-audio-toggles" aria-label="Game audio controls">
+            <button class="game-audio-toggle" type="button" aria-pressed="false" aria-label="Mute music" data-music-toggle><span aria-hidden="true">♪</span></button>
+            <button class="game-audio-toggle" type="button" aria-pressed="false" aria-label="Mute sound effects" data-fx-toggle><span aria-hidden="true">FX</span></button>
+          </div>
           <canvas class="space-game" width="1280" height="360" aria-label="Alien Alphabet game area" data-game-canvas></canvas>
           <div class="game-overlay" data-game-overlay>
             <p class="eyebrow">Ready</p>
