@@ -3567,3 +3567,289 @@ body:has(.game-page) .brand-combined,
     inset 0 1px 0 rgba(255, 255, 255, 0.08),
     0 0 24px rgba(143, 181, 208, 0.08);
 }
+
+
+/* Mobile header lock and touch keyboard */
+@media (max-width: 620px) {
+  .site-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
+    align-items: center;
+    column-gap: 8px;
+    row-gap: 8px;
+    padding: 14px 12px;
+  }
+
+  .brand {
+    min-width: 0;
+    margin: 0;
+    grid-column: 1;
+  }
+
+  .brand-combined.brand-wordmark {
+    width: min(42vw, 190px);
+    height: 58px;
+    white-space: normal;
+    line-height: 0.92;
+    overflow-wrap: anywhere;
+  }
+
+  .page-menu,
+  .library-menu,
+  .theme-toggle {
+    margin: 0;
+    justify-self: end;
+  }
+
+  .page-menu {
+    grid-column: 2;
+    order: 0;
+  }
+
+  .library-menu {
+    grid-column: 3;
+    order: 0;
+  }
+
+  .theme-toggle {
+    grid-column: 4;
+    order: 0;
+  }
+
+  .page-menu-control,
+  .library-menu-control {
+    min-height: 32px;
+    gap: 2px;
+    padding: 2px;
+  }
+
+  .home-link,
+  .library-menu .library-link {
+    min-width: 0;
+    min-height: 28px;
+    padding: 4px 9px;
+    font-size: 0.78rem;
+  }
+
+  .page-menu-toggle,
+  .library-menu .library-menu-toggle {
+    width: 25px;
+    min-height: 28px;
+  }
+
+  .theme-toggle {
+    width: 34px;
+    height: 34px;
+  }
+
+  .site-nav {
+    width: min(230px, calc(100vw - 24px));
+  }
+}
+
+.mobile-keyboard {
+  display: none;
+}
+
+@media (max-width: 760px), (pointer: coarse) {
+  .game-page {
+    padding-inline: 12px;
+  }
+
+  .flight-deck {
+    padding: 10px;
+  }
+
+  .space-game {
+    height: min(62vh, 520px);
+  }
+
+  .mobile-keyboard {
+    display: grid;
+    gap: 6px;
+    margin-top: 8px;
+    padding: 8px;
+    border: 1px solid rgba(123, 214, 111, 0.34);
+    border-radius: 8px;
+    background: linear-gradient(180deg, rgba(123, 214, 111, 0.12), rgba(0, 0, 0, 0.3));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 22px rgba(123, 214, 111, 0.1);
+  }
+
+  .mobile-keyboard > div {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .mobile-keyboard button {
+    flex: 0 1 34px;
+    min-width: 0;
+    height: 36px;
+    color: #f4fff1;
+    font: 900 0.92rem/1 Inter, sans-serif;
+    border: 1px solid rgba(123, 214, 111, 0.62);
+    border-radius: 7px;
+    background:
+      radial-gradient(circle at 24% 18%, rgba(255, 255, 255, 0.22), transparent 24%),
+      linear-gradient(180deg, rgba(39, 84, 38, 0.94), rgba(2, 8, 3, 0.98));
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      inset 0 -3px 0 rgba(0, 0, 0, 0.66),
+      0 2px 0 rgba(0, 0, 0, 0.72),
+      0 0 12px rgba(123, 214, 111, 0.14);
+  }
+
+  .mobile-keyboard button:active,
+  .mobile-keyboard button.is-hit {
+    transform: translateY(2px);
+    box-shadow:
+      inset 0 3px 8px rgba(0, 0, 0, 0.68),
+      0 0 14px rgba(123, 214, 111, 0.22);
+  }
+
+  .flight-deck:fullscreen {
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .flight-deck:fullscreen .flight-actionbar {
+    padding-bottom: 4px;
+  }
+
+  .flight-deck:fullscreen .space-game-shell {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .flight-deck:fullscreen .space-game {
+    height: 100%;
+  }
+
+  .flight-deck:fullscreen .mobile-keyboard {
+    flex: 0 0 auto;
+    margin-top: 0;
+  }
+
+  .flight-deck:fullscreen .game-status {
+    margin-top: 0;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .brand-combined.brand-wordmark {
+    width: min(39vw, 154px);
+    font-size: clamp(1.24rem, 8.2vw, 1.9rem);
+  }
+
+  .home-link,
+  .library-menu .library-link {
+    padding-inline: 7px;
+    font-size: 0.72rem;
+  }
+
+  .page-menu-toggle,
+  .library-menu .library-menu-toggle {
+    width: 22px;
+  }
+
+  .theme-toggle {
+    width: 31px;
+    height: 31px;
+  }
+
+  .mobile-keyboard button {
+    flex-basis: 29px;
+    height: 34px;
+    font-size: 0.84rem;
+  }
+}
+
+
+@media (max-width: 760px), (pointer: coarse) {
+  body.mobile-game-active {
+    overflow: hidden;
+  }
+
+  body.mobile-game-active .flight-deck {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    width: 100vw;
+    height: 100dvh;
+    max-width: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+    border-radius: 0;
+    overflow: hidden;
+  }
+
+  body.mobile-game-active .flight-actionbar {
+    flex: 0 0 auto;
+    padding-bottom: 2px;
+  }
+
+  body.mobile-game-active .space-game-shell {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  body.mobile-game-active .space-game {
+    height: 100%;
+  }
+
+  body.mobile-game-active .mobile-keyboard,
+  body.mobile-game-active .game-status {
+    flex: 0 0 auto;
+  }
+
+  body.mobile-game-active .game-status {
+    margin: 0;
+    padding: 6px 4px 0;
+    font-size: 0.88rem;
+  }
+}
+
+
+/* Mobile game control compaction */
+@media (max-width: 760px), (pointer: coarse) {
+  .flight-actionbar {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    gap: 6px;
+    padding-bottom: 6px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .flight-actionbar > .hud-tile,
+  .flight-actionbar > .button,
+  .flight-actionbar > .button.primary,
+  .flight-actionbar > .button.secondary {
+    min-height: 34px;
+    height: 34px;
+    padding: 5px 9px;
+    font-size: 0.82rem;
+  }
+
+  .flight-actionbar > .button,
+  .flight-actionbar > .button.primary,
+  .flight-actionbar > .button.secondary {
+    min-width: 68px;
+  }
+
+  .hud-select-tile select {
+    width: 38px;
+    max-width: 38px;
+    font-size: 0.8rem;
+  }
+
+  body.mobile-game-active .flight-actionbar {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+  }
+}

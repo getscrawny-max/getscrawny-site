@@ -330,6 +330,7 @@ const gameStreak = document.querySelector("[data-game-streak]");
 const gameStatus = document.querySelector("[data-game-status]");
 const gameOverlay = document.querySelector("[data-game-overlay]");
 const gameMute = document.querySelector("[data-game-mute]");
+const virtualKeyboard = document.querySelector("[data-virtual-keyboard]");
 const startAudio = document.querySelector("[data-start-audio]");
 const musicAudio = document.querySelector("[data-music-audio]");
 const gameOverAudio = document.querySelector("[data-game-over-audio]");
@@ -364,6 +365,7 @@ if (gameCanvas) {
   let wisps = [];
   let ufoShake = 0;
   let gameMuted = localStorage.getItem("alienAlphabetMuted") === "true";
+  const isMobileGameLayout = () => window.matchMedia("(max-width: 760px), (pointer: coarse)").matches;
   const encouragements = [
     "Great key targeting.",
     "Nice calm timing.",
@@ -471,8 +473,9 @@ if (gameCanvas) {
   const resizeGame = () => {
     const rect = gameCanvas.getBoundingClientRect();
     dpr = Math.min(window.devicePixelRatio || 1, 2);
-    width = Math.max(680, Math.floor(rect.width));
-    height = Math.max(500, Math.floor(rect.height));
+    const compactLayout = isMobileGameLayout();
+    width = Math.max(compactLayout ? 320 : 680, Math.floor(rect.width));
+    height = Math.max(compactLayout ? 420 : 500, Math.floor(rect.height));
     gameCanvas.width = Math.floor(width * dpr);
     gameCanvas.height = Math.floor(height * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -509,6 +512,10 @@ if (gameCanvas) {
     if (gameStatus) gameStatus.textContent = message;
   };
 
+  const setMobileGameFocus = (active) => {
+    document.body.classList.toggle("mobile-game-active", Boolean(active && isMobileGameLayout()));
+  };
+
   const setOverlay = (visible, label = "Ready", title = "Click Start, then use your keyboard.") => {
     if (!gameOverlay) return;
     gameOverlay.hidden = !visible;
@@ -524,6 +531,7 @@ if (gameCanvas) {
     misfires = 0;
     running = false;
     ended = false;
+    setMobileGameFocus(false);
     stopGameMusic();
     lastTime = 0;
     spawnTimer = 0;
@@ -858,6 +866,7 @@ if (gameCanvas) {
     if (lives <= 0) {
       running = false;
       ended = true;
+      setMobileGameFocus(false);
       stopGameMusic();
       playAudioFile(gameOverAudio);
       setOverlay(true, "Game over", "Score " + score + ". Misfires " + misfires + ". Press Reset to try another flight.");
@@ -893,6 +902,13 @@ if (gameCanvas) {
   const startGame = () => {
     if (ended) resetGame();
     if (running) return;
+    // Mobile browsers need the fullscreen request directly inside the Start tap.
+    if (isMobileGameLayout()) {
+      setMobileGameFocus(true);
+      if (flightDeck && document.fullscreenEnabled && document.fullscreenElement !== flightDeck) {
+        flightDeck.requestFullscreen?.().catch(() => {});
+      }
+    }
     if (lifeSelect) lifeSelect.disabled = true;
     playUfoStartSound();
     running = true;
@@ -925,11 +941,10 @@ if (gameCanvas) {
     flightDeck.requestFullscreen?.();
   };
 
-  const handleKey = (event) => {
-    if (!running || event.metaKey || event.ctrlKey || event.altKey) return;
-    const key = event.key.toUpperCase();
+  const pressGameKey = (key) => {
+    if (!running) return;
+    key = String(key).toUpperCase();
     if (!letters.includes(key) || key.length !== 1) return;
-    event.preventDefault();
     const candidates = obstacles
       .filter((obstacle) => obstacle.code.includes(key))
       .sort((a, b) => b.y - a.y);
@@ -961,9 +976,18 @@ if (gameCanvas) {
     updateStats();
   };
 
+  const handleKey = (event) => {
+    if (!running || event.metaKey || event.ctrlKey || event.altKey) return;
+    const key = event.key.toUpperCase();
+    if (!letters.includes(key) || key.length !== 1) return;
+    event.preventDefault();
+    pressGameKey(key);
+  };
+
   window.addEventListener("resize", resizeGame);
   window.addEventListener("keydown", handleKey);
   document.addEventListener("fullscreenchange", () => {
+    if (!document.fullscreenElement && !running) setMobileGameFocus(false);
     updateFullscreenButton();
     resizeGame();
     draw();
@@ -972,6 +996,15 @@ if (gameCanvas) {
   gamePause?.addEventListener("click", pauseGame);
   gameReset?.addEventListener("click", resetGame);
   gameFullscreen?.addEventListener("click", toggleFullscreen);
+  virtualKeyboard?.addEventListener("click", (event) => {
+    const button = event.target instanceof Element ? event.target.closest("[data-key]") : null;
+    if (!(button instanceof HTMLButtonElement)) return;
+    button.classList.remove("is-hit");
+    void button.offsetWidth;
+    button.classList.add("is-hit");
+    window.setTimeout(() => button.classList.remove("is-hit"), 130);
+    pressGameKey(button.dataset.key || "");
+  });
   gameMute?.addEventListener("click", () => {
     gameMuted = !gameMuted;
     localStorage.setItem("alienAlphabetMuted", String(gameMuted));
