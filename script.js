@@ -1,5 +1,7 @@
 const navToggle = document.querySelector("[data-nav-toggle]");
 const nav = document.querySelector("[data-nav]");
+const libraryNavToggle = document.querySelector("[data-library-nav-toggle]");
+const libraryNav = document.querySelector("[data-library-nav]");
 const form = document.querySelector("[data-contact-form]");
 const formNote = document.querySelector("[data-form-note]");
 const themeToggle = document.querySelector("[data-theme-toggle]");
@@ -70,22 +72,31 @@ const syncThemeToggle = () => {
 syncThemeToggle();
 syncThemeLinks();
 
-if (navToggle && nav) {
-  navToggle.addEventListener("click", () => {
-    const isOpen = navToggle.getAttribute("aria-expanded") === "true";
-    navToggle.setAttribute("aria-expanded", String(!isOpen));
-    navToggle.setAttribute("aria-label", isOpen ? "Open home page directory" : "Close home page directory");
-    nav.classList.toggle("is-open", !isOpen);
-  });
-
-  nav.addEventListener("click", (event) => {
-    if (event.target instanceof HTMLAnchorElement) {
-      navToggle.setAttribute("aria-expanded", "false");
-      navToggle.setAttribute("aria-label", "Open home page directory");
-      nav.classList.remove("is-open");
+const setupDisclosureNav = (toggle, menu, openLabel, closeLabel, otherToggle, otherMenu) => {
+  if (!toggle || !menu) return;
+  const close = () => {
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.setAttribute("aria-label", openLabel);
+    menu.classList.remove("is-open");
+  };
+  toggle.addEventListener("click", () => {
+    const isOpen = toggle.getAttribute("aria-expanded") === "true";
+    if (otherToggle && otherMenu) {
+      otherToggle.setAttribute("aria-expanded", "false");
+      otherToggle.setAttribute("aria-label", otherToggle === navToggle ? "Open home page directory" : "Open library directory");
+      otherMenu.classList.remove("is-open");
     }
+    toggle.setAttribute("aria-expanded", String(!isOpen));
+    toggle.setAttribute("aria-label", isOpen ? openLabel : closeLabel);
+    menu.classList.toggle("is-open", !isOpen);
   });
-}
+  menu.addEventListener("click", (event) => {
+    if (event.target instanceof HTMLAnchorElement) close();
+  });
+};
+
+setupDisclosureNav(navToggle, nav, "Open home page directory", "Close home page directory", libraryNavToggle, libraryNav);
+setupDisclosureNav(libraryNavToggle, libraryNav, "Open library directory", "Close library directory", navToggle, nav);
 
 let clickAudioContext;
 
@@ -126,7 +137,7 @@ const playMechanicalClick = () => {
   noise.stop(now + 0.04);
 };
 
-document.querySelectorAll(".page-menu-control a, .page-menu-toggle, .site-nav a, .library-link, .theme-toggle, .game-controls button, .hero-actions a").forEach((control) => {
+document.querySelectorAll(".page-menu-control a, .page-menu-toggle, .site-nav a, .library-link, .library-menu-toggle, .theme-toggle, .game-controls button, .flight-actionbar button, .hero-actions a").forEach((control) => {
   control.addEventListener("pointerdown", () => playMechanicalClick());
 });
 
@@ -320,6 +331,7 @@ const gameStatus = document.querySelector("[data-game-status]");
 const gameOverlay = document.querySelector("[data-game-overlay]");
 const gameMute = document.querySelector("[data-game-mute]");
 const startAudio = document.querySelector("[data-start-audio]");
+const musicAudio = document.querySelector("[data-music-audio]");
 const gameOverAudio = document.querySelector("[data-game-over-audio]");
 
 if (gameCanvas) {
@@ -388,6 +400,22 @@ if (gameCanvas) {
     audio.currentTime = 0;
     audio.volume = 0.42;
     audio.play().catch(() => {});
+  };
+
+  const syncGameMusic = () => {
+    if (!musicAudio) return;
+    musicAudio.volume = 0.28;
+    if (running && !gameMuted && !ended) {
+      musicAudio.play().catch(() => {});
+      return;
+    }
+    musicAudio.pause();
+  };
+
+  const stopGameMusic = () => {
+    if (!musicAudio) return;
+    musicAudio.pause();
+    musicAudio.currentTime = 0;
   };
 
   const playUfoStartSound = () => {
@@ -496,6 +524,7 @@ if (gameCanvas) {
     misfires = 0;
     running = false;
     ended = false;
+    stopGameMusic();
     lastTime = 0;
     spawnTimer = 0;
     nextSpawn = 1.65;
@@ -829,6 +858,7 @@ if (gameCanvas) {
     if (lives <= 0) {
       running = false;
       ended = true;
+      stopGameMusic();
       playAudioFile(gameOverAudio);
       setOverlay(true, "Game over", "Score " + score + ". Misfires " + misfires + ". Press Reset to try another flight.");
     }
@@ -866,6 +896,7 @@ if (gameCanvas) {
     if (lifeSelect) lifeSelect.disabled = true;
     playUfoStartSound();
     running = true;
+    syncGameMusic();
     lastTime = 0;
     setOverlay(false);
     setStatus("Flight active. Press the keys on the falling objects before they reach the UFO.");
@@ -875,6 +906,7 @@ if (gameCanvas) {
   const pauseGame = () => {
     if (!running) return;
     running = false;
+    syncGameMusic();
     setOverlay(true, "Paused", "Press Start to continue the flight.");
     setStatus("Paused.");
   };
@@ -944,6 +976,7 @@ if (gameCanvas) {
     gameMuted = !gameMuted;
     localStorage.setItem("alienAlphabetMuted", String(gameMuted));
     syncMuteButton();
+    syncGameMusic();
   });
   lifeSelect?.addEventListener("change", () => {
     resetGame();

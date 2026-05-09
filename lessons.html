@@ -33,7 +33,18 @@
         </nav>
       </div>
 
-      <a class="library-link" href="lessons.html" aria-current="page">Library</a>
+      <div class="library-menu">
+        <div class="library-menu-control">
+          <a class="library-link" href="lessons.html" aria-current="page">Library</a>
+          <button class="library-menu-toggle page-menu-toggle" type="button" aria-label="Open library directory" aria-expanded="false" data-library-nav-toggle>
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+        <nav class="site-nav library-nav" aria-label="Library directory" data-library-nav>
+          <a href="lessons.html" aria-current="page">Scrawny's Library</a>
+          <a href="keyboard-flight.html">Alien Alphabet</a>
+        </nav>
+      </div>
 
       <button class="theme-toggle" type="button" aria-label="Switch to light mode" data-theme-toggle>
         <span aria-hidden="true"></span>

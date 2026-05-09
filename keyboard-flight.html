@@ -30,7 +30,18 @@
         </nav>
       </div>
 
-      <a class="library-link" href="lessons.html" aria-current="page">Library</a>
+      <div class="library-menu">
+        <div class="library-menu-control">
+          <a class="library-link" href="lessons.html" aria-current="page">Library</a>
+          <button class="library-menu-toggle page-menu-toggle" type="button" aria-label="Open library directory" aria-expanded="false" data-library-nav-toggle>
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+        <nav class="site-nav library-nav" aria-label="Library directory" data-library-nav>
+          <a href="lessons.html">Scrawny's Library</a>
+          <a href="keyboard-flight.html" aria-current="page">Alien Alphabet</a>
+        </nav>
+      </div>
 
       <button class="theme-toggle" type="button" aria-label="Switch theme" data-theme-toggle>
         <span aria-hidden="true"></span>
@@ -45,7 +56,7 @@
           <p class="hero-text">Press the falling letters to clear the lane before they reach your UFO. Start simple, then build toward faster two- and three-key targets.</p>
         </div>
         <div class="game-rules" aria-label="Game rules">
-          <span>5 lives</span>
+          <span>Pick your lives</span>
           <span>Random letters</span>
           <span>Accuracy focused</span>
         </div>
@@ -88,6 +99,7 @@
 
         <p class="game-status" data-game-status aria-live="polite">Press the letter shown on each falling object. Multi-letter objects can be cleared in any order.</p>
         <audio data-start-audio preload="auto" src="assets/spaceship-startup.mp3"></audio>
+        <audio data-music-audio preload="auto" loop src="assets/alien-alphabet.mp3"></audio>
         <audio data-game-over-audio preload="auto" src="assets/game-over.mp3"></audio>
 </section>
     </main>

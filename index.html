@@ -33,7 +33,18 @@
         </nav>
       </div>
 
-      <a class="library-link" href="lessons.html">Library</a>
+      <div class="library-menu">
+        <div class="library-menu-control">
+          <a class="library-link" href="lessons.html">Library</a>
+          <button class="library-menu-toggle page-menu-toggle" type="button" aria-label="Open library directory" aria-expanded="false" data-library-nav-toggle>
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+        <nav class="site-nav library-nav" aria-label="Library directory" data-library-nav>
+          <a href="lessons.html">Scrawny's Library</a>
+          <a href="keyboard-flight.html">Alien Alphabet</a>
+        </nav>
+      </div>
 
       <button class="theme-toggle" type="button" aria-label="Switch to dark mode" data-theme-toggle>
         <span aria-hidden="true"></span>
@@ -122,22 +133,38 @@
 
         <div class="service-grid">
           <article class="service-card">
-            <span class="card-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path d="M4 12h7"></path><path d="M13 5l7 7-7 7"></path></svg>
+            <span class="card-icon service-graphic initiation-graphic" aria-hidden="true">
+              <svg viewBox="0 0 64 64" focusable="false">
+                <circle class="graphic-orbit" cx="32" cy="32" r="22"></circle>
+                <circle class="graphic-dot" cx="20" cy="32" r="5"></circle>
+                <path class="graphic-line" d="M20 32h22"></path>
+                <path class="graphic-line" d="M36 22l10 10-10 10"></path>
+              </svg>
             </span>
             <h3>Motor Initiation</h3>
             <p>Practice initiating useful movement through clear setup, modeling, rhythm, and patient coaching of the body part doing the work.</p>
           </article>
           <article class="service-card">
-            <span class="card-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path d="M4 7h6v6H4z"></path><path d="M14 11h6v6h-6z"></path><path d="M10 10l4 2"></path></svg>
+            <span class="card-icon service-graphic sequence-graphic" aria-hidden="true">
+              <svg viewBox="0 0 64 64" focusable="false">
+                <path class="graphic-line" d="M18 22h16c7 0 12 5 12 12s-5 12-12 12H18"></path>
+                <rect class="graphic-box" x="12" y="16" width="12" height="12" rx="2"></rect>
+                <rect class="graphic-box" x="26" y="26" width="12" height="12" rx="2"></rect>
+                <rect class="graphic-box" x="40" y="36" width="12" height="12" rx="2"></rect>
+              </svg>
             </span>
             <h3>Sequencing</h3>
             <p>Break unfamiliar actions into approachable parts so the body can rehearse order, timing, direction, and follow-through.</p>
           </article>
           <article class="service-card">
-            <span class="card-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path d="M5 18c3-9 9-12 14-12"></path><path d="M8 18h11"></path><path d="M16 6l3 3-3 3"></path></svg>
+            <span class="card-icon service-graphic practice-graphic" aria-hidden="true">
+              <svg viewBox="0 0 64 64" focusable="false">
+                <circle class="graphic-orbit" cx="32" cy="32" r="20"></circle>
+                <circle class="graphic-orbit soft" cx="32" cy="32" r="10"></circle>
+                <path class="graphic-line" d="M18 43c6 7 20 8 29-1"></path>
+                <path class="graphic-line" d="M43 35l5 7-8 3"></path>
+                <circle class="graphic-dot" cx="32" cy="32" r="4"></circle>
+              </svg>
             </span>
             <h3>Purposeful Practice</h3>
             <p>Build sessions around meaningful goals: fitness, daily participation, keyboard access, communication support, or movement confidence.</p>
