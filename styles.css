@@ -7195,3 +7195,192 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
     grid-template-columns: 1fr;
   }
 }
+
+/* Deployment hardening for live domain */
+.explore-page .world-dock,
+.arcade-page .arcade-dock,
+.muscle-map-shell,
+.muscle-map-education-shell,
+.muscle-map-log-shell,
+.lessons-page .lesson-web,
+.lessons-page .lessons-hero {
+  box-sizing: border-box;
+}
+
+.explore-page .world-card-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+}
+
+.explore-page .world-card,
+.arcade-page .arcade-feature-card {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.explore-page .world-card-image,
+.arcade-page .arcade-feature-art {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 0;
+  max-height: 260px;
+  overflow: hidden;
+  flex: 0 0 auto;
+}
+
+.explore-page .world-card-image img,
+.arcade-page .arcade-feature-art img {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100%;
+  max-height: none;
+}
+
+.explore-page .world-card-image {
+  background:
+    radial-gradient(circle at 50% 46%, rgba(80, 170, 230, 0.16), transparent 48%),
+    linear-gradient(180deg, rgba(14, 62, 96, 0.7), rgba(6, 28, 45, 0.92));
+}
+
+.explore-page .world-card-image img {
+  object-fit: contain;
+  box-sizing: border-box;
+  padding: clamp(0.75rem, 2vw, 1.45rem);
+  transform: scale(0.82);
+  transform-origin: center;
+  filter:
+    brightness(0)
+    saturate(100%)
+    invert(62%)
+    sepia(47%)
+    saturate(836%)
+    hue-rotate(166deg)
+    brightness(96%)
+    contrast(94%)
+    drop-shadow(0 0 18px rgba(80, 170, 230, 0.26));
+  opacity: 0.96;
+}
+
+.arcade-page .arcade-feature-art img {
+  object-fit: cover;
+}
+
+.arcade-page .arcade-feature-card {
+  grid-template-columns: minmax(240px, 0.88fr) minmax(280px, 1fr);
+}
+
+.arcade-page .arcade-feature-copy,
+.explore-page .world-card span,
+.explore-page .world-card strong {
+  min-width: 0;
+}
+
+.muscle-map-page .muscle-map-hero,
+.muscle-map-page .content-section,
+.muscle-map-page .info-panel,
+.muscle-map-log-shell .workout-intro,
+.muscle-map-log-shell .log-layout,
+.muscle-map-log-shell #training-tools,
+.muscle-map-education-shell .content-section {
+  width: min(1120px, calc(100% - 48px));
+  max-width: 1120px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (max-width: 760px) {
+  .explore-page .world-card-grid,
+  .arcade-page .arcade-feature-card {
+    grid-template-columns: 1fr;
+  }
+
+  .explore-page .world-card-image,
+  .arcade-page .arcade-feature-art {
+    max-height: 220px;
+  }
+
+  .muscle-map-page .muscle-map-hero,
+  .muscle-map-page .content-section,
+  .muscle-map-page .info-panel,
+  .muscle-map-log-shell .workout-intro,
+  .muscle-map-log-shell .log-layout,
+  .muscle-map-log-shell #training-tools,
+  .muscle-map-education-shell .content-section,
+  .explore-page .world-dock,
+  .arcade-page .arcade-dock {
+    width: min(100% - 28px, 1120px);
+  }
+}
+
+/* Explore directory simplification */
+.explore-page .world-dock {
+  background: #000;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  padding: clamp(2.5rem, 5vw, 4.5rem) 0 clamp(3rem, 6vw, 5rem);
+}
+
+.explore-page .world-dock-title {
+  margin: 0 auto clamp(1.75rem, 4vw, 2.75rem);
+  max-width: 980px;
+  text-align: center;
+  font-size: clamp(3rem, 8vw, 5.75rem);
+  line-height: 0.92;
+  letter-spacing: 0;
+}
+
+.explore-page .world-card {
+  background:
+    linear-gradient(180deg, rgba(18, 34, 46, 0.96), rgba(9, 18, 26, 0.98));
+}
+
+.explore-page .world-card-image {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-color: rgba(143, 181, 208, 0.42);
+}
+
+.explore-page .world-card-image img {
+  display: block;
+  width: min(72%, 176px) !important;
+  height: min(72%, 176px) !important;
+  max-width: 176px;
+  max-height: 176px;
+  object-fit: contain;
+  object-position: center;
+  padding: 0;
+  transform: none;
+  filter:
+    brightness(0)
+    saturate(100%)
+    invert(66%)
+    sepia(31%)
+    saturate(611%)
+    hue-rotate(164deg)
+    brightness(94%)
+    contrast(92%)
+    drop-shadow(0 0 16px rgba(143, 181, 208, 0.34));
+  opacity: 1;
+}
+
+.explore-page .featured-world-card .world-card-image img {
+  width: min(66%, 164px) !important;
+  height: min(66%, 164px) !important;
+}
+
+@media (max-width: 760px) {
+  .explore-page .world-dock-title {
+    font-size: clamp(2.65rem, 13vw, 4.25rem);
+  }
+
+  .explore-page .world-card-image img {
+    width: min(68%, 150px) !important;
+    height: min(68%, 150px) !important;
+  }
+}
+
