@@ -8,6 +8,7 @@
     start: document.querySelector('[data-octa-start]'),
     restart: document.querySelector('[data-octa-restart]'),
     fullscreen: document.querySelector('[data-octa-fullscreen]'),
+    hardMode: document.querySelector('[data-octa-hard]'),
     shell: document.querySelector('.octarun-shell'),
     stage: document.querySelector('[data-octa-stage]'),
     ballNext: document.querySelector('[data-octa-ball-next]'),
@@ -16,6 +17,13 @@
     overlay: document.querySelector('[data-octa-overlay]'),
     overlayStart: document.querySelector('[data-octa-overlay-start]')
   };
+
+  const mobileJumpButton = document.createElement('button');
+  mobileJumpButton.type = 'button';
+  mobileJumpButton.className = 'octarun-jump-button';
+  mobileJumpButton.textContent = 'Jump';
+  mobileJumpButton.setAttribute('aria-label', 'Jump');
+  hud.stage?.appendChild(mobileJumpButton);
 
   const THREE = window.THREE;
   const scene = new THREE.Scene();
@@ -33,11 +41,11 @@
   const chunkDepth = 3.34;
   const laneArc = (Math.PI * 2) / lanes;
   const levelConfigs = [
-    { level: 1, duration: 45, speed: 5.45, hazards: [1, 2], wallChance: 0.30, safeStart: 8, copy: 'Level 2 opens up after 90 seconds with more lane reads.' },
-    { level: 2, duration: 90, speed: 6.25, hazards: [2, 3], wallChance: 0.36, safeStart: 7, copy: 'Level 3 runs two full minutes and asks for cleaner jumps.' },
-    { level: 3, duration: 120, speed: 7.05, hazards: [3, 4], wallChance: 0.42, safeStart: 6, copy: 'Level 4 stretches to two and a half minutes with tighter timing.' },
-    { level: 4, duration: 150, speed: 7.85, hazards: [4, 5], wallChance: 0.48, safeStart: 5, copy: 'Level 5 is the three-minute final run.' },
-    { level: 5, duration: 180, speed: 8.65, hazards: [5, 6], wallChance: 0.54, safeStart: 5, copy: 'You cleared the full OctaRun set.' }
+    { level: 1, duration: 45, speed: 5.15, hazards: [2, 2], wallChance: 0.14, safeStart: 7, copy: 'Level 2 opens up after 90 seconds with more lane reads.' },
+    { level: 2, duration: 90, speed: 5.95, hazards: [2, 3], wallChance: 0.22, safeStart: 7, copy: 'Level 3 runs two full minutes and asks for cleaner jumps.' },
+    { level: 3, duration: 120, speed: 6.75, hazards: [3, 4], wallChance: 0.31, safeStart: 6, copy: 'Level 4 stretches to two and a half minutes with tighter timing.' },
+    { level: 4, duration: 150, speed: 7.55, hazards: [4, 5], wallChance: 0.40, safeStart: 5, copy: 'Level 5 is the three-minute final run.' },
+    { level: 5, duration: 180, speed: 8.35, hazards: [5, 6], wallChance: 0.48, safeStart: 5, copy: 'You cleared the full OctaRun set.' }
   ];
 
   const levelPalettes = [
@@ -54,16 +62,17 @@
   }
 
   function makeLaneSurfaceGeometry(lane, depth = chunkDepth) {
-    const overlap = 0;
+    const overlap = 0.045;
     const a0 = -laneArc / 2 - overlap;
     const a1 = laneArc / 2 + overlap;
-    const z0 = -depth / 2;
-    const z1 = depth / 2;
+    const z0 = -depth / 2 - 0.16;
+    const z1 = depth / 2 + 0.16;
+    const panelRadius = radius + 0.1;
     const verts = [
-      ...lanePoint(lane, a0, radius, z0),
-      ...lanePoint(lane, a1, radius, z0),
-      ...lanePoint(lane, a1, radius, z1),
-      ...lanePoint(lane, a0, radius, z1)
+      ...lanePoint(lane, a0, panelRadius, z0),
+      ...lanePoint(lane, a1, panelRadius, z0),
+      ...lanePoint(lane, a1, panelRadius, z1),
+      ...lanePoint(lane, a0, panelRadius, z1)
     ];
     const geom = new THREE.BufferGeometry();
     geom.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3));
@@ -73,13 +82,13 @@
   }
 
   function makeLaneWallGeometry(lane) {
-    const edgeInset = 0.045;
+    const edgeInset = 0.024;
     const a0 = -laneArc / 2 + edgeInset;
     const a1 = laneArc / 2 - edgeInset;
-    const z0 = -0.44;
-    const z1 = 0.44;
-    const outer = radius - 0.03;
-    const inner = radius - 2.15;
+    const z0 = -0.82;
+    const z1 = 0.82;
+    const outer = radius + 0.06;
+    const inner = radius - 2.72;
     const verts = [
       ...lanePoint(lane, a0, outer, z0),
       ...lanePoint(lane, a1, outer, z0),
@@ -105,14 +114,14 @@
   }
 
   function makeWallXGeometry(lane, flip) {
-    const edgeInset = 0.11;
+    const edgeInset = 0.065;
     const a0 = -laneArc / 2 + edgeInset;
     const a1 = laneArc / 2 - edgeInset;
-    const outer = radius + 0.01;
-    const inner = radius - 1.98;
-    const z = 0.49;
-    const da = 0.026;
-    const dr = 0.11;
+    const outer = radius + 0.11;
+    const inner = radius - 2.48;
+    const z = 0.9;
+    const da = 0.04;
+    const dr = 0.18;
     const pA = flip ? { a: a1, r: outer } : { a: a0, r: outer };
     const pB = flip ? { a: a0, r: inner } : { a: a1, r: inner };
     const verts = [
@@ -133,8 +142,8 @@
   const wallXGeometries = Array.from({ length: lanes }, (_, lane) => [makeWallXGeometry(lane, false), makeWallXGeometry(lane, true)]);
   const colors = [0x31a6ff, 0xa838ff, 0x4db8ff, 0xd23dff, 0x385dcb];
   const materials = colors.map((color) => new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.33, roughness: 0.38, metalness: 0.18, side: THREE.DoubleSide, flatShading: true }));
-  const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x030306, emissive: 0x140006, emissiveIntensity: 0.16, roughness: 0.52, metalness: 0.08, side: THREE.DoubleSide, flatShading: true });
-  const wallXMaterial = new THREE.MeshBasicMaterial({ color: 0xff1734, transparent: true, opacity: 0.96, side: THREE.DoubleSide });
+  const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xffd23c, emissive: 0xff8a00, emissiveIntensity: 0.58, roughness: 0.34, metalness: 0.08, side: THREE.DoubleSide, flatShading: true });
+  const wallXMaterial = new THREE.MeshBasicMaterial({ color: 0x050505, transparent: false, opacity: 1, side: THREE.DoubleSide, depthWrite: false });
 
   function applyLevelPalette() {
     const palette = levelPalettes[levelIndex] || levelPalettes[0];
@@ -149,8 +158,8 @@
   const textureLoader = new THREE.TextureLoader();
   const playerMaterial = new THREE.MeshBasicMaterial({ transparent: true, alphaTest: 0.05, depthTest: true, depthWrite: false, toneMapped: false });
   const player = new THREE.Mesh(new THREE.PlaneGeometry(1.22, 1.22), playerMaterial);
-  const playerGlow = new THREE.Mesh(new THREE.SphereGeometry(0.7, 32, 16), new THREE.MeshBasicMaterial({ color: 0x67e8ff, transparent: true, opacity: 0.28, blending: THREE.AdditiveBlending, depthWrite: false }));
-  const trail = new THREE.Mesh(new THREE.TorusGeometry(0.92, 0.028, 8, 64), new THREE.MeshBasicMaterial({ color: 0x35d7ff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending }));
+  const playerGlow = new THREE.Mesh(new THREE.SphereGeometry(1.05, 40, 20), new THREE.MeshBasicMaterial({ color: 0x67e8ff, transparent: true, opacity: 0.34, blending: THREE.AdditiveBlending, depthWrite: false }));
+  const trail = new THREE.Mesh(new THREE.TorusGeometry(1.08, 0.034, 8, 72), new THREE.MeshBasicMaterial({ color: 0x35d7ff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending }));
   player.renderOrder = 4;
   playerGlow.renderOrder = 2;
   trail.renderOrder = 1;
@@ -175,6 +184,7 @@
   let state = 'ready';
   let score = 0;
   let neonOn = true;
+  let hardMode = false;
   let speed = levelConfigs[0].speed;
   let levelIndex = 0;
   let levelElapsed = 0;
@@ -213,7 +223,8 @@
   function speedForLevel() {
     const config = currentConfig();
     const progress = Math.min(1, levelProgress() / config.duration);
-    return config.speed + progress * 1.15;
+    const baseSpeed = config.speed + progress * 1.15;
+    return hardMode ? baseSpeed * 1.3 : baseSpeed;
   }
 
   function makeChunkStates(index) {
@@ -340,7 +351,7 @@
     seedChunks();
     state = 'ready';
     updateHud();
-    setOverlay('Ready', 'Find the safe lane.', 'Level 1 runs 45 seconds. Arrow keys rotate. Space jumps. On mobile, tap left or right and swipe up.', true, 'Start Level 1');
+    setOverlay('Ready', 'Find the safe lane.', 'Level 1 runs 45 seconds. Arrow keys rotate. Space jumps. On mobile, tap left or right and use the Jump button.', true, 'Start Level 1');
     syncStartButton();
     syncMusic();
   }
@@ -376,7 +387,19 @@
     syncMusic();
   }
 
+  function isMobileRunLayout() {
+    return window.matchMedia('(max-width: 760px), (pointer: coarse)').matches;
+  }
+
+  async function enterMobileFullscreen() {
+    const target = hud.shell || hud.stage;
+    if (!target || !isMobileRunLayout() || !document.fullscreenEnabled || document.fullscreenElement) return;
+    try { await target.requestFullscreen(); } catch (_) {}
+    window.setTimeout(resize, 80);
+  }
+
   function start() {
+    enterMobileFullscreen();
     if (state === 'dead') {
       reset();
       beginLevel(0);
@@ -436,13 +459,18 @@
     playTone(92, 0.32, 'sawtooth', 0.055);
     playGameOverSound();
     updateHud();
-    setOverlay('Run ended', 'The tunnel caught you.', 'Restart and look one lane ahead. The safe path always exists.', true, 'Restart Run');
+    setOverlay('Run ended', 'The tunnel caught you.', 'Press Spacebar to reset, then look one lane ahead. The safe path always exists.', true, 'Restart Run');
     syncStartButton();
   }
 
   function updateHud() {
     if (hud.score) hud.score.textContent = String(Math.floor(score));
     if (hud.level) hud.level.textContent = String(currentConfig().level);
+    if (hud.hardMode) {
+      hud.hardMode.textContent = hardMode ? 'Hard' : 'Normal';
+      hud.hardMode.setAttribute('aria-pressed', String(hardMode));
+      hud.hardMode.classList.toggle('is-active', hardMode);
+    }
   }
 
   function rotate(dir) {
@@ -517,11 +545,13 @@
     trail.rotation.z += dt * (8 + trailEnergy * 20);
     playerGlow.visible = neonOn;
     trail.visible = neonOn;
-    playerGlow.material.opacity = neonOn ? 0.18 + Math.max(0, trailEnergy * 0.14) : 0;
-    trail.material.opacity = neonOn ? Math.max(0, trailEnergy * 0.42) : 0;
+    const glowPulse = Math.max(0, trailEnergy);
+    playerGlow.scale.setScalar(1 + glowPulse * 0.18);
+    playerGlow.material.opacity = neonOn ? 0.24 + glowPulse * 0.22 : 0;
+    trail.material.opacity = neonOn ? Math.max(0, glowPulse * 0.5) : 0;
     trailEnergy = Math.max(0, trailEnergy - dt * 1.8);
-    ballSpin += (state === 'playing' ? speed * 0.34 : 0.45) * dt + ballSpinVel * dt;
-    ballSpinVel *= Math.pow(0.05, dt);
+    ballSpin += ballSpinVel * dt;
+    ballSpinVel *= Math.pow(0.035, dt);
     player.rotation.set(0, 0, ballSpin);
     if (shake > 0) shake = Math.max(0, shake - dt);
     camera.position.x = (Math.random() - 0.5) * shake;
@@ -539,28 +569,42 @@
   window.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowLeft') rotate(-1);
     if (event.key === 'ArrowRight') rotate(1);
-    if (event.code === 'Space') { event.preventDefault(); doJump(); }
+    if (event.code === 'Space') {
+      event.preventDefault();
+      if (state === 'dead') { reset(); beginLevel(0); return; }
+      if (state === 'ready' || state === 'level-complete' || state === 'paused') { start(); return; }
+      doJump();
+    }
     if (event.key === 'Escape') pause();
   });
   let touchStart = null;
-  let lastTap = 0;
   canvas.addEventListener('pointerdown', (event) => {
+    event.preventDefault();
     touchStart = { x: event.clientX, y: event.clientY, time: performance.now() };
   });
   canvas.addEventListener('pointerup', (event) => {
+    event.preventDefault();
     if (!touchStart) return;
     const dy = event.clientY - touchStart.y;
-    const now = performance.now();
-    if (dy < -30 || now - lastTap < 260) doJump();
+    if (dy < -34) doJump();
     else rotate(event.clientX < window.innerWidth / 2 ? -1 : 1);
-    lastTap = now;
     touchStart = null;
+  });
+  mobileJumpButton.addEventListener('pointerdown', (event) => event.preventDefault());
+  mobileJumpButton.addEventListener('click', (event) => {
+    event.preventDefault();
+    doJump();
   });
   hud.start?.addEventListener('click', () => {
     if (state === 'playing') pause();
     else start();
   });
   hud.restart?.addEventListener('click', () => { reset(); beginLevel(0); });
+  hud.hardMode?.addEventListener('click', () => {
+    hardMode = !hardMode;
+    updateHud();
+    playTone(hardMode ? 720 : 430, 0.065, 'square', 0.018);
+  });
   hud.fullscreen?.addEventListener('click', toggleFullscreen);
   hud.overlayStart?.addEventListener('click', start);
   hud.music?.addEventListener('click', () => {

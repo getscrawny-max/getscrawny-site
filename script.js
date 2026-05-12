@@ -962,7 +962,7 @@ if (gameCanvas) {
       setMobileGameFocus(false);
       stopGameMusic();
       playAudioFile(gameOverAudio);
-      setOverlay(true, "Game over", "Score " + score + ". Misfires " + misfires + ". Press Reset to try another flight.");
+      setOverlay(true, "Game over", "Score " + score + ". Misfires " + misfires + ". Press Spacebar to reset, or press Start for another flight.");
     }
   };
 
@@ -1071,6 +1071,11 @@ if (gameCanvas) {
   };
 
   const handleKey = (event) => {
+    if (event.code === "Space" && ended) {
+      event.preventDefault();
+      resetGame();
+      return;
+    }
     if (!running || event.metaKey || event.ctrlKey || event.altKey) return;
     const key = event.key.toUpperCase();
     if (!letters.includes(key) || key.length !== 1) return;
@@ -1090,7 +1095,9 @@ if (gameCanvas) {
   gamePause?.addEventListener("click", pauseGame);
   gameReset?.addEventListener("click", resetGame);
   gameFullscreen?.addEventListener("click", toggleFullscreen);
+  virtualKeyboard?.addEventListener("pointerdown", (event) => event.preventDefault(), { passive: false });
   virtualKeyboard?.addEventListener("click", (event) => {
+    event.preventDefault();
     const button = event.target instanceof Element ? event.target.closest("[data-key]") : null;
     if (!(button instanceof HTMLButtonElement)) return;
     button.classList.remove("is-hit");

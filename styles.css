@@ -7384,3 +7384,77 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
   }
 }
 
+/* Game mobile control polish */
+.octarun-stage,
+.octarun-stage canvas,
+.space-game-shell,
+.game-canvas-shell,
+.mobile-keyboard,
+.mobile-keyboard button {
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.octarun-jump-button {
+  display: none;
+}
+
+@media (max-width: 760px), (pointer: coarse) {
+  .octarun-stage,
+  .octarun-stage canvas {
+    touch-action: none;
+  }
+
+  .octarun-jump-button {
+    position: absolute;
+    left: 50%;
+    bottom: 16px;
+    z-index: 5;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 104px;
+    min-height: 52px;
+    padding: 0.75rem 1.1rem;
+    border: 1px solid rgba(79, 202, 255, 0.82);
+    border-radius: 999px;
+    color: #03101c;
+    background: linear-gradient(180deg, #d8fbff, #35d7ff 62%, #1686c7);
+    box-shadow:
+      inset 0 2px 0 rgba(255,255,255,0.65),
+      inset 0 -3px 0 rgba(4, 57, 91, 0.46),
+      0 0 24px rgba(48, 217, 255, 0.42),
+      0 10px 24px rgba(0,0,0,0.42);
+    font: inherit;
+    font-weight: 950;
+    transform: translateX(-50%);
+    touch-action: manipulation;
+  }
+
+  .octarun-jump-button:active {
+    transform: translateX(-50%) translateY(2px);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.38),
+      inset 0 3px 9px rgba(4, 57, 91, 0.55),
+      0 0 18px rgba(48, 217, 255, 0.32);
+  }
+
+  .octarun-shell:fullscreen .octarun-jump-button {
+    bottom: max(16px, env(safe-area-inset-bottom));
+  }
+}
+
+
+
+/* OctaRun barrier and hard-mode polish */
+.octarun-hud button[data-octa-hard].is-active,
+.octarun-hud button[data-octa-hard][aria-pressed="true"] {
+  border-color: rgba(255, 210, 60, 0.95);
+  color: #120b00;
+  background: linear-gradient(180deg, #fff3a0, #ffb32f 48%, #c76b00 100%);
+  box-shadow:
+    0 0 22px rgba(255, 190, 45, 0.36),
+    inset 0 1px 0 rgba(255,255,255,0.7),
+    inset 0 -8px 18px rgba(75, 36, 0, 0.18);
+}
