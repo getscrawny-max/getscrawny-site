@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>OctaRun | Get Scrawny Arcade</title>
+    <meta name="description" content="A neon eight-lane reflex tunnel game from Get Scrawny Arcade.">
+    <link rel="preload" href="styles.css" as="style">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body class="octarun-body">
+    <header class="site-header" data-header>
+      <a class="brand" href="index.html#top" aria-label="Get Scrawny home">
+        <span class="brand-combined brand-wordmark" aria-hidden="true">Get Scrawny Motor Coaching</span>
+      </a>
+      <div class="page-menu">
+        <div class="page-menu-control">
+          <a class="home-link" href="index.html#top">Home</a>
+          <button class="page-menu-toggle" type="button" aria-label="Open home page directory" aria-expanded="false" data-nav-toggle><span aria-hidden="true"></span></button>
+        </div>
+        <nav class="site-nav" aria-label="Home page directory" data-nav>
+          <a href="index.html#approach">Approach</a>
+          <a href="index.html#services">Services</a>
+          <a href="index.html#who">Who We Serve</a>
+          <a href="index.html#coach">Meet Your Coach</a>
+          <a href="index.html#contact">Contact</a>
+        </nav>
+      </div>
+      <div class="library-menu">
+        <div class="library-menu-control">
+          <a class="library-link" href="explore.html" aria-current="page">Explore</a>
+          <button class="library-menu-toggle page-menu-toggle" type="button" aria-label="Open explore directory" aria-expanded="false" data-library-nav-toggle><span aria-hidden="true"></span></button>
+        </div>
+        <nav class="site-nav library-nav" aria-label="Explore directory" data-library-nav>
+          <a href="explore.html">Scrawny's World</a>
+          <a href="muscle-map.html">Strength Lab</a>
+          <a href="lessons.html">Library</a>
+          <a href="arcade.html" aria-current="page">Arcade</a>
+        </nav>
+      </div>
+      <button class="theme-toggle" type="button" aria-label="Switch color mode" data-theme-toggle><span aria-hidden="true"></span></button>
+    </header>
+
+    <main class="octarun-page" id="top">
+      <section class="octarun-hero" aria-labelledby="octarun-title">
+        <p class="eyebrow">Arcade reflex run</p>
+        <h1 id="octarun-title">OctaRun</h1>
+        <p>Rotate lane to lane, jump low walls, and stay alive through an eight-sided neon tunnel.</p>
+      </section>
+
+      <section class="octarun-shell" aria-label="OctaRun game">
+        <div class="octarun-hud">
+          <span>Score <strong data-octa-score>0</strong></span>
+          <span>Level <strong data-octa-level>1</strong></span>
+          <button type="button" data-octa-ball-next class="octarun-ball-button" aria-label="Change ball color">Ball Color</button>
+          <button type="button" data-octa-start>Start</button>
+          <button type="button" data-octa-restart>Restart</button>
+          <button type="button" data-octa-fullscreen>Fullscreen</button>
+        </div>
+        <div class="octarun-stage has-neon" data-octa-stage>
+          <video class="octarun-space-video" src="assets/neon_space_loop.mp4" autoplay muted loop playsinline aria-hidden="true"></video>
+          <div class="octarun-audio-toggles" aria-label="Game audio controls">
+            <button class="octarun-audio-button" type="button" data-octa-music aria-pressed="true" aria-label="Toggle music">♫</button>
+            <button class="octarun-audio-button" type="button" data-octa-fx aria-pressed="true" aria-label="Toggle sound effects">FX</button>
+          </div>
+          <canvas data-octa-canvas aria-label="OctaRun octagonal tunnel game canvas"></canvas>
+          <div class="octarun-overlay is-visible" data-octa-overlay>
+            <p class="eyebrow">Ready</p>
+            <h2>Find the safe lane.</h2>
+            <p>Arrow keys rotate. Space jumps. Escape pauses. On mobile, tap left or right and swipe up to jump.</p>
+            <button type="button" data-octa-overlay-start>Start Run</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Get Scrawny LLC</p>
+      <p>OctaRun reflex play for timing and motor practice.</p>
+    </footer>
+
+    <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+    <script src="assets/neon-octarun/game.js?v=octarun-assets-levels-3"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

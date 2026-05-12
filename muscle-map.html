@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Scrawny's Strength Lab | Get Scrawny</title>
+    <meta name="description" content="Get Scrawny's Strength Lab for exercises, stretches, calories, macros, and workout logging.">
+    
+    <link rel="stylesheet" href="assets/muscle-map/site.css">
+    
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header" data-header>
+      <a class="brand" href="index.html#top" aria-label="Get Scrawny home">
+        <span class="brand-combined brand-wordmark" aria-hidden="true">Get Scrawny Motor Coaching</span>
+      </a>
+
+      <div class="page-menu">
+        <div class="page-menu-control">
+          <a class="home-link" href="index.html#top">Home</a>
+          <button class="page-menu-toggle" type="button" aria-label="Open home page directory" aria-expanded="false" data-nav-toggle>
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+        <nav class="site-nav" aria-label="Home page directory" data-nav>
+          <a href="index.html#approach">Approach</a>
+          <a href="index.html#services">Services</a>
+          <a href="index.html#who">Who We Serve</a>
+          <a href="index.html#coach">Meet Your Coach</a>
+          <a href="index.html#contact">Contact</a>
+        </nav>
+      </div>
+
+      <div class="library-menu">
+        <div class="library-menu-control">
+          <a class="library-link" href="explore.html" aria-current="page">Explore</a>
+          <button class="library-menu-toggle page-menu-toggle" type="button" aria-label="Open explore directory" aria-expanded="false" data-library-nav-toggle>
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+        <nav class="site-nav library-nav" aria-label="Explore directory" data-library-nav>
+          <a href="explore.html">Scrawny's World</a>
+          <a href="muscle-map.html" aria-current="page">Strength Lab</a>
+          <a href="lessons.html">Library</a>
+          <a href="arcade.html">Arcade</a>
+        </nav>
+      </div>
+
+      <button class="theme-toggle" type="button" aria-label="Switch color mode" data-theme-toggle>
+        <span aria-hidden="true"></span>
+      </button>
+    </header>
+
+    <main id="top" class="app muscle-map-page muscle-map-main">
+      <section class="muscle-map-hero" aria-labelledby="muscle-page-title">
+        <h1 id="muscle-page-title">Scrawny's Strength Lab</h1>
+        <p>A practical training hub for exercises, stretches, strength tools, calories, macros, and workout logging.</p>
+        <nav class="muscle-subnav" aria-label="Strength Lab tools">
+          <a href="muscle-map.html">Exercise + Stretch Library</a>
+          <a href="muscle-map-education.html">Calories + Macros</a>
+          <a href="muscle-map-log.html">Workout Log</a>
+        </nav>
+      </section>
+<div class="app-layout">
+<aside class="info-panel" aria-live="polite">
+          <div class="panel-topline">
+            <span>Selected Muscle</span>
+            <span id="selected-dot" class="selected-dot"></span>
+          </div>
+
+          <div class="selected-heading">
+            <div>
+              <h2 id="muscle-name"></h2>
+              <p id="muscle-summary"></p>
+            </div>
+            <div class="muscle-diagram mini-map" id="muscle-diagram" aria-label="Selected muscle diagram"></div>
+          </div>
+
+          <div class="exercise-header">
+            <label class="sort-control">
+              <span>Sort</span>
+              <select id="exercise-sort">
+                <option value="popular">Most popular</option>
+                <option value="alpha">Alphabetical</option>
+                <option value="primary-first">Primary first</option>
+                <option value="secondary-first">Secondary first</option>
+              </select>
+            </label>
+            <label class="sort-control search-control">
+              <span>Search</span>
+              <input id="exercise-search" type="search" placeholder="Exercise name" />
+            </label>
+          </div>
+
+          <div class="quick-select" id="quick-select" aria-label="Select muscle group"></div>
+
+          <div class="exercise-list" id="exercise-list"></div>
+
+          <div class="coach-note">
+            Start light, move slowly, and stop if a movement causes sharp pain.
+          </div>
+        </aside>
+      </div>
+
+      <section class="content-section" id="stretches">
+        <div class="content-section-header">
+          <div>
+            <span>Recovery</span>
+            <h2>Stretch Library</h2>
+            <p>Quick reference stretches by muscle group for cooldowns, mobility work, or tight spots.</p>
+          </div>
+          <label class="sort-control">
+            <span>Sort</span>
+            <select id="page-stretch-sort">
+              <option value="popular">Most popular</option>
+              <option value="alpha">Alphabetical</option>
+              <option value="muscle-asc">Muscle A-Z</option>
+              <option value="muscle-desc">Muscle Z-A</option>
+            </select>
+          </label>
+          <label class="sort-control search-control">
+            <span>Search</span>
+            <input id="stretch-search" type="search" placeholder="Stretch or muscle" />
+          </label>
+        </div>
+        <div class="stretch-grid page-stretch-grid" id="page-stretch-grid"></div>
+      </section>
+    </main>
+
+    <div class="modal-backdrop hidden" id="modal-backdrop">
+      <section class="education-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-header">
+          <div>
+            <span>Strength Lab Guide</span>
+            <h2 id="modal-title"></h2>
+          </div>
+          <button class="icon-button" id="modal-close" type="button" aria-label="Close modal">X</button>
+        </div>
+        <div id="modal-body"></div>
+      </section>
+    </div>
+
+    <script src="assets/muscle-map/site-data.js"></script>
+    <script src="assets/muscle-map/script.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

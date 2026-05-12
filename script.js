@@ -50,9 +50,13 @@ let submittedTerms = [];
 document.documentElement.dataset.theme = initialTheme;
 writeStoredTheme(initialTheme);
 
+if (document.querySelector(".arcade-page")) {
+  document.documentElement.dataset.theme = "dark";
+}
+
 const syncThemeLinks = () => {
   const currentTheme = document.documentElement.dataset.theme;
-  document.querySelectorAll('a[href^="index.html"], a[href^="lessons.html"], a[href^="keyboard-flight.html"]').forEach((link) => {
+  document.querySelectorAll('a[href^="index.html"], a[href^="explore.html"], a[href^="lessons.html"], a[href^="arcade.html"], a[href^="keyboard-flight.html"], a[href^="muscle-map.html"], a[href^="muscle-map-education.html"], a[href^="muscle-map-log.html"]').forEach((link) => {
     const rawHref = link.getAttribute("href");
     if (!rawHref || rawHref.includes("assets/")) return;
     const url = new URL(rawHref, window.location.href);
@@ -83,7 +87,7 @@ const setupDisclosureNav = (toggle, menu, openLabel, closeLabel, otherToggle, ot
     const isOpen = toggle.getAttribute("aria-expanded") === "true";
     if (otherToggle && otherMenu) {
       otherToggle.setAttribute("aria-expanded", "false");
-      otherToggle.setAttribute("aria-label", otherToggle === navToggle ? "Open home page directory" : "Open library directory");
+      otherToggle.setAttribute("aria-label", otherToggle === navToggle ? "Open home page directory" : "Open explore directory");
       otherMenu.classList.remove("is-open");
     }
     toggle.setAttribute("aria-expanded", String(!isOpen));
@@ -96,7 +100,7 @@ const setupDisclosureNav = (toggle, menu, openLabel, closeLabel, otherToggle, ot
 };
 
 setupDisclosureNav(navToggle, nav, "Open home page directory", "Close home page directory", libraryNavToggle, libraryNav);
-setupDisclosureNav(libraryNavToggle, libraryNav, "Open library directory", "Close library directory", navToggle, nav);
+setupDisclosureNav(libraryNavToggle, libraryNav, "Open explore directory", "Close explore directory", navToggle, nav);
 
 let clickAudioContext;
 
@@ -137,8 +141,12 @@ const playMechanicalClick = () => {
   noise.stop(now + 0.04);
 };
 
-document.querySelectorAll('a[href], button:not([disabled]), select, input[type="submit"], input[type="button"], .hashtag-filter button, .tag-bank-clear').forEach((control) => {
-  control.addEventListener("pointerdown", () => playMechanicalClick());
+const clickSoundSelector = 'a[href], button:not([disabled]), select, input, textarea, summary, [role="button"], .exercise-card.expandable, .stretch-card.expandable, .world-card, .lesson-card, .arcade-feature-card';
+
+document.addEventListener("pointerdown", (event) => {
+  if (event.target.closest(clickSoundSelector)) {
+    playMechanicalClick();
+  }
 });
 
 if (themeToggle) {

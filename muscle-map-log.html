@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Workout Log | Scrawny's Strength Lab</title>
+    <meta name="description" content="A local workout log for cardio, exercises, stretches, notes, printing, and PDF export.">
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="assets/muscle-map/site.css">
+    <link rel="stylesheet" href="assets/muscle-map/workout-log.css">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header" data-header>
+      <a class="brand" href="index.html#top" aria-label="Get Scrawny home">
+        <span class="brand-combined brand-wordmark" aria-hidden="true">Get Scrawny Motor Coaching</span>
+      </a>
+
+      <div class="page-menu">
+        <div class="page-menu-control">
+          <a class="home-link" href="index.html#top">Home</a>
+          <button class="page-menu-toggle" type="button" aria-label="Open home page directory" aria-expanded="false" data-nav-toggle>
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+        <nav class="site-nav" aria-label="Home page directory" data-nav>
+          <a href="index.html#approach">Approach</a>
+          <a href="index.html#services">Services</a>
+          <a href="index.html#who">Who We Serve</a>
+          <a href="index.html#coach">Meet Your Coach</a>
+          <a href="index.html#contact">Contact</a>
+        </nav>
+      </div>
+
+      <div class="library-menu">
+        <div class="library-menu-control">
+          <a class="library-link" href="explore.html" aria-current="page">Explore</a>
+          <button class="library-menu-toggle page-menu-toggle" type="button" aria-label="Open explore directory" aria-expanded="false" data-library-nav-toggle>
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+        <nav class="site-nav library-nav" aria-label="Explore directory" data-library-nav>
+          <a href="explore.html">Scrawny's World</a>
+          <a href="muscle-map.html" aria-current="page">Strength Lab</a>
+          <a href="lessons.html">Library</a>
+          <a href="arcade.html">Arcade</a>
+        </nav>
+      </div>
+
+      <button class="theme-toggle" type="button" aria-label="Switch color mode" data-theme-toggle>
+        <span aria-hidden="true"></span>
+      </button>
+    </header>
+
+    <main id="top" class="app muscle-map-page muscle-map-log-shell">
+      <section class="muscle-map-hero" aria-labelledby="muscle-page-title">
+        <h1 id="muscle-page-title">Workout Log</h1>
+        <p>Log the work you did, keep the pieces organized, and print or save a receipt-style summary for your records.</p>
+        <nav class="muscle-subnav" aria-label="Strength Lab tools">
+          <a href="muscle-map.html">Exercise + Stretch Library</a>
+          <a href="muscle-map-education.html">Calories + Macros</a>
+          <a href="muscle-map-log.html">Workout Log</a>
+        </nav>
+      </section>
+<section class="workout-intro" aria-label="Workout log tools">
+        <div>
+          <span>Workout Builder</span>
+          <h2>Utilize this page to log your workouts</h2>
+          <p>Add only the work you did, arrange it in your real workout order, then save or print the receipt.</p>
+        </div>
+        <div class="add-section-bar compact-add-bar" aria-label="Add workout section">
+          <span class="add-label">Add:</span>
+          <button type="button" data-add-section="cardio">Cardio</button>
+          <span class="add-divider" aria-hidden="true">|</span>
+          <button type="button" data-add-section="exercise">Exercises</button>
+          <span class="add-divider" aria-hidden="true">|</span>
+          <button type="button" data-add-section="stretch">Stretching</button>
+        </div>
+      </section>
+
+      <section class="log-layout" aria-label="Workout log form">
+        <form class="log-form" id="workout-form">
+          <div class="workout-blocks" id="workout-blocks">
+          <section class="logger-panel cardio-panel workout-block" data-section-type="cardio">
+            <div class="section-heading section-heading-with-tools">
+              <span>01</span>
+              <div>
+                <h2>Cardio</h2>
+                <p>Optional. Duration is the main number to capture.</p>
+              </div>
+              <div class="section-controls">
+                <button type="button" data-section-move="up">Up</button>
+                <button type="button" data-section-move="down">Down</button>
+                <button type="button" data-remove-section>Remove</button>
+              </div>
+            </div>
+
+            <div class="field-grid">
+              <label>
+                <span>Cardio Type</span>
+                <select data-cardio-field="type">
+                  <option value="">Select type</option>
+                  <option>Treadmill</option>
+                  <option>Bike</option>
+                  <option>Elliptical</option>
+                  <option>Stair climber</option>
+                  <option>Rowing machine</option>
+                  <option>Walking</option>
+                  <option>Running</option>
+                  <option>Other</option>
+                </select>
+              </label>
+
+              <label class="duration-field">
+                <span>Duration</span>
+                <input data-cardio-field="duration" type="text" inputmode="decimal" placeholder="30 min" />
+              </label>
+
+              <label>
+                <span>Distance</span>
+                <input data-cardio-field="distance" type="text" inputmode="decimal" placeholder="2.5 mi" />
+              </label>
+
+              <label>
+                <span>Speed</span>
+                <input data-cardio-field="speed" type="text" inputmode="decimal" placeholder="6 mph" />
+              </label>
+
+              <label>
+                <span>Incline</span>
+                <input data-cardio-field="incline" type="text" inputmode="decimal" placeholder="3%" />
+              </label>
+
+              <label>
+                <span>Resistance</span>
+                <input data-cardio-field="resistance" type="text" inputmode="decimal" placeholder="Level 8" />
+              </label>
+
+              <label>
+                <span>Calories Burned</span>
+                <input data-cardio-field="calories" type="text" inputmode="numeric" placeholder="240" />
+              </label>
+
+              <label>
+                <span>Heart Rate</span>
+                <input data-cardio-field="heartRate" type="text" inputmode="numeric" placeholder="135 bpm" />
+              </label>
+
+              <label class="wide-field">
+                <span>Notes</span>
+                <textarea data-cardio-field="notes" rows="3" placeholder="How did the cardio feel?"></textarea>
+              </label>
+            </div>
+          </section>
+
+          <section class="logger-panel exercise-panel workout-block" data-section-type="exercise">
+            <div class="section-heading exercise-section-heading section-heading-with-tools">
+              <span>02</span>
+              <div>
+                <h2>Exercises</h2>
+                <p>Add strength work, notes, and how each movement felt.</p>
+              </div>
+              <div class="section-controls">
+                <button type="button" data-section-move="up">Up</button>
+                <button type="button" data-section-move="down">Down</button>
+                <button type="button" data-remove-section>Remove</button>
+                <button class="add-exercise-button" data-add-exercise type="button">Add Exercise</button>
+              </div>
+            </div>
+
+            <datalist id="exercise-options"></datalist>
+            <div class="exercise-rows" id="exercise-rows"></div>
+          </section>
+
+          <section class="logger-panel stretch-panel workout-block" data-section-type="stretch">
+            <div class="section-heading exercise-section-heading section-heading-with-tools">
+              <span>03</span>
+              <div>
+                <h2>Stretches</h2>
+                <p>Optional mobility work, cooldowns, or tight spots.</p>
+              </div>
+              <div class="section-controls">
+                <button type="button" data-section-move="up">Up</button>
+                <button type="button" data-section-move="down">Down</button>
+                <button type="button" data-remove-section>Remove</button>
+                <button class="add-exercise-button" data-add-stretch type="button">Add Stretch</button>
+              </div>
+            </div>
+
+            <datalist id="stretch-options"></datalist>
+            <div class="exercise-rows" id="stretch-rows"></div>
+          </section>
+          </div>
+        </form>
+
+        <aside class="receipt-preview-panel" aria-label="Workout receipt preview">
+          <div class="receipt-preview-header">
+            <div>
+              <span>Receipt Preview</span>
+              <p>Generated locally. No account, no database.</p>
+            </div>
+            <div class="receipt-actions">
+              <button class="save-button" id="save-pdf" type="button">Save PDF</button>
+              <button class="print-button" id="print-workout" type="button">Print</button>
+            </div>
+          </div>
+          <section class="workout-receipt" id="workout-receipt"></section>
+
+
+      <section class="content-section log-tool-section" id="training-tools">
+        <div class="content-section-header">
+          <div>
+            <span>Training Tools</span>
+            <h2>Workout calculators</h2>
+            <p>Quick strength and balance references to use while planning or reviewing a logged workout.</p>
+          </div>
+        </div>
+        <div class="tool-panel-grid training-tool-grid">
+          <article class="education-topic-card tool-card">
+            <h3>1RM Calculator</h3>
+            <label>Weight lifted <input data-one-rm-weight type="number" min="0" step="1" placeholder="135"></label>
+            <label>Reps <input data-one-rm-reps type="number" min="1" max="10" step="1" placeholder="5"></label>
+            <label>Unit <select data-one-rm-unit><option value="lb">lb</option><option value="kg">kg</option></select></label>
+            <button class="tool-calc-button" data-one-rm-calculate type="button">Calculate 1RM</button>
+            <p class="tool-result" data-one-rm-result>Enter a hard set of 10 reps or fewer to estimate your max and useful training loads.</p>
+          </article>
+          <article class="education-topic-card tool-card">
+            <h3>Strength Standards</h3>
+            <label>Lift <select data-standard-lift><option value="bench">Bench press</option><option value="squat">Squat</option><option value="deadlift">Deadlift</option></select></label>
+            <label>Bodyweight <input data-standard-weight type="number" min="0" step="1" placeholder="180"></label>
+            <label>Best lift <input data-standard-lifted type="number" min="0" step="1" placeholder="225"></label>
+            <label>Unit <select data-standard-unit><option value="lb">lb</option><option value="kg">kg</option></select></label>
+            <button class="tool-calc-button" data-standard-calculate type="button">Compare lift</button>
+            <p class="tool-result" data-standard-result>Enter bodyweight and best lift to see broad beginner, intermediate, and advanced reference ranges.</p>
+          </article>
+        </div>
+      </section>
+        </aside>
+      </section>
+    </main>
+
+    <script src="assets/muscle-map/site-data.js"></script>
+    <script src="assets/muscle-map/workout-log.js"></script>
+    <script src="assets/muscle-map/log-tools.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

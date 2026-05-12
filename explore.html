@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Scrawny's World | Get Scrawny</title>
+    <meta name="description" content="Explore Get Scrawny's lesson library, arcade games, and Strength Lab fitness tools.">
+    <link rel="preload" href="styles.css" as="style">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header" data-header>
+      <a class="brand" href="index.html#top" aria-label="Get Scrawny home">
+        <span class="brand-combined brand-wordmark" aria-hidden="true">Get Scrawny Motor Coaching</span>
+      </a>
+
+      <div class="page-menu">
+        <div class="page-menu-control">
+          <a class="home-link" href="index.html#top">Home</a>
+          <button class="page-menu-toggle" type="button" aria-label="Open home page directory" aria-expanded="false" data-nav-toggle>
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+        <nav class="site-nav" aria-label="Home page directory" data-nav>
+          <a href="index.html#approach">Approach</a>
+          <a href="index.html#services">Services</a>
+          <a href="index.html#who">Who We Serve</a>
+          <a href="index.html#coach">Meet Your Coach</a>
+          <a href="index.html#contact">Contact</a>
+        </nav>
+      </div>
+
+      <div class="library-menu">
+        <div class="library-menu-control">
+          <a class="library-link" href="explore.html" aria-current="page">Explore</a>
+          <button class="library-menu-toggle page-menu-toggle" type="button" aria-label="Open explore directory" aria-expanded="false" data-library-nav-toggle>
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+        <nav class="site-nav library-nav" aria-label="Explore directory" data-library-nav>
+          <a href="explore.html" aria-current="page">Scrawny's World</a>
+          <a href="muscle-map.html">Strength Lab</a>
+          <a href="lessons.html">Library</a>
+          <a href="arcade.html">Arcade</a>
+        </nav>
+      </div>
+
+      <button class="theme-toggle" type="button" aria-label="Switch color mode" data-theme-toggle>
+        <span aria-hidden="true"></span>
+      </button>
+    </header>
+
+    <main class="explore-page" id="top">
+      <section class="lessons-hero explore-hero" aria-labelledby="world-title">
+        <div class="library-hero-inner">
+          <div class="library-globe-wrap scrawny-world-globe" aria-hidden="true">
+            <svg class="library-globe" viewBox="0 0 360 360" focusable="false">
+              <circle class="globe-ring" cx="180" cy="180" r="140"></circle>
+              <g class="globe-longitudes">
+                <ellipse class="globe-line globe-meridian" cx="180" cy="180" rx="112" ry="140"></ellipse>
+                <ellipse class="globe-line globe-meridian" cx="180" cy="180" rx="78" ry="140"></ellipse>
+                <ellipse class="globe-line globe-meridian" cx="180" cy="180" rx="42" ry="140"></ellipse>
+                <ellipse class="globe-line globe-meridian" cx="180" cy="180" rx="12" ry="140"></ellipse>
+              </g>
+              <ellipse class="globe-line globe-equator" cx="180" cy="180" rx="140" ry="38"></ellipse>
+              <path class="globe-line" d="M56 134c62 28 186 28 248 0"></path>
+              <path class="globe-line" d="M42 180c72 32 204 32 276 0"></path>
+              <path class="globe-line" d="M56 226c62-28 186-28 248 0"></path>
+            </svg>
+          </div>
+          <p class="eyebrow">Explore</p>
+          <h1 id="world-title" class="library-title">Scrawny's World</h1>
+          <p class="hero-text">
+            A growing home base for purposeful movement, communication practice, keyboard games, and health tools.
+          </p>
+          <p class="library-intro">
+            Choose the area that fits the moment: lessons for structured communication practice, arcade games for keyboard motor skills, or Strength Lab for workouts, recovery, and training logs.
+          </p>
+        </div>
+      </section>
+
+      <section class="world-dock" aria-labelledby="world-dock-title">
+        <div class="section-heading">
+          <p class="eyebrow">Directory</p>
+          <h2 id="world-dock-title">Pick your lane.</h2>
+        </div>
+        <div class="world-card-grid">
+          <a class="world-card featured-world-card" href="muscle-map.html">
+            <span class="world-card-image"><img src="assets/fitnessandhealth_logo.PNG" alt=""></span>
+            <span class="eyebrow">Health + Fitness</span>
+            <strong>Strength Lab</strong>
+            <span>Explore muscles, workouts, calories, macros, and a flexible training log.</span>
+          </a>
+          <a class="world-card" href="lessons.html">
+            <span class="world-card-image"><img src="assets/library_logo.PNG" alt=""></span>
+            <span class="eyebrow">Free Resources</span>
+            <strong>Scrawny's Library</strong>
+            <span>Browse lesson PDFs for communication, fluency, and purposeful motor practice.</span>
+          </a>
+          <a class="world-card" href="arcade.html">
+            <span class="world-card-image"><img src="assets/aracde_logo.PNG" alt=""></span>
+            <span class="eyebrow">Keyboard Games</span>
+            <strong>Arcade</strong>
+            <span>Play Alien Alphabet and future motor-friendly educational games.</span>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Get Scrawny LLC</p>
+      <p>Scrawny's World for lessons, games, and movement tools.</p>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>

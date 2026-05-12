@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Arcade | Get Scrawny</title>
+    <meta name="description" content="Educational keyboard games from Get Scrawny, starting with Alien Alphabet.">
+    <link rel="preload" href="styles.css" as="style">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header" data-header>
+      <a class="brand" href="index.html#top" aria-label="Get Scrawny home">
+        <span class="brand-combined brand-wordmark" aria-hidden="true">Get Scrawny Motor Coaching</span>
+      </a>
+
+      <div class="page-menu">
+        <div class="page-menu-control">
+          <a class="home-link" href="index.html#top">Home</a>
+          <button class="page-menu-toggle" type="button" aria-label="Open home page directory" aria-expanded="false" data-nav-toggle>
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+        <nav class="site-nav" aria-label="Home page directory" data-nav>
+          <a href="index.html#approach">Approach</a>
+          <a href="index.html#services">Services</a>
+          <a href="index.html#who">Who We Serve</a>
+          <a href="index.html#coach">Meet Your Coach</a>
+          <a href="index.html#contact">Contact</a>
+        </nav>
+      </div>
+
+      <div class="library-menu">
+        <div class="library-menu-control">
+          <a class="library-link" href="explore.html" aria-current="page">Explore</a>
+          <button class="library-menu-toggle page-menu-toggle" type="button" aria-label="Open explore directory" aria-expanded="false" data-library-nav-toggle>
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+        <nav class="site-nav library-nav" aria-label="Explore directory" data-library-nav>
+          <a href="explore.html">Scrawny's World</a>
+          <a href="muscle-map.html">Strength Lab</a>
+          <a href="lessons.html">Library</a>
+          <a href="arcade.html" aria-current="page">Arcade</a>
+        </nav>
+      </div>
+
+      <button class="theme-toggle" type="button" aria-label="Switch color mode" data-theme-toggle>
+        <span aria-hidden="true"></span>
+      </button>
+    </header>
+
+    <main class="arcade-page" id="top">
+      <section class="lessons-hero arcade-landing-hero" aria-labelledby="arcade-title">
+        <div class="library-hero-inner">
+          <p class="eyebrow">Arcade</p>
+          <h1 id="arcade-title" class="library-title">Purposeful play.</h1>
+          <p class="hero-text">
+            Keyboard games built for accuracy, timing, and playful repetition.
+          </p>
+        </div>
+      </section>
+
+      <section class="arcade-dock" aria-labelledby="arcade-games-title">
+        <h2 class="sr-only" id="arcade-games-title">Arcade games</h2>
+        <article class="arcade-feature-card">
+          <div class="arcade-feature-art">
+            <img src="assets/alien-alphabet-thumbnail.png" alt="Green alien flying a UFO through space">
+          </div>
+          <div class="arcade-feature-copy">
+            <h2 id="alien-card-title">Alien Alphabet</h2>
+            <p>
+              Clear falling letters before they reach the UFO. Start simple, then build toward faster two- and three-key targets.
+            </p>
+            <a class="button primary" href="keyboard-flight.html">Play Alien Alphabet</a>
+          </div>
+        </article>
+        <article class="arcade-feature-card octarun-feature-card">
+          <div class="arcade-feature-art octarun-feature-art">
+            <img src="assets/neon%20octorun%20spheres/octarun%20thumbmail.jpg" alt="OctaRun neon tunnel preview">
+          </div>
+          <div class="arcade-feature-copy">
+            <h2 class="octarun-card-title">OctaRun</h2>
+            <p>
+              Rotate around an eight-lane neon tunnel, jump walls, dodge gaps, and survive as the pace climbs.
+            </p>
+            <a class="button primary" href="neon-octorun.html">Play OctaRun</a>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Get Scrawny LLC</p>
+      <p>Arcade games for keyboard motor practice.</p>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
