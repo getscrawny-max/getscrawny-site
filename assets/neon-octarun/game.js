@@ -157,9 +157,9 @@
   }
   const textureLoader = new THREE.TextureLoader();
   const playerMaterial = new THREE.MeshBasicMaterial({ transparent: true, alphaTest: 0.05, depthTest: true, depthWrite: false, toneMapped: false });
-  const player = new THREE.Mesh(new THREE.PlaneGeometry(1.22, 1.22), playerMaterial);
-  const playerGlow = new THREE.Mesh(new THREE.SphereGeometry(1.05, 40, 20), new THREE.MeshBasicMaterial({ color: 0x67e8ff, transparent: true, opacity: 0.34, blending: THREE.AdditiveBlending, depthWrite: false }));
-  const trail = new THREE.Mesh(new THREE.TorusGeometry(1.08, 0.034, 8, 72), new THREE.MeshBasicMaterial({ color: 0x35d7ff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending }));
+  const player = new THREE.Mesh(new THREE.PlaneGeometry(1.72, 1.72), playerMaterial);
+  const playerGlow = new THREE.Mesh(new THREE.SphereGeometry(1.42, 40, 20), new THREE.MeshBasicMaterial({ color: 0x67e8ff, transparent: true, opacity: 0.34, blending: THREE.AdditiveBlending, depthWrite: false }));
+  const trail = new THREE.Mesh(new THREE.TorusGeometry(1.45, 0.04, 8, 72), new THREE.MeshBasicMaterial({ color: 0x35d7ff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending }));
   player.renderOrder = 4;
   playerGlow.renderOrder = 2;
   trail.renderOrder = 1;
@@ -224,7 +224,7 @@
     const config = currentConfig();
     const progress = Math.min(1, levelProgress() / config.duration);
     const baseSpeed = config.speed + progress * 1.15;
-    return hardMode ? baseSpeed * 1.3 : baseSpeed;
+    return hardMode ? baseSpeed * 1.5 : baseSpeed;
   }
 
   function makeChunkStates(index) {
