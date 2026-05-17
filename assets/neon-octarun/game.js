@@ -14,6 +14,7 @@
     shell: document.querySelector('.octarun-shell'),
     stage: document.querySelector('[data-octa-stage]'),
     ballNext: document.querySelector('[data-octa-ball-next]'),
+    pathPalette: document.querySelector('[data-octa-path-palette]'),
     music: document.querySelector('[data-octa-music]'),
     fx: document.querySelector('[data-octa-fx]'),
     overlay: document.querySelector('[data-octa-overlay]'),
@@ -90,13 +91,26 @@
     [0xffffff, 0x48d7ff, 0xff47f0, 0x714cff, 0x10112f]
   ];
 
+  const cautionLevelPalettes = [
+    [0xff5c5c, 0xf8ff61, 0xffb861, 0xa8ff61, 0xff5c5c, 0xf8ff61, 0xffb861, 0xa8ff61],
+    [0xf8ff61, 0xffb861, 0xa8ff61, 0xff5c5c, 0xf8ff61, 0xffb861, 0xa8ff61, 0xff5c5c],
+    [0xffb861, 0xa8ff61, 0xff5c5c, 0xf8ff61, 0xffb861, 0xa8ff61, 0xff5c5c, 0xf8ff61],
+    [0xa8ff61, 0xff5c5c, 0xf8ff61, 0xffb861, 0xa8ff61, 0xff5c5c, 0xf8ff61, 0xffb861],
+    [0xff5c5c, 0xffb861, 0xf8ff61, 0xa8ff61, 0xff5c5c, 0xffb861, 0xf8ff61, 0xa8ff61]
+  ];
+  let pathPaletteMode = 'neon';
+
+  function activeLevelPalettes() {
+    return pathPaletteMode === 'caution' ? cautionLevelPalettes : levelPalettes;
+  }
+
   function lanePoint(lane, edgeOffset, radial, z) {
     const angle = lane * laneArc + edgeOffset;
     return [Math.sin(angle) * radial, -Math.cos(angle) * radial, z];
   }
 
   function makeLaneSurfaceGeometry(lane, depth = chunkDepth) {
-    const overlap = 0.022;
+    const overlap = 0.008;
     const a0 = -laneArc / 2 - overlap;
     const a1 = laneArc / 2 + overlap;
     const z0 = -depth / 2 - 0.16;
@@ -180,7 +194,8 @@
   const wallXMaterial = new THREE.MeshBasicMaterial({ color: 0x050505, transparent: false, opacity: 1, side: THREE.DoubleSide, depthWrite: false });
 
   function applyLevelPalette() {
-    const palette = levelPalettes[levelIndex] || levelPalettes[0];
+    const palettes = activeLevelPalettes();
+    const palette = palettes[levelIndex] || palettes[0];
     materials.forEach((material, index) => {
       const color = palette[index % palette.length];
       material.color.setHex(color);
@@ -191,7 +206,7 @@
   }
   const textureLoader = new THREE.TextureLoader();
   const playerMaterial = new THREE.MeshBasicMaterial({ transparent: true, alphaTest: 0.05, depthTest: true, depthWrite: false, toneMapped: false });
-  const player = new THREE.Mesh(new THREE.PlaneGeometry(1.72, 1.72), playerMaterial);
+  const player = new THREE.Mesh(new THREE.PlaneGeometry(2.02, 2.02), playerMaterial);
   const playerGlow = new THREE.Mesh(new THREE.SphereGeometry(1.42, 40, 20), new THREE.MeshBasicMaterial({ color: 0x67e8ff, transparent: true, opacity: 0.34, blending: THREE.AdditiveBlending, depthWrite: false }));
   const trail = new THREE.Mesh(new THREE.TorusGeometry(1.45, 0.04, 8, 72), new THREE.MeshBasicMaterial({ color: 0x35d7ff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending }));
   player.renderOrder = 4;
@@ -305,7 +320,7 @@
   }
 
   function controlsMarkup() {
-    return '<p>Level 1 runs 45 seconds. The safe path always exists, but the lane reads get quicker each level.</p><div class="octarun-controls-list"><span>Arrow Keys or A/D = Move</span><span>W or Spacebar = Jump</span><span>Enter = Restart / Continue</span><span>Esc = Pause</span><span>M = Toggle Music</span><span>F = Toggle FX</span></div>';
+    return '<p>Level 1 runs 30 seconds. Each unlocked level lasts longer and asks for quicker reads.</p><div class="octarun-controls-list"><span>Arrow Keys or A/D = Move</span><span>W or Spacebar = Jump</span><span>Enter = Restart / Continue</span><span>Esc = Pause</span><span>M = Toggle Music</span><span>F = Toggle FX</span></div>';
   }
 
   function canReceivePlayInput() {
@@ -640,6 +655,12 @@
       hud.hardMode.setAttribute('aria-pressed', String(hardMode));
       hud.hardMode.classList.toggle('is-active', hardMode);
     }
+    if (hud.pathPalette) {
+      const caution = pathPaletteMode === 'caution';
+      hud.pathPalette.textContent = caution ? 'Caution Path' : 'Neon Path';
+      hud.pathPalette.setAttribute('aria-pressed', String(caution));
+      hud.pathPalette.classList.toggle('is-active', caution);
+    }
   }
 
   function syncLevelSelect() {
@@ -747,7 +768,8 @@
     trailEnergy = Math.max(0, trailEnergy - dt * 1.8);
     ballSpin += ballSpinVel * dt;
     ballSpinVel *= Math.pow(0.035, dt);
-    player.rotation.set(0, 0, ballSpin);
+    if (playerMaterial.map) playerMaterial.map.needsUpdate = true;
+    player.rotation.set(0, 0, ballSpin - Math.PI / 2);
     if (shake > 0) shake = Math.max(0, shake - dt);
     camera.position.x = (Math.random() - 0.5) * shake;
     camera.position.y = (Math.random() - 0.5) * shake;
@@ -877,17 +899,11 @@
   hud.fx?.addEventListener('click', toggleFX);
 
   const ballPalettes = [
-    { file: 'teal sphere.PNG', glow: 0x45f0ff },
-    { file: 'blue sphere.PNG', glow: 0x3b8dff },
-    { file: 'pink sphere.PNG', glow: 0xff61df },
-    { file: 'white sphere.PNG', glow: 0xffffff },
-    { file: 'green sphere.PNG', glow: 0x75ff99 },
-    { file: 'yellow sphere.PNG', glow: 0xffde55 },
-    { file: 'red sphere.PNG', glow: 0xff4d5d }
+    { file: 'diamond-ball.gif', path: 'assets/diamond-ball.gif', glow: 0x8eeaff }
   ];
 
   const ballTextures = ballPalettes.map((palette) => {
-    const texture = textureLoader.load(encodeURI('assets/neon octorun spheres/' + palette.file));
+    const texture = textureLoader.load(encodeURI(palette.path || ('assets/neon octorun spheres/' + palette.file)));
     if ('colorSpace' in texture && THREE.SRGBColorSpace) texture.colorSpace = THREE.SRGBColorSpace;
     else if ('encoding' in texture && THREE.sRGBEncoding) texture.encoding = THREE.sRGBEncoding;
     if (renderer.capabilities && typeof renderer.capabilities.getMaxAnisotropy === 'function') {
@@ -912,10 +928,17 @@
     ballColorIndex = (ballColorIndex + direction + ballPalettes.length) % ballPalettes.length;
     applyBallColor();
     ballSpinVel += direction * 8;
-    playTone(520 + ballColorIndex * 70, 0.055, 'triangle', 0.022);
+    playTone(560, 0.055, 'triangle', 0.022);
   }
 
   hud.ballNext?.addEventListener('click', () => stepBallColor(1));
+
+  hud.pathPalette?.addEventListener('click', () => {
+    pathPaletteMode = pathPaletteMode === 'caution' ? 'neon' : 'caution';
+    applyLevelPalette();
+    updateHud();
+    playTone(pathPaletteMode === 'caution' ? 360 : 620, 0.065, 'square', 0.018);
+  });
   applyBallColor();
   applyLevelPalette();
   resize();
