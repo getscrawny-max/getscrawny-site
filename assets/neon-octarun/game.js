@@ -75,11 +75,11 @@
   const chunkDepth = 3.34;
   const laneArc = (Math.PI * 2) / lanes;
   const levelConfigs = [
-    { level: 1, duration: 45, speed: 5.15, hazards: [2, 2], wallChance: 0.14, safeStart: 7, copy: 'Level 2 opens up after 90 seconds with more lane reads.' },
-    { level: 2, duration: 90, speed: 5.95, hazards: [2, 3], wallChance: 0.22, safeStart: 7, copy: 'Level 3 runs two full minutes and asks for cleaner jumps.' },
-    { level: 3, duration: 120, speed: 6.75, hazards: [3, 4], wallChance: 0.31, safeStart: 6, copy: 'Level 4 stretches to two and a half minutes with tighter timing.' },
-    { level: 4, duration: 150, speed: 7.55, hazards: [4, 5], wallChance: 0.40, safeStart: 5, copy: 'Level 5 is the three-minute final run.' },
-    { level: 5, duration: 180, speed: 8.35, hazards: [5, 6], wallChance: 0.48, safeStart: 5, copy: 'You cleared the full OctaRun set.' }
+    { level: 1, duration: 30, speed: 5.15, hazards: [2, 2], wallChance: 0.14, safeStart: 7, copy: 'Level 2 opens up after 30 seconds with more lane reads.' },
+    { level: 2, duration: 60, speed: 5.95, hazards: [2, 3], wallChance: 0.22, safeStart: 7, copy: 'Level 3 runs 90 seconds and asks for cleaner jumps.' },
+    { level: 3, duration: 90, speed: 6.75, hazards: [3, 4], wallChance: 0.31, safeStart: 6, copy: 'Level 4 stretches to two minutes with tighter timing.' },
+    { level: 4, duration: 120, speed: 7.55, hazards: [4, 5], wallChance: 0.40, safeStart: 5, copy: 'Level 5 is the two-and-a-half-minute final run.' },
+    { level: 5, duration: 150, speed: 8.35, hazards: [5, 6], wallChance: 0.48, safeStart: 5, copy: 'You cleared the full OctaRun set.' }
   ];
 
   const levelPalettes = [
