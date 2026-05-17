@@ -239,6 +239,8 @@
   let levelElapsed = 0;
   let chunkSerial = 0;
   let ballColorIndex = 0;
+  let ballFrameIndex = 0;
+  let ballFrameTimer = 0;
   let laneIndex = 0;
   let laneStep = 0;
   let targetAngle = 0;
@@ -249,6 +251,8 @@
   let trailEnergy = 0;
   let ballSpin = 0;
   let ballSpinVel = 0;
+  const ballFrameRate = 18;
+  const ballFrameDuration = 1 / ballFrameRate;
   let musicOn = true;
   let fxOn = true;
   let audioContext = null;
@@ -525,6 +529,9 @@
     shake = 0;
     ballSpin = 0;
     ballSpinVel = 0;
+    ballFrameIndex = 0;
+    ballFrameTimer = 0;
+    applyBallColor();
     trailEnergy = 0;
     applyLevelPalette();
     seedChunks();
@@ -768,7 +775,13 @@
     trailEnergy = Math.max(0, trailEnergy - dt * 1.8);
     ballSpin += ballSpinVel * dt;
     ballSpinVel *= Math.pow(0.035, dt);
-    if (playerMaterial.map) playerMaterial.map.needsUpdate = true;
+    ballFrameTimer += dt;
+    while (ballTextures.length && ballFrameTimer >= ballFrameDuration) {
+      ballFrameTimer -= ballFrameDuration;
+      ballFrameIndex = (ballFrameIndex + 1) % ballTextures.length;
+      playerMaterial.map = ballTextures[ballFrameIndex];
+      playerMaterial.needsUpdate = true;
+    }
     player.rotation.set(0, 0, ballSpin - Math.PI / 2);
     if (shake > 0) shake = Math.max(0, shake - dt);
     camera.position.x = (Math.random() - 0.5) * shake;
@@ -898,34 +911,36 @@
   hud.music?.addEventListener('click', toggleMusic);
   hud.fx?.addEventListener('click', toggleFX);
 
-  const ballPalettes = [
-    { file: 'diamond-ball.gif', path: 'assets/diamond-ball.gif', glow: 0x8eeaff }
-  ];
+  const ballGlowColor = 0x8eeaff;
+  const ballFrameFiles = 'ABCDEFGHIJKLMNOPQR'.split('').map((letter) => 'assets/dball/' + letter + '.png');
 
-  const ballTextures = ballPalettes.map((palette) => {
-    const texture = textureLoader.load(encodeURI(palette.path || ('assets/neon octorun spheres/' + palette.file)));
+  function prepareBallTexture(texture) {
     if ('colorSpace' in texture && THREE.SRGBColorSpace) texture.colorSpace = THREE.SRGBColorSpace;
     else if ('encoding' in texture && THREE.sRGBEncoding) texture.encoding = THREE.sRGBEncoding;
     if (renderer.capabilities && typeof renderer.capabilities.getMaxAnisotropy === 'function') {
       texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
     }
-    texture.minFilter = THREE.LinearMipmapLinearFilter;
+    texture.generateMipmaps = false;
+    texture.minFilter = THREE.LinearFilter;
     texture.magFilter = THREE.LinearFilter;
     return texture;
-  });
+  }
+
+  const ballTextures = ballFrameFiles.map((path) => prepareBallTexture(textureLoader.load(encodeURI(path))));
 
   function applyBallColor() {
-    const palette = ballPalettes[ballColorIndex];
-    playerMaterial.map = ballTextures[ballColorIndex];
+    playerMaterial.map = ballTextures[ballFrameIndex] || null;
     playerMaterial.color.setHex(0xffffff);
     playerMaterial.opacity = 1;
     playerMaterial.needsUpdate = true;
-    playerGlow.material.color.setHex(palette.glow);
-    trail.material.color.setHex(palette.glow);
+    playerGlow.material.color.setHex(ballGlowColor);
+    trail.material.color.setHex(ballGlowColor);
   }
 
   function stepBallColor(direction = 1) {
-    ballColorIndex = (ballColorIndex + direction + ballPalettes.length) % ballPalettes.length;
+    ballColorIndex = (ballColorIndex + direction + ballTextures.length) % Math.max(1, ballTextures.length);
+    ballFrameIndex = ballColorIndex % Math.max(1, ballTextures.length);
+    ballFrameTimer = 0;
     applyBallColor();
     ballSpinVel += direction * 8;
     playTone(560, 0.055, 'triangle', 0.022);
