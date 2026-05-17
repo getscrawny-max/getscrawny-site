@@ -6390,6 +6390,23 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
   display: block;
 }
 
+.octarun-countdown {
+  position: absolute;
+  z-index: 5;
+  top: clamp(0.7rem, 1.5vw, 1rem);
+  left: clamp(0.8rem, 1.7vw, 1.15rem);
+  color: #e8f7ff;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  font-size: clamp(0.9rem, 1.4vw, 1.05rem);
+  font-weight: 900;
+  letter-spacing: 0;
+  text-shadow: 0 0 12px rgba(48, 217, 255, 0.7), 0 2px 8px rgba(0,0,0,0.85);
+  pointer-events: none;
+}
+
 .octarun-overlay {
   position: absolute;
   inset: 0;
@@ -7457,4 +7474,54 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
     0 0 22px rgba(255, 190, 45, 0.36),
     inset 0 1px 0 rgba(255,255,255,0.7),
     inset 0 -8px 18px rgba(75, 36, 0, 0.18);
+}
+
+
+/* OctaRun v3 control and browser fallback polish */
+.octarun-overlay-copy {
+  display: grid;
+  gap: 0.8rem;
+  justify-items: center;
+  max-width: min(720px, 92%);
+  margin: 0 auto;
+}
+
+.octarun-overlay-copy p {
+  margin: 0;
+  color: rgba(226, 241, 255, 0.78);
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+.octarun-controls-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(210px, 1fr));
+  gap: 0.5rem;
+  width: min(620px, 100%);
+}
+
+.octarun-controls-list span {
+  border: 1px solid rgba(74, 191, 255, 0.28);
+  border-radius: 8px;
+  padding: 0.55rem 0.7rem;
+  background: rgba(9, 35, 62, 0.64);
+  color: #d7f2ff;
+  font-size: 0.88rem;
+  font-weight: 800;
+  text-align: left;
+}
+
+.octarun-webgl-fallback {
+  position: absolute;
+  inset: 1rem;
+}
+
+.octarun-stage.is-reduced-graphics {
+  min-height: 420px;
+}
+
+@media (max-width: 720px) {
+  .octarun-controls-list {
+    grid-template-columns: 1fr;
+  }
 }

@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>OctaRun | Get Scrawny Arcade</title>
     <meta name="description" content="A neon eight-lane reflex tunnel game from Get Scrawny Arcade.">
-    <link rel="preload" href="styles.css?v=20260512b" as="style">
-    <link rel="stylesheet" href="styles.css?v=20260512b">
+    <link rel="preload" href="styles.css?v=20260512c" as="style">
+    <link rel="stylesheet" href="styles.css?v=20260512c">
   </head>
   <body class="octarun-body">
     <header class="site-header" data-header>
@@ -59,6 +59,7 @@
           <button type="button" data-octa-fullscreen>Fullscreen</button>
         </div>
         <div class="octarun-stage has-neon" data-octa-stage>
+          <div class="octarun-countdown" data-octa-countdown>45s left</div>
           <video class="octarun-space-video" src="assets/neon_space_loop.mp4" autoplay muted loop playsinline aria-hidden="true"></video>
           <div class="octarun-audio-toggles" aria-label="Game audio controls">
             <button class="octarun-audio-button" type="button" data-octa-music aria-pressed="true" aria-label="Toggle music">♫</button>
@@ -81,7 +82,7 @@
     </footer>
 
     <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
-    <script src="assets/neon-octarun/game.js?v=ball-presence-hard-15"></script>
+    <script src="assets/neon-octarun/game.js?v=octarun-session-unlocks-1"></script>
     <script src="script.js?v=game-mobile-polish-1"></script>
   </body>
 </html>
