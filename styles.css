@@ -6985,9 +6985,6 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
   grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
 }
 
-.octarun-hud button[data-octa-ball-next] {
-  min-width: 132px;
-}
 
 .muscle-map-education-shell .content-section-header {
   grid-template-columns: 1fr !important;
@@ -7524,4 +7521,21 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
   .octarun-controls-list {
     grid-template-columns: 1fr;
   }
+}
+
+/* OctaRun background video should feel alive even when browser playback starts slowly. */
+.octarun-space-video {
+  transform: scale(1.1) translate3d(-1.5%, -1%, 0);
+  animation: octarunSpaceDrift 22s ease-in-out infinite;
+}
+
+@keyframes octarunSpaceDrift {
+  0%, 100% { transform: scale(1.1) translate3d(-1.5%, -1%, 0); }
+  50% { transform: scale(1.14) translate3d(1.5%, 1%, 0); }
+}
+
+
+.octarun-countdown.is-urgent {
+  color: #ff3b3b;
+  text-shadow: 0 0 12px rgba(255, 59, 59, 0.72);
 }

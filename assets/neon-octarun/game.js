@@ -13,7 +13,7 @@
     hardMode: document.querySelector('[data-octa-hard]'),
     shell: document.querySelector('.octarun-shell'),
     stage: document.querySelector('[data-octa-stage]'),
-    ballNext: document.querySelector('[data-octa-ball-next]'),
+    spaceVideo: document.querySelector('.octarun-space-video'),
     pathPalette: document.querySelector('[data-octa-path-palette]'),
     music: document.querySelector('[data-octa-music]'),
     fx: document.querySelector('[data-octa-fx]'),
@@ -76,11 +76,11 @@
   const chunkDepth = 3.34;
   const laneArc = (Math.PI * 2) / lanes;
   const levelConfigs = [
-    { level: 1, duration: 30, speed: 5.15, hazards: [2, 2], wallChance: 0.14, safeStart: 7, copy: 'Level 2 opens up after 30 seconds with more lane reads.' },
-    { level: 2, duration: 60, speed: 5.95, hazards: [2, 3], wallChance: 0.22, safeStart: 7, copy: 'Level 3 runs 90 seconds and asks for cleaner jumps.' },
-    { level: 3, duration: 90, speed: 6.75, hazards: [3, 4], wallChance: 0.31, safeStart: 6, copy: 'Level 4 stretches to two minutes with tighter timing.' },
-    { level: 4, duration: 120, speed: 7.55, hazards: [4, 5], wallChance: 0.40, safeStart: 5, copy: 'Level 5 is the two-and-a-half-minute final run.' },
-    { level: 5, duration: 150, speed: 8.35, hazards: [5, 6], wallChance: 0.48, safeStart: 5, copy: 'You cleared the full OctaRun set.' }
+    { level: 1, duration: 30, speed: 5.15, hazards: [2, 2], wallChance: 0.14, gapRunChance: 0.08, safeStart: 7, copy: 'Level 2 opens up after 30 seconds with more lane reads.' },
+    { level: 2, duration: 60, speed: 5.95, hazards: [2, 3], wallChance: 0.22, gapRunChance: 0.16, safeStart: 7, copy: 'Level 3 runs 90 seconds and asks for cleaner jumps.' },
+    { level: 3, duration: 90, speed: 6.75, hazards: [3, 4], wallChance: 0.23, gapRunChance: 0.48, safeStart: 6, copy: 'Level 4 stretches to two minutes with tighter timing.' },
+    { level: 4, duration: 120, speed: 7.55, hazards: [4, 5], wallChance: 0.40, gapRunChance: 0.22, safeStart: 5, copy: 'Level 5 is the two-and-a-half-minute final run.' },
+    { level: 5, duration: 150, speed: 8.35, hazards: [5, 6], wallChance: 0.48, gapRunChance: 0.18, safeStart: 5, copy: 'You cleared the full OctaRun set.' }
   ];
 
   const levelPalettes = [
@@ -194,20 +194,36 @@
   const wallXMaterial = new THREE.MeshBasicMaterial({ color: 0x050505, transparent: false, opacity: 1, side: THREE.DoubleSide, depthWrite: false });
 
   function applyLevelPalette() {
+    const caution = pathPaletteMode === 'caution';
     const palettes = activeLevelPalettes();
     const palette = palettes[levelIndex] || palettes[0];
     materials.forEach((material, index) => {
       const color = palette[index % palette.length];
       material.color.setHex(color);
       material.emissive.setHex(color);
+      material.needsUpdate = true;
     });
     const fogColor = palette[4] || palette[0];
     scene.fog.color.setHex(fogColor);
+
+    if (caution) {
+      wallMaterial.color.setHex(0x176dff);
+      wallMaterial.emissive.setHex(0x1a7dff);
+      wallMaterial.emissiveIntensity = 0.5;
+      wallXMaterial.color.setHex(0xff4fd8);
+    } else {
+      wallMaterial.color.setHex(0xffd23c);
+      wallMaterial.emissive.setHex(0xff8a00);
+      wallMaterial.emissiveIntensity = 0.58;
+      wallXMaterial.color.setHex(0x050505);
+    }
+    wallMaterial.needsUpdate = true;
+    wallXMaterial.needsUpdate = true;
   }
   const textureLoader = new THREE.TextureLoader();
   const playerMaterial = new THREE.MeshBasicMaterial({ transparent: true, alphaTest: 0.05, depthTest: true, depthWrite: false, toneMapped: false });
   const player = new THREE.Mesh(new THREE.PlaneGeometry(2.02, 2.02), playerMaterial);
-  const playerGlow = new THREE.Mesh(new THREE.SphereGeometry(1.42, 40, 20), new THREE.MeshBasicMaterial({ color: 0x67e8ff, transparent: true, opacity: 0.34, blending: THREE.AdditiveBlending, depthWrite: false }));
+  const playerGlow = new THREE.Mesh(new THREE.SphereGeometry(0.71, 40, 20), new THREE.MeshBasicMaterial({ color: 0x67e8ff, transparent: true, opacity: 0.34, blending: THREE.AdditiveBlending, depthWrite: false }));
   const trail = new THREE.Mesh(new THREE.TorusGeometry(1.45, 0.04, 8, 72), new THREE.MeshBasicMaterial({ color: 0x35d7ff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending }));
   player.renderOrder = 4;
   playerGlow.renderOrder = 2;
@@ -238,6 +254,7 @@
   let levelIndex = 0;
   let levelElapsed = 0;
   let chunkSerial = 0;
+  let previousGapLanes = [];
   let ballColorIndex = 0;
   let ballFrameIndex = 0;
   let ballFrameTimer = 0;
@@ -251,6 +268,7 @@
   let trailEnergy = 0;
   let ballSpin = 0;
   let ballSpinVel = 0;
+  let ballRollAngle = 0;
   const ballFrameRate = 18;
   const ballFrameDuration = 1 / ballFrameRate;
   let musicOn = true;
@@ -401,20 +419,44 @@
   function makeChunkStates(index) {
     const config = currentConfig();
     const states = Array(lanes).fill(0);
-    if (index < config.safeStart) return states;
+    if (index < config.safeStart) {
+      previousGapLanes = [];
+      return states;
+    }
     const [minHazards, maxHazards] = config.hazards;
     const hazardCount = minHazards + Math.floor(Math.random() * (maxHazards - minHazards + 1));
     const blocked = new Set();
+    const forcedGaps = new Set();
     const protectLane = laneIndex;
     const protectLeft = (laneIndex + lanes - 1) % lanes;
     const protectRight = (laneIndex + 1) % lanes;
+    if (previousGapLanes.length && Math.random() < (config.gapRunChance || 0)) {
+      previousGapLanes.forEach((lane) => {
+        if (blocked.size < Math.max(1, hazardCount - 1)) {
+          blocked.add(lane);
+          forcedGaps.add(lane);
+        }
+      });
+    }
     while (blocked.size < hazardCount && blocked.size < lanes - 2) {
       const lane = Math.floor(Math.random() * lanes);
       if (index < config.safeStart + 3 && (lane === protectLane || lane === protectLeft || lane === protectRight)) continue;
       blocked.add(lane);
     }
-    blocked.forEach((lane) => { states[lane] = Math.random() < config.wallChance ? 2 : 1; });
-    if (!states.some((cell) => cell === 0)) states[Math.floor(Math.random() * lanes)] = 0;
+    const gapLanes = [];
+    blocked.forEach((lane) => {
+      const makeWall = !forcedGaps.has(lane) && Math.random() < config.wallChance;
+      states[lane] = makeWall ? 2 : 1;
+      if (!makeWall) gapLanes.push(lane);
+    });
+    previousGapLanes = gapLanes.slice(0, 2);
+    if (states.filter((cell) => cell === 0).length < 2) {
+      const candidates = Array.from({ length: lanes }, (_, lane) => lane).sort(() => Math.random() - 0.5);
+      for (const lane of candidates) {
+        if (states[lane] !== 0) states[lane] = 0;
+        if (states.filter((cell) => cell === 0).length >= 2) break;
+      }
+    }
     return states;
   }
 
@@ -529,6 +571,7 @@
     shake = 0;
     ballSpin = 0;
     ballSpinVel = 0;
+    ballRollAngle = 0;
     ballFrameIndex = 0;
     ballFrameTimer = 0;
     applyBallColor();
@@ -655,7 +698,11 @@
   function updateHud() {
     if (hud.score) hud.score.textContent = String(Math.floor(score));
     if (hud.level) hud.level.textContent = String(currentConfig().level);
-    if (hud.countdown) hud.countdown.textContent = levelSecondsLeft() + 's left';
+    if (hud.countdown) {
+      const secondsLeft = levelSecondsLeft();
+      hud.countdown.textContent = String(secondsLeft);
+      hud.countdown.classList.toggle('is-urgent', secondsLeft <= 10);
+    }
     syncLevelSelect();
     if (hud.hardMode) {
       hud.hardMode.textContent = hardMode ? 'Hard' : 'Normal';
@@ -664,7 +711,7 @@
     }
     if (hud.pathPalette) {
       const caution = pathPaletteMode === 'caution';
-      hud.pathPalette.textContent = caution ? 'Caution Path' : 'Neon Path';
+      hud.pathPalette.textContent = caution ? 'Star Burst' : 'Neon Path';
       hud.pathPalette.setAttribute('aria-pressed', String(caution));
       hud.pathPalette.classList.toggle('is-active', caution);
     }
@@ -673,10 +720,10 @@
   function syncLevelSelect() {
     if (!hud.levelPick) return;
     const locked = state === 'playing' || state === 'paused';
-    hud.levelPick.textContent = 'Run Level ' + currentConfig().level;
+    hud.levelPick.textContent = 'Level ' + currentConfig().level;
     hud.levelPick.disabled = locked;
     hud.levelPick.setAttribute('aria-disabled', String(locked));
-    hud.levelPick.title = unlockedLevel > 1 ? 'Unlocked through Level ' + unlockedLevel : 'Beat Level 1 to unlock Level 2';
+    hud.levelPick.title = unlockedLevel > 1 ? 'Click to choose unlocked levels' : 'Beat Level 1 to unlock Level 2';
   }
 
   function cycleSelectedLevel() {
@@ -769,12 +816,13 @@
     playerGlow.visible = neonOn;
     trail.visible = neonOn;
     const glowPulse = Math.max(0, trailEnergy);
-    playerGlow.scale.setScalar(1 + glowPulse * 0.18);
-    playerGlow.material.opacity = neonOn ? 0.24 + glowPulse * 0.22 : 0;
+    playerGlow.scale.setScalar(1 + glowPulse * 0.09);
+    playerGlow.material.opacity = neonOn ? 0.12 + glowPulse * 0.11 : 0;
     trail.material.opacity = neonOn ? Math.max(0, glowPulse * 0.5) : 0;
     trailEnergy = Math.max(0, trailEnergy - dt * 1.8);
     ballSpin += ballSpinVel * dt;
     ballSpinVel *= Math.pow(0.035, dt);
+    if (state === 'running') ballRollAngle += dt * Math.max(8, speed * 2.1);
     ballFrameTimer += dt;
     while (ballTextures.length && ballFrameTimer >= ballFrameDuration) {
       ballFrameTimer -= ballFrameDuration;
@@ -782,7 +830,7 @@
       playerMaterial.map = ballTextures[ballFrameIndex];
       playerMaterial.needsUpdate = true;
     }
-    player.rotation.set(0, 0, ballSpin - Math.PI / 2);
+    player.rotation.set(0, 0, ballRollAngle + ballSpin - Math.PI / 2);
     if (shake > 0) shake = Math.max(0, shake - dt);
     camera.position.x = (Math.random() - 0.5) * shake;
     camera.position.y = (Math.random() - 0.5) * shake;
@@ -896,6 +944,7 @@
     queueJump();
   });
   hud.start?.addEventListener('click', () => {
+    primeSpaceVideo();
     if (state === 'playing') pause();
     else start();
   });
@@ -907,7 +956,7 @@
     playTone(hardMode ? 720 : 430, 0.065, 'square', 0.018);
   });
   hud.fullscreen?.addEventListener('click', toggleFullscreen);
-  hud.overlayStart?.addEventListener('click', start);
+  hud.overlayStart?.addEventListener('click', () => { primeSpaceVideo(); start(); });
   hud.music?.addEventListener('click', toggleMusic);
   hud.fx?.addEventListener('click', toggleFX);
 
@@ -945,8 +994,6 @@
     ballSpinVel += direction * 8;
     playTone(560, 0.055, 'triangle', 0.022);
   }
-
-  hud.ballNext?.addEventListener('click', () => stepBallColor(1));
 
   hud.pathPalette?.addEventListener('click', () => {
     pathPaletteMode = pathPaletteMode === 'caution' ? 'neon' : 'caution';
