@@ -815,6 +815,7 @@
     world.rotation.z = -visualAngle;
     player.position.set(0, -radius + 0.88 + jump, 0.18);
     player.rotation.set(0, 0, 0);
+    playerRoll.position.set(0, 0, 0);
     playerGlow.position.copy(player.position);
     playerGlow.position.z = 0.09;
     trail.position.copy(player.position);
@@ -963,12 +964,17 @@
   let playerModel = null;
 
   function normalizePlayerModel(root) {
+    root.position.set(0, 0, 0);
+    root.updateMatrixWorld(true);
     const box = new THREE.Box3().setFromObject(root);
-    const center = box.getCenter(new THREE.Vector3());
-    root.position.sub(center);
     const size = box.getSize(new THREE.Vector3());
     const maxSide = Math.max(size.x, size.y, size.z) || 1;
     root.scale.setScalar(1.35 / maxSide);
+    root.updateMatrixWorld(true);
+    const centeredBox = new THREE.Box3().setFromObject(root);
+    const center = centeredBox.getCenter(new THREE.Vector3());
+    root.position.sub(center);
+    root.updateMatrixWorld(true);
     root.traverse((child) => {
       if (!child.isMesh) return;
       child.castShadow = false;
