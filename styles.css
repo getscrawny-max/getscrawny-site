@@ -4862,9 +4862,13 @@ body:has(.game-page) .brand-combined,
     linear-gradient(180deg, var(--bg), var(--surface));
 }
 
-.explore-hero,
 .arcade-landing-hero {
   min-height: min(760px, 82vh);
+}
+
+.explore-hero {
+  min-height: auto;
+  padding-bottom: clamp(1.5rem, 3vw, 2.5rem);
 }
 
 .scrawny-world-globe {
@@ -7333,7 +7337,7 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
   border: 0;
   border-radius: 0;
   box-shadow: none;
-  padding: clamp(2.5rem, 5vw, 4.5rem) 0 clamp(3rem, 6vw, 5rem);
+  padding: clamp(1rem, 2.5vw, 2rem) 0 clamp(3rem, 6vw, 5rem);
 }
 
 .explore-page .world-dock-title {
@@ -7538,4 +7542,195 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
 .octarun-countdown.is-urgent {
   color: #ff3b3b;
   text-shadow: 0 0 12px rgba(255, 59, 59, 0.72);
+}
+
+/* May 17: home page spacing pass and workout-log layout guardrails */
+.home-page .hero {
+  padding-top: clamp(44px, 6vw, 74px);
+  padding-bottom: clamp(44px, 6vw, 74px);
+}
+
+.home-page .intro-band {
+  margin-top: 0;
+  padding-top: clamp(22px, 3vw, 36px);
+  padding-bottom: clamp(22px, 3vw, 36px);
+}
+
+.home-page .intro-band p {
+  max-width: 1120px;
+  font-size: clamp(1.05rem, 1.8vw, 1.42rem);
+  line-height: 1.45;
+}
+
+.home-page .section,
+.home-page .feature-band,
+.home-page .coach-section,
+.home-page .contact-section {
+  padding-top: clamp(48px, 6vw, 78px);
+  padding-bottom: clamp(48px, 6vw, 78px);
+}
+
+.home-page .education-panel,
+.home-page .services {
+  padding-top: clamp(44px, 5vw, 70px);
+  padding-bottom: clamp(44px, 5vw, 70px);
+}
+
+.home-page .section-heading {
+  margin-bottom: clamp(22px, 3vw, 34px);
+}
+
+.home-page .split {
+  gap: clamp(28px, 5vw, 64px);
+}
+
+.home-page .prose p {
+  margin-bottom: 0.9rem;
+}
+
+.home-page .education-grid,
+.home-page .service-grid {
+  gap: clamp(14px, 2vw, 22px);
+}
+
+.home-page .education-grid article,
+.home-page .service-card {
+  min-height: 0;
+  padding: clamp(20px, 2.4vw, 30px);
+}
+
+.home-page .education-grid span,
+.home-page .card-icon {
+  margin-bottom: clamp(20px, 3vw, 34px);
+}
+
+.home-page .service-session-note {
+  margin-bottom: clamp(22px, 3vw, 34px);
+}
+
+.home-page .feature-band {
+  min-height: auto;
+}
+
+.home-page .coach-section {
+  gap: clamp(28px, 5vw, 58px);
+  align-items: center;
+}
+
+.muscle-map-log-shell .workout-intro,
+.muscle-map-log-shell .log-layout {
+  width: min(1120px, calc(100% - 48px)) !important;
+  max-width: 1120px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.muscle-map-log-shell .log-layout {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 400px) !important;
+  gap: clamp(16px, 2vw, 24px) !important;
+  align-items: start !important;
+}
+
+.muscle-map-log-shell .log-form,
+.muscle-map-log-shell .workout-blocks,
+.muscle-map-log-shell .logger-panel,
+.muscle-map-log-shell .receipt-preview-panel,
+.muscle-map-log-shell .workout-receipt,
+.muscle-map-log-shell .receipt-preview-panel #training-tools {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.muscle-map-log-shell .workout-blocks {
+  display: grid;
+  gap: clamp(16px, 2vw, 22px);
+}
+
+.muscle-map-log-shell .receipt-preview-panel {
+  position: sticky;
+  top: calc(var(--header-height, 88px) + 16px);
+  align-self: start;
+  display: grid;
+  gap: 16px;
+  overflow: visible;
+}
+
+.muscle-map-log-shell .receipt-preview-panel #training-tools {
+  width: 100% !important;
+  margin: 16px 0 0 !important;
+  padding: clamp(14px, 2vw, 18px) !important;
+}
+
+.muscle-map-log-shell .receipt-preview-panel #training-tools .training-tool-grid {
+  grid-template-columns: 1fr !important;
+}
+
+.muscle-map-log-shell .receipt-preview-header {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  gap: 14px;
+  align-items: start !important;
+}
+
+.muscle-map-log-shell .receipt-actions {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 10px;
+  min-width: 112px;
+}
+
+.muscle-map-log-shell .receipt-actions button {
+  width: 100%;
+  min-width: 0;
+}
+
+.muscle-map-log-shell .workout-receipt {
+  width: 100%;
+  overflow-x: auto;
+}
+
+@media (max-width: 1080px) {
+  .muscle-map-log-shell .log-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .muscle-map-log-shell .receipt-preview-panel {
+    position: static;
+  }
+}
+
+@media (max-width: 760px) {
+  .home-page .hero {
+    padding-top: 34px;
+    padding-bottom: 38px;
+  }
+
+  .home-page .section,
+  .home-page .feature-band,
+  .home-page .coach-section,
+  .home-page .contact-section {
+    padding-top: 42px;
+    padding-bottom: 42px;
+  }
+
+  .muscle-map-log-shell .workout-intro,
+  .muscle-map-log-shell .log-layout {
+    width: min(100% - 28px, 1120px) !important;
+  }
+
+  .muscle-map-log-shell .workout-intro {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .muscle-map-log-shell .receipt-preview-header {
+    grid-template-columns: 1fr !important;
+  }
+
+  .muscle-map-log-shell .receipt-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
 }

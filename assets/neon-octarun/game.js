@@ -220,12 +220,23 @@
     wallMaterial.needsUpdate = true;
     wallXMaterial.needsUpdate = true;
   }
-  const textureLoader = new THREE.TextureLoader();
-  const playerMaterial = new THREE.MeshBasicMaterial({ transparent: true, alphaTest: 0.05, depthTest: true, depthWrite: false, toneMapped: false });
-  const player = new THREE.Mesh(new THREE.PlaneGeometry(2.02, 2.02), playerMaterial);
-  const playerGlow = new THREE.Mesh(new THREE.SphereGeometry(0.71, 40, 20), new THREE.MeshBasicMaterial({ color: 0x67e8ff, transparent: true, opacity: 0.34, blending: THREE.AdditiveBlending, depthWrite: false }));
-  const trail = new THREE.Mesh(new THREE.TorusGeometry(1.45, 0.04, 8, 72), new THREE.MeshBasicMaterial({ color: 0x35d7ff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending }));
+  const ballGlowColor = 0x8eeaff;
+  const player = new THREE.Group();
+  const playerFallback = new THREE.Mesh(
+    new THREE.SphereGeometry(0.62, 48, 24),
+    new THREE.MeshStandardMaterial({
+      color: ballGlowColor,
+      emissive: 0x2ddcff,
+      emissiveIntensity: 0.34,
+      roughness: 0.26,
+      metalness: 0.2
+    })
+  );
+  player.add(playerFallback);
+  const playerGlow = new THREE.Mesh(new THREE.SphereGeometry(0.78, 40, 20), new THREE.MeshBasicMaterial({ color: ballGlowColor, transparent: true, opacity: 0.24, blending: THREE.AdditiveBlending, depthWrite: false }));
+  const trail = new THREE.Mesh(new THREE.TorusGeometry(1.26, 0.035, 8, 72), new THREE.MeshBasicMaterial({ color: ballGlowColor, transparent: true, opacity: 0, blending: THREE.AdditiveBlending }));
   player.renderOrder = 4;
+  playerFallback.renderOrder = 4;
   playerGlow.renderOrder = 2;
   trail.renderOrder = 1;
   const world = new THREE.Group();
@@ -233,7 +244,7 @@
   scene.add(player);
   scene.add(playerGlow);
   scene.add(trail);
-  scene.add(new THREE.AmbientLight(0x6b86ff, 0.52));
+  scene.add(new THREE.AmbientLight(0x6b86ff, 0.72));
   const keyLight = new THREE.PointLight(0x44e8ff, 3.2, 35);
   keyLight.position.set(0, 3, 5);
   scene.add(keyLight);
@@ -255,9 +266,6 @@
   let levelElapsed = 0;
   let chunkSerial = 0;
   let previousGapLanes = [];
-  let ballColorIndex = 0;
-  let ballFrameIndex = 0;
-  let ballFrameTimer = 0;
   let laneIndex = 0;
   let laneStep = 0;
   let targetAngle = 0;
@@ -269,8 +277,6 @@
   let ballSpin = 0;
   let ballSpinVel = 0;
   let ballRollAngle = 0;
-  const ballFrameRate = 18;
-  const ballFrameDuration = 1 / ballFrameRate;
   let musicOn = true;
   let fxOn = true;
   let audioContext = null;
@@ -296,8 +302,9 @@
   levelCompleteAudio.preload = 'auto';
   levelCompleteAudio.volume = 0.5;
 
+  const hardModeMultiplier = () => (hardMode ? 1.5 : 1);
   const currentConfig = () => levelConfigs[levelIndex];
-  const levelProgress = () => levelElapsed;
+  const levelProgress = () => levelElapsed * hardModeMultiplier();
   const levelSecondsLeft = () => Math.max(0, Math.ceil(currentConfig().duration - levelProgress()));
   const unlockStorageKey = 'octarunUnlockedLevel';
 
@@ -572,8 +579,6 @@
     ballSpin = 0;
     ballSpinVel = 0;
     ballRollAngle = 0;
-    ballFrameIndex = 0;
-    ballFrameTimer = 0;
     applyBallColor();
     trailEnergy = 0;
     applyLevelPalette();
@@ -822,15 +827,8 @@
     trailEnergy = Math.max(0, trailEnergy - dt * 1.8);
     ballSpin += ballSpinVel * dt;
     ballSpinVel *= Math.pow(0.035, dt);
-    if (state === 'running') ballRollAngle += dt * Math.max(8, speed * 2.1);
-    ballFrameTimer += dt;
-    while (ballTextures.length && ballFrameTimer >= ballFrameDuration) {
-      ballFrameTimer -= ballFrameDuration;
-      ballFrameIndex = (ballFrameIndex + 1) % ballTextures.length;
-      playerMaterial.map = ballTextures[ballFrameIndex];
-      playerMaterial.needsUpdate = true;
-    }
-    player.rotation.set(0, 0, ballRollAngle + ballSpin - Math.PI / 2);
+    if (state === 'playing') ballRollAngle += dt * Math.max(8, speed * 2.1);
+    player.rotation.set(ballRollAngle + ballSpin, 0, 0);
     if (shake > 0) shake = Math.max(0, shake - dt);
     camera.position.x = (Math.random() - 0.5) * shake;
     camera.position.y = (Math.random() - 0.5) * shake;
@@ -960,37 +958,62 @@
   hud.music?.addEventListener('click', toggleMusic);
   hud.fx?.addEventListener('click', toggleFX);
 
-  const ballGlowColor = 0x8eeaff;
-  const ballFrameFiles = 'ABCDEFGHIJKLMNOPQR'.split('').map((letter) => 'assets/dball/' + letter + '.png');
+  let playerModel = null;
 
-  function prepareBallTexture(texture) {
-    if ('colorSpace' in texture && THREE.SRGBColorSpace) texture.colorSpace = THREE.SRGBColorSpace;
-    else if ('encoding' in texture && THREE.sRGBEncoding) texture.encoding = THREE.sRGBEncoding;
-    if (renderer.capabilities && typeof renderer.capabilities.getMaxAnisotropy === 'function') {
-      texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
-    }
-    texture.generateMipmaps = false;
-    texture.minFilter = THREE.LinearFilter;
-    texture.magFilter = THREE.LinearFilter;
-    return texture;
+  function normalizePlayerModel(root) {
+    const box = new THREE.Box3().setFromObject(root);
+    const center = box.getCenter(new THREE.Vector3());
+    root.position.sub(center);
+    const size = box.getSize(new THREE.Vector3());
+    const maxSide = Math.max(size.x, size.y, size.z) || 1;
+    root.scale.setScalar(1.35 / maxSide);
+    root.traverse((child) => {
+      if (!child.isMesh) return;
+      child.castShadow = false;
+      child.receiveShadow = false;
+      child.renderOrder = 4;
+      const materials = Array.isArray(child.material) ? child.material : [child.material];
+      materials.filter(Boolean).forEach((material) => {
+        material.transparent = material.transparent || false;
+        material.depthTest = true;
+        material.depthWrite = true;
+        material.needsUpdate = true;
+      });
+    });
   }
 
-  const ballTextures = ballFrameFiles.map((path) => prepareBallTexture(textureLoader.load(encodeURI(path))));
+  function loadPlayerModel() {
+    const loaderUrl = 'https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
+    import(loaderUrl)
+      .then((module) => {
+        const Loader = module.GLTFLoader;
+        if (!Loader) throw new Error('GLTFLoader unavailable');
+        const loader = new Loader();
+        loader.load('assets/octarun_ball.glb', (gltf) => {
+          playerModel = gltf.scene;
+          normalizePlayerModel(playerModel);
+          playerFallback.visible = false;
+          player.add(playerModel);
+        }, undefined, () => {
+          playerFallback.visible = true;
+        });
+      })
+      .catch(() => {
+        playerFallback.visible = true;
+      });
+  }
 
   function applyBallColor() {
-    playerMaterial.map = ballTextures[ballFrameIndex] || null;
-    playerMaterial.color.setHex(0xffffff);
-    playerMaterial.opacity = 1;
-    playerMaterial.needsUpdate = true;
     playerGlow.material.color.setHex(ballGlowColor);
     trail.material.color.setHex(ballGlowColor);
+    if (playerFallback.material) {
+      playerFallback.material.color.setHex(ballGlowColor);
+      playerFallback.material.emissive.setHex(0x2ddcff);
+      playerFallback.material.needsUpdate = true;
+    }
   }
 
   function stepBallColor(direction = 1) {
-    ballColorIndex = (ballColorIndex + direction + ballTextures.length) % Math.max(1, ballTextures.length);
-    ballFrameIndex = ballColorIndex % Math.max(1, ballTextures.length);
-    ballFrameTimer = 0;
-    applyBallColor();
     ballSpinVel += direction * 8;
     playTone(560, 0.055, 'triangle', 0.022);
   }
@@ -1001,6 +1024,7 @@
     updateHud();
     playTone(pathPaletteMode === 'caution' ? 360 : 620, 0.065, 'square', 0.018);
   });
+  loadPlayerModel();
   applyBallColor();
   applyLevelPalette();
   resize();
