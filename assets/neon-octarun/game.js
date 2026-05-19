@@ -222,6 +222,7 @@
   }
   const ballGlowColor = 0x8eeaff;
   const player = new THREE.Group();
+  const playerRoll = new THREE.Group();
   const playerFallback = new THREE.Mesh(
     new THREE.SphereGeometry(0.62, 48, 24),
     new THREE.MeshStandardMaterial({
@@ -232,7 +233,8 @@
       metalness: 0.2
     })
   );
-  player.add(playerFallback);
+  player.add(playerRoll);
+  playerRoll.add(playerFallback);
   const playerGlow = new THREE.Mesh(new THREE.SphereGeometry(0.78, 40, 20), new THREE.MeshBasicMaterial({ color: ballGlowColor, transparent: true, opacity: 0.24, blending: THREE.AdditiveBlending, depthWrite: false }));
   const trail = new THREE.Mesh(new THREE.TorusGeometry(1.26, 0.035, 8, 72), new THREE.MeshBasicMaterial({ color: ballGlowColor, transparent: true, opacity: 0, blending: THREE.AdditiveBlending }));
   player.renderOrder = 4;
@@ -579,6 +581,8 @@
     ballSpin = 0;
     ballSpinVel = 0;
     ballRollAngle = 0;
+    player.rotation.set(0, 0, 0);
+    playerRoll.rotation.set(0, 0, 0);
     applyBallColor();
     trailEnergy = 0;
     applyLevelPalette();
@@ -616,6 +620,11 @@
     visualAngle = 0;
     jump = 0;
     jumpVel = 0;
+    ballSpin = 0;
+    ballSpinVel = 0;
+    ballRollAngle = 0;
+    player.rotation.set(0, 0, 0);
+    playerRoll.rotation.set(0, 0, 0);
     trailEnergy = 0;
     applyLevelPalette();
     seedChunks();
@@ -747,7 +756,7 @@
     laneIndex = (laneIndex + dir + lanes) % lanes;
     laneStep += dir;
     targetAngle = laneStep * laneArc;
-    ballSpinVel += -dir * 13;
+    ballSpinVel += -dir * 5;
     trailEnergy = 1;
     playTone(420 + Math.abs(dir) * 90, 0.045, 'square', 0.024);
   }
@@ -810,9 +819,9 @@
       updateHud();
     }
     visualAngle += (targetAngle - visualAngle) * Math.min(1, dt * 12);
-    const r = radius - 0.88 - jump;
     world.rotation.z = -visualAngle;
-    player.position.set(0, -r, 0.18);
+    player.position.set(0, -radius + 0.88 + jump, 0.18);
+    player.rotation.set(0, 0, 0);
     playerGlow.position.copy(player.position);
     playerGlow.position.z = 0.09;
     trail.position.copy(player.position);
@@ -828,7 +837,7 @@
     ballSpin += ballSpinVel * dt;
     ballSpinVel *= Math.pow(0.035, dt);
     if (state === 'playing') ballRollAngle += dt * Math.max(8, speed * 2.1);
-    player.rotation.set(ballRollAngle + ballSpin, 0, 0);
+    playerRoll.rotation.set(0, 0, ballRollAngle + ballSpin);
     if (shake > 0) shake = Math.max(0, shake - dt);
     camera.position.x = (Math.random() - 0.5) * shake;
     camera.position.y = (Math.random() - 0.5) * shake;
@@ -993,7 +1002,7 @@
           playerModel = gltf.scene;
           normalizePlayerModel(playerModel);
           playerFallback.visible = false;
-          player.add(playerModel);
+          playerRoll.add(playerModel);
         }, undefined, () => {
           playerFallback.visible = true;
         });
@@ -1014,7 +1023,7 @@
   }
 
   function stepBallColor(direction = 1) {
-    ballSpinVel += direction * 8;
+    ballSpinVel += direction * 3;
     playTone(560, 0.055, 'triangle', 0.022);
   }
 
