@@ -83,25 +83,19 @@
     { level: 5, duration: 150, speed: 8.35, hazards: [5, 6], wallChance: 0.48, gapRunChance: 0.18, safeStart: 5, copy: 'You cleared the full OctaRun set.' }
   ];
 
-  const levelPalettes = [
-    [0x2d6cdf, 0x4fb5df, 0x7c4fd9, 0xb83fd8, 0x22306d],
-    [0x18b7ff, 0x763cff, 0xf24cff, 0x2f6dff, 0x102a7a],
-    [0x20d6ff, 0x3f7bff, 0xff3dd2, 0x8a5cff, 0x151d62],
-    [0xff4fd8, 0x6c4cff, 0x27d9ff, 0x3759ff, 0x24105f],
-    [0xffffff, 0x48d7ff, 0xff47f0, 0x714cff, 0x10112f]
-  ];
-
-  const cautionLevelPalettes = [
-    [0xff5c5c, 0xf8ff61, 0xffb861, 0xa8ff61, 0xff5c5c, 0xf8ff61, 0xffb861, 0xa8ff61],
-    [0xf8ff61, 0xffb861, 0xa8ff61, 0xff5c5c, 0xf8ff61, 0xffb861, 0xa8ff61, 0xff5c5c],
-    [0xffb861, 0xa8ff61, 0xff5c5c, 0xf8ff61, 0xffb861, 0xa8ff61, 0xff5c5c, 0xf8ff61],
-    [0xa8ff61, 0xff5c5c, 0xf8ff61, 0xffb861, 0xa8ff61, 0xff5c5c, 0xf8ff61, 0xffb861],
-    [0xff5c5c, 0xffb861, 0xf8ff61, 0xa8ff61, 0xff5c5c, 0xffb861, 0xf8ff61, 0xa8ff61]
+  const pathPalettes = [
+    { id: 'neon', name: 'Neon', colors: [0xfe0000, 0xfdfe02, 0x0bff01, 0x011efe, 0xfe00f6] },
+    { id: 'bursting-star', name: 'Bursting Star', colors: [0xff0000, 0xff43af, 0xff8600, 0xfff105, 0xff9bd9] },
+    { id: 'citeh', name: 'Citeh', colors: [0xeeeeee, 0xa2d2ff, 0x99c2db, 0x5887d6, 0x606060] },
+    { id: 'fiona', name: 'Fiona', colors: [0x1e5b0b, 0xc8d707, 0x7cc427, 0xba0012, 0xf0c17f] },
+    { id: 'barca', name: 'Barca', colors: [0xa50044, 0x004d98, 0xedbb00, 0xffed02, 0xdb0030] },
+    { id: 'color-blind', name: 'Color Blind', colors: [0xd55e00, 0xcc79a7, 0x0072b2, 0xf0e442, 0x009e73] },
+    { id: 'omni-vincible', name: 'Omni-Vincible', colors: [0xffe556, 0x00bcf0, 0x303539, 0xc8412d, 0xe1ebed] }
   ];
   let pathPaletteMode = 'neon';
 
-  function activeLevelPalettes() {
-    return pathPaletteMode === 'caution' ? cautionLevelPalettes : levelPalettes;
+  function activePathPalette() {
+    return pathPalettes.find((palette) => palette.id === pathPaletteMode) || pathPalettes[0];
   }
 
   function lanePoint(lane, edgeOffset, radial, z) {
@@ -194,19 +188,18 @@
   const wallXMaterial = new THREE.MeshBasicMaterial({ color: 0x050505, transparent: false, opacity: 1, side: THREE.DoubleSide, depthWrite: false });
 
   function applyLevelPalette() {
-    const caution = pathPaletteMode === 'caution';
-    const palettes = activeLevelPalettes();
-    const palette = palettes[levelIndex] || palettes[0];
+    const activePalette = activePathPalette();
+    const palette = activePalette.colors;
     materials.forEach((material, index) => {
-      const color = palette[index % palette.length];
+      const color = palette[(levelIndex + index) % palette.length];
       material.color.setHex(color);
       material.emissive.setHex(color);
       material.needsUpdate = true;
     });
-    const fogColor = palette[4] || palette[0];
+    const fogColor = palette[(levelIndex + 4) % palette.length] || palette[0];
     scene.fog.color.setHex(fogColor);
 
-    if (caution) {
+    if (pathPaletteMode === 'bursting-star') {
       wallMaterial.color.setHex(0x176dff);
       wallMaterial.emissive.setHex(0x1a7dff);
       wallMaterial.emissiveIntensity = 0.5;
@@ -724,10 +717,10 @@
       hud.hardMode.classList.toggle('is-active', hardMode);
     }
     if (hud.pathPalette) {
-      const caution = pathPaletteMode === 'caution';
-      hud.pathPalette.textContent = caution ? 'Star Burst' : 'Neon Path';
-      hud.pathPalette.setAttribute('aria-pressed', String(caution));
-      hud.pathPalette.classList.toggle('is-active', caution);
+      const activePalette = activePathPalette();
+      hud.pathPalette.textContent = activePalette.name;
+      hud.pathPalette.setAttribute('aria-pressed', pathPaletteMode !== 'neon' ? 'true' : 'false');
+      hud.pathPalette.classList.toggle('is-active', pathPaletteMode !== 'neon');
     }
   }
 
@@ -1028,10 +1021,11 @@
   }
 
   hud.pathPalette?.addEventListener('click', () => {
-    pathPaletteMode = pathPaletteMode === 'caution' ? 'neon' : 'caution';
+    const currentIndex = Math.max(0, pathPalettes.findIndex((palette) => palette.id === pathPaletteMode));
+    pathPaletteMode = pathPalettes[(currentIndex + 1) % pathPalettes.length].id;
     applyLevelPalette();
     updateHud();
-    playTone(pathPaletteMode === 'caution' ? 360 : 620, 0.065, 'square', 0.018);
+    playTone(pathPaletteMode === 'neon' ? 620 : 420, 0.065, 'square', 0.018);
   });
   loadPlayerModel();
   applyBallColor();
