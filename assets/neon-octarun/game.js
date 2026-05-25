@@ -6,17 +6,19 @@
     score: document.querySelector('[data-octa-score]'),
     level: document.querySelector('[data-octa-level]'),
     countdown: document.querySelector('[data-octa-countdown]'),
-    start: document.querySelector('[data-octa-start]'),
     restart: document.querySelector('[data-octa-restart]'),
     fullscreen: document.querySelector('[data-octa-fullscreen]'),
+    ballColor: document.querySelector('[data-octa-ball-color]'),
+    ballColorInput: document.querySelector('[data-octa-ball-color-input]'),
+    ballSwatch: document.querySelector('[data-octa-ball-swatch]'),
     levelPick: document.querySelector('[data-octa-level-pick]'),
-    hardMode: document.querySelector('[data-octa-hard]'),
     shell: document.querySelector('.octarun-shell'),
     stage: document.querySelector('[data-octa-stage]'),
     spaceVideo: document.querySelector('.octarun-space-video'),
     pathPalette: document.querySelector('[data-octa-path-palette]'),
     music: document.querySelector('[data-octa-music]'),
     fx: document.querySelector('[data-octa-fx]'),
+    startModes: document.querySelector('[data-octa-start-modes]'),
     overlay: document.querySelector('[data-octa-overlay]'),
     overlayStart: document.querySelector('[data-octa-overlay-start]')
   };
@@ -51,7 +53,7 @@
   }
 
   const scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0x030615, 0.026);
+  scene.fog = new THREE.FogExp2(0x030615, 0.016);
   const camera = new THREE.PerspectiveCamera(62, 1, 0.1, 260);
   camera.position.set(0, 0, 9.5);
   camera.lookAt(0, 0, -16);
@@ -75,6 +77,13 @@
   const chunkSpacing = 3.34;
   const chunkDepth = 3.34;
   const laneArc = (Math.PI * 2) / lanes;
+  const playerZ = 0.18;
+  const playerCollisionRadius = 0.58;
+  const gapFrontCollisionDepth = chunkDepth / 2 + 0.16 + playerCollisionRadius;
+  const gapBackCollisionDepth = chunkDepth / 2 - 0.42;
+  const wallCollisionDepth = 0.82 + playerCollisionRadius;
+  const gapClearance = 0.42;
+  const wallClearance = 0.72;
   const levelConfigs = [
     { level: 1, duration: 30, speed: 5.15, hazards: [2, 2], wallChance: 0.14, gapRunChance: 0.08, safeStart: 7, copy: 'Level 2 opens up after 30 seconds with more lane reads.' },
     { level: 2, duration: 60, speed: 5.95, hazards: [2, 3], wallChance: 0.22, gapRunChance: 0.16, safeStart: 7, copy: 'Level 3 runs 90 seconds and asks for cleaner jumps.' },
@@ -93,6 +102,10 @@
     { id: 'omni-vincible', name: 'Omni-Vincible', colors: [0xffe556, 0x00bcf0, 0x303539, 0xc8412d, 0xe1ebed] }
   ];
   let pathPaletteMode = 'neon';
+
+  function allPaletteColors() {
+    return [...new Set(pathPalettes.flatMap((palette) => palette.colors))];
+  }
 
   function activePathPalette() {
     return pathPalettes.find((palette) => palette.id === pathPaletteMode) || pathPalettes[0];
@@ -184,46 +197,68 @@
   const wallXGeometries = Array.from({ length: lanes }, (_, lane) => [makeWallXGeometry(lane, false), makeWallXGeometry(lane, true)]);
   const colors = [0x31a6ff, 0xa838ff, 0x4db8ff, 0xd23dff, 0x385dcb];
   const materials = colors.map((color) => new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.33, roughness: 0.38, metalness: 0.18, side: THREE.DoubleSide, flatShading: true }));
-  const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xffd23c, emissive: 0xff8a00, emissiveIntensity: 0.58, roughness: 0.34, metalness: 0.08, side: THREE.DoubleSide, flatShading: true });
-  const wallXMaterial = new THREE.MeshBasicMaterial({ color: 0x050505, transparent: false, opacity: 1, side: THREE.DoubleSide, depthWrite: false });
+  const wallMaterials = Array.from({ length: materials.length }, () => new THREE.MeshStandardMaterial({ color: 0xffd23c, emissive: 0xff8a00, emissiveIntensity: 0.48, roughness: 0.34, metalness: 0.08, side: THREE.DoubleSide, flatShading: true }));
+  const wallXMaterials = Array.from({ length: materials.length }, () => new THREE.MeshBasicMaterial({ color: 0x050505, transparent: false, opacity: 1, side: THREE.DoubleSide, depthWrite: false }));
+
+  function colorLuminance(hex) {
+    const color = new THREE.Color(hex);
+    const channels = [color.r, color.g, color.b].map((channel) => {
+      return channel <= 0.03928 ? channel / 12.92 : Math.pow((channel + 0.055) / 1.055, 2.4);
+    });
+    return channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722;
+  }
+
+  function contrastRatio(colorA, colorB) {
+    const bright = Math.max(colorLuminance(colorA), colorLuminance(colorB));
+    const dark = Math.min(colorLuminance(colorA), colorLuminance(colorB));
+    return (bright + 0.05) / (dark + 0.05);
+  }
+
+  function contrastingPaletteColor(candidates, trackColor) {
+    return candidates.reduce((best, candidate) => {
+      const score = contrastRatio(candidate, trackColor);
+      return score > best.score ? { color: candidate, score } : best;
+    }, { color: candidates[0], score: -1 }).color;
+  }
 
   function applyLevelPalette() {
     const activePalette = activePathPalette();
     const palette = activePalette.colors;
+    const trackColors = materials.map((_, index) => palette[(levelIndex + index) % palette.length]);
+    const trackColorSet = new Set(trackColors);
+    const barrierCandidates = allPaletteColors().filter((color) => !trackColorSet.has(color));
     materials.forEach((material, index) => {
-      const color = palette[(levelIndex + index) % palette.length];
+      const color = trackColors[index];
       material.color.setHex(color);
       material.emissive.setHex(color);
       material.needsUpdate = true;
     });
-    const fogColor = palette[(levelIndex + 4) % palette.length] || palette[0];
-    scene.fog.color.setHex(fogColor);
+    const fogColor = new THREE.Color(palette[(levelIndex + 4) % palette.length] || palette[0]).lerp(new THREE.Color(0x030615), 0.72);
+    scene.fog.color.copy(fogColor);
 
-    if (pathPaletteMode === 'bursting-star') {
-      wallMaterial.color.setHex(0x176dff);
-      wallMaterial.emissive.setHex(0x1a7dff);
-      wallMaterial.emissiveIntensity = 0.5;
-      wallXMaterial.color.setHex(0xff4fd8);
-    } else {
-      wallMaterial.color.setHex(0xffd23c);
-      wallMaterial.emissive.setHex(0xff8a00);
-      wallMaterial.emissiveIntensity = 0.58;
-      wallXMaterial.color.setHex(0x050505);
-    }
-    wallMaterial.needsUpdate = true;
-    wallXMaterial.needsUpdate = true;
+    wallMaterials.forEach((material, index) => {
+      const barrierColor = contrastingPaletteColor(barrierCandidates, trackColors[index]);
+      material.color.setHex(barrierColor);
+      material.emissive.setHex(barrierColor);
+      material.emissiveIntensity = 0.48;
+      material.needsUpdate = true;
+      const markerColor = contrastRatio(0x050505, barrierColor) > contrastRatio(0xffffff, barrierColor) ? 0x050505 : 0xffffff;
+      wallXMaterials[index].color.setHex(markerColor);
+      wallXMaterials[index].needsUpdate = true;
+    });
   }
-  const ballGlowColor = 0x8eeaff;
+  let ballGlowColor = 0x8eeaff;
   const player = new THREE.Group();
   const playerRoll = new THREE.Group();
   const playerFallback = new THREE.Mesh(
-    new THREE.SphereGeometry(0.62, 48, 24),
+    new THREE.CircleGeometry(0.62, 64),
     new THREE.MeshStandardMaterial({
       color: ballGlowColor,
       emissive: 0x2ddcff,
       emissiveIntensity: 0.34,
       roughness: 0.26,
-      metalness: 0.2
+      metalness: 0.2,
+      side: THREE.DoubleSide
     })
   );
   player.add(playerRoll);
@@ -282,6 +317,8 @@
   let laneInputCooldown = 0;
   const laneInputDelay = 0.075;
   let last = performance.now();
+  let queuedStartMode = new URLSearchParams(window.location.search).get('octaStart');
+  if (queuedStartMode !== 'easy' && queuedStartMode !== 'hard') queuedStartMode = null;
 
   const musicTracks = ['OctoRun.mp3', 'OctoRun-2.mp3', 'OctoRun-3.mp3', 'OctoRun-4.mp3'].map((file) => {
     const audio = new Audio('assets/octarun_music/' + file);
@@ -334,7 +371,7 @@
     const config = currentConfig();
     const progress = Math.min(1, levelProgress() / config.duration);
     const baseSpeed = config.speed + progress * 1.15;
-    return hardMode ? baseSpeed * 1.5 : baseSpeed;
+    return hardMode ? baseSpeed * 1.65 : baseSpeed;
   }
 
   function clearInputBuffers() {
@@ -345,6 +382,14 @@
 
   function controlsMarkup() {
     return '<p>Level 1 runs 30 seconds. Each unlocked level lasts longer and asks for quicker reads.</p><div class="octarun-controls-list"><span>Arrow Keys or A/D = Move</span><span>W or Spacebar = Jump</span><span>Enter = Restart / Continue</span><span>Esc = Pause</span><span>M = Toggle Music</span><span>F = Toggle FX</span></div>';
+  }
+
+  function startModeButtonsMarkup() {
+    return '';
+  }
+
+  function readyOverlayCopy() {
+    return controlsMarkup() + startModeButtonsMarkup();
   }
 
   function canReceivePlayInput() {
@@ -399,6 +444,69 @@
       return;
     }
     if (state === 'ready' || state === 'paused') start();
+  }
+
+  function startWithMode(mode) {
+    primeSpaceVideo();
+    if (state === 'ready') {
+      hardMode = mode === 'hard';
+      enterMobileFullscreen();
+      beginLevel(levelIndex);
+      return;
+    }
+    if (state !== 'playing' && state !== 'paused') hardMode = mode === 'hard';
+    start();
+  }
+  window.octaStartMode = startWithMode;
+
+  function startFromModeControl(event) {
+    const directModeButton = event.currentTarget?.matches?.('[data-octa-overlay-start-mode]') ? event.currentTarget : null;
+    const targetElement = event.target?.nodeType === 1 ? event.target : event.target?.parentElement;
+    const targetModeButton = targetElement?.closest?.('[data-octa-overlay-start-mode]');
+    const pointModeButton = modeButtonFromPoint(event);
+    const startModeButton = directModeButton || targetModeButton || pointModeButton;
+    if (!startModeButton) return;
+    event.preventDefault();
+    event.stopPropagation();
+    hardMode = startModeButton.dataset.octaOverlayStartMode === 'hard';
+    handlePrimaryAction();
+  }
+
+  function modeButtonFromPoint(event) {
+    if (!Number.isFinite(event.clientX) || !Number.isFinite(event.clientY)) return null;
+    for (const button of document.querySelectorAll('[data-octa-overlay-start-mode]')) {
+      if (button.closest('[hidden]')) continue;
+      const rect = button.getBoundingClientRect();
+      const insideX = event.clientX >= rect.left && event.clientX <= rect.right;
+      const insideY = event.clientY >= rect.top && event.clientY <= rect.bottom;
+      if (insideX && insideY) return button;
+    }
+    return null;
+  }
+
+  function startModeUrl(mode) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('octaStart', mode);
+    return url.pathname + url.search + url.hash;
+  }
+
+  function clearQueuedStartModeUrl() {
+    const url = new URL(window.location.href);
+    if (!url.searchParams.has('octaStart')) return;
+    url.searchParams.delete('octaStart');
+    try {
+      history.replaceState(null, '', url.pathname + url.search + url.hash);
+    } catch (_) {}
+  }
+
+  function handleStartHash() {
+    if (window.location.hash === '#octarun-start-easy') startWithMode('easy');
+    if (window.location.hash === '#octarun-start-hard') startWithMode('hard');
+    if (window.location.hash === '#octarun-start-easy' || window.location.hash === '#octarun-start-hard') {
+      try {
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+      } catch (_) {}
+    }
   }
 
   function isEditableTarget(target) {
@@ -473,18 +581,19 @@
         group.add(panel);
       }
       if (cell === 2) {
-        const wall = new THREE.Mesh(wallGeometries[lane], wallMaterial);
+        const band = (lane + levelIndex) % materials.length;
+        const wall = new THREE.Mesh(wallGeometries[lane], wallMaterials[band]);
         wall.position.z = z;
         group.add(wall);
         wallXGeometries[lane].forEach((geom) => {
-          const mark = new THREE.Mesh(geom, wallXMaterial);
+          const mark = new THREE.Mesh(geom, wallXMaterials[band]);
           mark.position.z = z;
           group.add(mark);
         });
       }
     });
     world.add(group);
-    return { group, states, z, checked: false };
+    return { group, states, z, passed: false };
   }
 
   function ensureAudio() {
@@ -583,23 +692,45 @@
     state = 'ready';
     clearInputBuffers();
     updateHud();
-    setOverlay('Ready', 'Find the safe lane.', controlsMarkup(), true, 'Start Level ' + currentConfig().level);
+    setOverlay('Ready', 'Find the safe lane.', readyOverlayCopy(), true, null);
     syncStartButton();
     syncMusic();
+    if (queuedStartMode) {
+      const mode = queuedStartMode;
+      queuedStartMode = null;
+      clearQueuedStartModeUrl();
+      hardMode = mode === 'hard';
+      handlePrimaryAction();
+    }
   }
 
   function setOverlay(kicker, title, copy, visible, buttonText) {
     if (!hud.overlay) return;
     hud.overlay.classList.toggle('is-visible', visible);
-    hud.overlay.innerHTML = '<p class="eyebrow">' + kicker + '</p><h2>' + title + '</h2><div class="octarun-overlay-copy">' + copy + '</div><button type="button" data-octa-overlay-start>' + (buttonText || (state === 'dead' ? 'Restart Run' : 'Start Run')) + '</button>';
+    const buttonMarkup = buttonText === null ? '' : '<button type="button" data-octa-overlay-start>' + (buttonText || (state === 'dead' ? 'Restart Run' : 'Start Run')) + '</button>';
+    hud.overlay.innerHTML = '<p class="eyebrow">' + kicker + '</p><h2>' + title + '</h2><div class="octarun-overlay-copy">' + copy + '</div>' + buttonMarkup;
     const overlayButton = hud.overlay.querySelector('[data-octa-overlay-start]');
     if (overlayButton) overlayButton.addEventListener('click', handlePrimaryAction);
+    hud.overlay.querySelectorAll('[data-octa-overlay-start-mode]').forEach((button) => {
+      button.addEventListener('pointerdown', startFromModeControl);
+      button.addEventListener('pointerup', startFromModeControl);
+      button.addEventListener('mousedown', startFromModeControl);
+      button.addEventListener('mouseup', startFromModeControl);
+      button.addEventListener('touchend', startFromModeControl);
+      button.addEventListener('click', startFromModeControl);
+    });
   }
 
   function syncStartButton() {
-    if (!hud.start) return;
-    hud.start.textContent = state === 'playing' ? 'Pause' : 'Start';
-    hud.start.setAttribute('aria-pressed', String(state === 'playing'));
+    if (hud.startModes) hud.startModes.hidden = state !== 'ready';
+    document.querySelectorAll('[data-octa-overlay-start-mode]').forEach((button) => {
+      const mode = button.dataset.octaOverlayStartMode === 'hard' ? 'Hard' : 'Easy';
+      button.textContent = 'Level ' + currentConfig().level + ': ' + mode;
+      if ('disabled' in button) button.disabled = state === 'playing' || state === 'paused';
+      button.setAttribute('aria-disabled', String(state === 'playing' || state === 'paused'));
+      button.setAttribute('aria-pressed', String((mode === 'Hard') === hardMode));
+      if (button.tagName === 'A') button.setAttribute('href', startModeUrl(button.dataset.octaOverlayStartMode));
+    });
   }
 
   function beginLevel(nextIndex) {
@@ -711,11 +842,7 @@
       hud.countdown.classList.toggle('is-urgent', secondsLeft <= 10);
     }
     syncLevelSelect();
-    if (hud.hardMode) {
-      hud.hardMode.textContent = hardMode ? 'Hard' : 'Normal';
-      hud.hardMode.setAttribute('aria-pressed', String(hardMode));
-      hud.hardMode.classList.toggle('is-active', hardMode);
-    }
+    syncStartButton();
     if (hud.pathPalette) {
       const activePalette = activePathPalette();
       hud.pathPalette.textContent = activePalette.name;
@@ -740,7 +867,7 @@
     applyLevelPalette();
     seedChunks();
     updateHud();
-    setOverlay('Ready', 'Find the safe lane.', controlsMarkup(), true, 'Start Level ' + currentConfig().level);
+    setOverlay('Ready', 'Find the safe lane.', readyOverlayCopy(), true, null);
     syncStartButton();
   }
 
@@ -795,10 +922,18 @@
       chunks.forEach((chunk) => {
         chunk.z += speed * dt;
         chunk.group.children.forEach((mesh) => { mesh.position.z += speed * dt; });
-        if (!chunk.checked && Math.abs(chunk.z) < 0.62) {
-          chunk.checked = true;
-          const cell = chunk.states[laneIndex];
-          if ((cell === 1 && jump < 0.18) || (cell === 2 && jump < 0.48)) die();
+        const cell = chunk.states[laneIndex];
+        if (!chunk.passed && cell !== 0) {
+          const offsetFromPlayer = chunk.z - playerZ;
+          const collisionDepth = cell === 1
+            ? (offsetFromPlayer < 0 ? gapFrontCollisionDepth : gapBackCollisionDepth)
+            : wallCollisionDepth;
+          const clearance = cell === 1 ? gapClearance : wallClearance;
+          if (Math.abs(offsetFromPlayer) <= collisionDepth && jump < clearance) die();
+        }
+        const passDepth = cell === 1 ? gapBackCollisionDepth : wallCollisionDepth;
+        if (!chunk.passed && chunk.z > playerZ + passDepth) {
+          chunk.passed = true;
         }
       });
       const first = chunks[0];
@@ -813,7 +948,7 @@
     }
     visualAngle += (targetAngle - visualAngle) * Math.min(1, dt * 12);
     world.rotation.z = -visualAngle;
-    player.position.set(0, -radius + 0.88 + jump, 0.18);
+    player.position.set(0, -radius + 0.88 + jump, playerZ);
     player.rotation.set(0, 0, 0);
     playerRoll.position.set(0, 0, 0);
     playerGlow.position.copy(player.position);
@@ -842,7 +977,11 @@
 
   window.addEventListener('resize', resize, { passive: true });
   document.addEventListener('fullscreenchange', () => {
-    if (hud.fullscreen) hud.fullscreen.textContent = document.fullscreenElement ? 'Exit Fullscreen' : 'Fullscreen';
+    if (hud.fullscreen) {
+      hud.fullscreen.classList.toggle('is-active', Boolean(document.fullscreenElement));
+      hud.fullscreen.setAttribute('aria-label', document.fullscreenElement ? 'Exit fullscreen' : 'Enter fullscreen');
+      hud.fullscreen.setAttribute('aria-pressed', String(Boolean(document.fullscreenElement)));
+    }
     window.setTimeout(resize, 80);
   });
   if ('ResizeObserver' in window && hud.stage) {
@@ -944,71 +1083,48 @@
     event.preventDefault();
     queueJump();
   });
-  hud.start?.addEventListener('click', () => {
-    primeSpaceVideo();
-    if (state === 'playing') pause();
-    else start();
-  });
   hud.restart?.addEventListener('click', () => { reset(); beginLevel(levelIndex); });
   hud.levelPick?.addEventListener('click', cycleSelectedLevel);
-  hud.hardMode?.addEventListener('click', () => {
-    hardMode = !hardMode;
-    updateHud();
-    playTone(hardMode ? 720 : 430, 0.065, 'square', 0.018);
-  });
   hud.fullscreen?.addEventListener('click', toggleFullscreen);
+  hud.ballColor?.addEventListener('click', () => {
+    hud.ballColorInput?.click();
+  });
+  hud.ballColorInput?.addEventListener('input', (event) => {
+    setBallColor(event.target.value);
+  });
   hud.overlayStart?.addEventListener('click', () => { primeSpaceVideo(); start(); });
+  hud.startModes?.addEventListener('pointerdown', startFromModeControl);
+  hud.startModes?.addEventListener('pointerup', startFromModeControl);
+  hud.startModes?.addEventListener('mousedown', startFromModeControl);
+  hud.startModes?.addEventListener('click', startFromModeControl);
+  hud.startModes?.addEventListener('focusin', startFromModeControl);
+  document.addEventListener('pointerdown', startFromModeControl, { capture: true });
+  document.addEventListener('pointerup', startFromModeControl, { capture: true });
+  document.addEventListener('mousedown', startFromModeControl, { capture: true });
+  document.addEventListener('click', startFromModeControl, { capture: true });
+  document.querySelectorAll('[data-octa-overlay-start-mode]').forEach((button) => {
+    button.addEventListener('pointerdown', startFromModeControl);
+    button.addEventListener('pointerup', startFromModeControl);
+    button.addEventListener('mousedown', startFromModeControl);
+    button.addEventListener('mouseup', startFromModeControl);
+    button.addEventListener('touchend', startFromModeControl);
+    button.addEventListener('click', startFromModeControl);
+    button.addEventListener('focus', startFromModeControl);
+  });
+  window.addEventListener('hashchange', handleStartHash);
   hud.music?.addEventListener('click', toggleMusic);
   hud.fx?.addEventListener('click', toggleFX);
 
-  let playerModel = null;
-
-  function normalizePlayerModel(root) {
-    root.position.set(0, 0, 0);
-    root.updateMatrixWorld(true);
-    const box = new THREE.Box3().setFromObject(root);
-    const size = box.getSize(new THREE.Vector3());
-    const maxSide = Math.max(size.x, size.y, size.z) || 1;
-    root.scale.setScalar(1.35 / maxSide);
-    root.updateMatrixWorld(true);
-    const centeredBox = new THREE.Box3().setFromObject(root);
-    const center = centeredBox.getCenter(new THREE.Vector3());
-    root.position.sub(center);
-    root.updateMatrixWorld(true);
-    root.traverse((child) => {
-      if (!child.isMesh) return;
-      child.castShadow = false;
-      child.receiveShadow = false;
-      child.renderOrder = 4;
-      const materials = Array.isArray(child.material) ? child.material : [child.material];
-      materials.filter(Boolean).forEach((material) => {
-        material.transparent = material.transparent || false;
-        material.depthTest = true;
-        material.depthWrite = true;
-        material.needsUpdate = true;
-      });
-    });
+  function normalizeHexColor(value) {
+    const hex = String(value || '').trim();
+    return /^#[0-9a-f]{6}$/i.test(hex) ? hex.toLowerCase() : null;
   }
 
-  function loadPlayerModel() {
-    const loaderUrl = 'https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
-    import(loaderUrl)
-      .then((module) => {
-        const Loader = module.GLTFLoader;
-        if (!Loader) throw new Error('GLTFLoader unavailable');
-        const loader = new Loader();
-        loader.load('assets/octarun_ball.glb', (gltf) => {
-          playerModel = gltf.scene;
-          normalizePlayerModel(playerModel);
-          playerFallback.visible = false;
-          playerRoll.add(playerModel);
-        }, undefined, () => {
-          playerFallback.visible = true;
-        });
-      })
-      .catch(() => {
-        playerFallback.visible = true;
-      });
+  function setBallColor(value) {
+    const hex = normalizeHexColor(value);
+    if (!hex) return;
+    ballGlowColor = Number.parseInt(hex.slice(1), 16);
+    applyBallColor();
   }
 
   function applyBallColor() {
@@ -1016,9 +1132,12 @@
     trail.material.color.setHex(ballGlowColor);
     if (playerFallback.material) {
       playerFallback.material.color.setHex(ballGlowColor);
-      playerFallback.material.emissive.setHex(0x2ddcff);
+      playerFallback.material.emissive.setHex(ballGlowColor);
       playerFallback.material.needsUpdate = true;
     }
+    const hex = '#' + ballGlowColor.toString(16).padStart(6, '0');
+    if (hud.ballColorInput && hud.ballColorInput.value.toLowerCase() !== hex) hud.ballColorInput.value = hex;
+    if (hud.ballSwatch) hud.ballSwatch.style.backgroundColor = hex;
   }
 
   function stepBallColor(direction = 1) {
@@ -1033,7 +1152,6 @@
     updateHud();
     playTone(pathPaletteMode === 'neon' ? 620 : 420, 0.065, 'square', 0.018);
   });
-  loadPlayerModel();
   applyBallColor();
   applyLevelPalette();
   resize();

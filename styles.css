@@ -6341,6 +6341,7 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
 }
 
 .octarun-shell {
+  position: relative;
   padding: clamp(0.75rem, 1.8vw, 1.2rem);
   border: 1px solid rgba(48, 217, 255, 0.55);
   border-radius: 12px;
@@ -6349,16 +6350,20 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
 }
 
 .octarun-hud {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   gap: 0.65rem;
+  min-height: 42px;
+  padding-right: 100px;
   margin-bottom: 0.85rem;
 }
 
-.octarun-hud span,
-.octarun-hud button {
+.octarun-hud > span,
+.octarun-hud > button,
+.octarun-hud-actions > button {
   min-height: 42px;
   padding: 0.65rem 0.9rem;
   border: 1px solid rgba(79, 202, 255, 0.48);
@@ -6371,6 +6376,138 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
 
 .octarun-hud button {
   cursor: pointer;
+}
+
+.octarun-start-mode-group {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(9rem, 22vh, 13rem);
+  z-index: 4;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  width: min(460px, calc(100% - 2rem));
+  margin-top: 0.3rem;
+  pointer-events: auto;
+  transform: translateX(-50%);
+}
+
+.octarun-start-mode-group[hidden] {
+  display: none;
+}
+
+.octarun-shell-start-modes {
+  z-index: 8;
+}
+
+.octarun-hud > button.octarun-start-mode,
+.octarun-shell button.octarun-start-mode,
+.octarun-shell a.octarun-start-mode,
+.octarun-overlay button.octarun-start-mode,
+.octarun-overlay a.octarun-start-mode {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 180px;
+  min-height: 48px;
+  border: 1px solid rgba(48, 217, 255, 0.7);
+  border-radius: 8px;
+  padding: 0.65rem 1rem;
+  font: inherit;
+  font-weight: 950;
+  text-decoration: none;
+  pointer-events: auto;
+  border-width: 2px;
+  color: #ffffff;
+  background: linear-gradient(180deg, rgba(5, 16, 30, 0.98), rgba(0, 4, 12, 0.99));
+  text-shadow: 0 1px 8px rgba(0,0,0,0.85);
+}
+
+.octarun-hud > button.octarun-start-mode-easy,
+.octarun-shell button.octarun-start-mode-easy,
+.octarun-shell a.octarun-start-mode-easy,
+.octarun-overlay button.octarun-start-mode-easy,
+.octarun-overlay a.octarun-start-mode-easy {
+  border-color: rgba(82, 255, 152, 0.88);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.18),
+    0 0 16px rgba(82, 255, 152, 0.22),
+    0 7px 14px rgba(0,0,0,0.28);
+}
+
+.octarun-hud > button.octarun-start-mode-hard,
+.octarun-shell button.octarun-start-mode-hard,
+.octarun-shell a.octarun-start-mode-hard,
+.octarun-overlay button.octarun-start-mode-hard,
+.octarun-overlay a.octarun-start-mode-hard {
+  border-color: rgba(255, 69, 92, 0.9);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.18),
+    0 0 16px rgba(255, 69, 92, 0.24),
+    0 7px 14px rgba(0,0,0,0.28);
+}
+
+.octarun-hud > button.octarun-start-mode[aria-pressed="true"],
+.octarun-shell button.octarun-start-mode[aria-pressed="true"],
+.octarun-shell a.octarun-start-mode[aria-pressed="true"],
+.octarun-overlay button.octarun-start-mode[aria-pressed="true"],
+.octarun-overlay a.octarun-start-mode[aria-pressed="true"] {
+  background: linear-gradient(180deg, rgba(22, 64, 94, 0.96), rgba(6, 20, 40, 0.98));
+}
+
+.octarun-hud-actions {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-left: 0;
+}
+
+.octarun-hud-actions > button.octarun-ball-color-button,
+.octarun-hud-actions > button.octarun-fullscreen-button {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  min-height: 42px;
+  padding: 0;
+}
+
+.octarun-hud-actions > button.octarun-ball-color-button {
+  border-radius: 50%;
+}
+
+.octarun-hud-actions > button.octarun-fullscreen-button {
+  border-radius: 8px;
+}
+
+.octarun-ball-swatch {
+  width: 26px;
+  height: 26px;
+  background: #8eeaff;
+  filter: drop-shadow(0 0 10px rgba(48, 217, 255, 0.62));
+  -webkit-mask: url("assets/ball_icon.png") center / contain no-repeat;
+  mask: url("assets/ball_icon.png") center / contain no-repeat;
+}
+
+.octarun-action-icon {
+  display: block;
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  filter: invert(1) drop-shadow(0 0 6px rgba(48, 217, 255, 0.56));
+}
+
+.octarun-color-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .octarun-hud button:hover,
@@ -6397,17 +6534,29 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
 .octarun-countdown {
   position: absolute;
   z-index: 5;
-  top: clamp(0.7rem, 1.5vw, 1rem);
-  left: clamp(0.8rem, 1.7vw, 1.15rem);
+  top: 16px;
+  left: 16px;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
   color: #e8f7ff;
-  background: transparent;
-  border: 0;
-  box-shadow: none;
+  background:
+    radial-gradient(circle at 36% 24%, rgba(255,255,255,0.34), transparent 24%),
+    radial-gradient(circle at 50% 60%, rgba(48, 217, 255, 0.34), transparent 58%),
+    linear-gradient(145deg, rgba(7, 20, 42, 0.98), rgba(2, 7, 17, 0.98));
+  border: 1px solid rgba(72, 207, 255, 0.68);
+  border-radius: 50%;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.22),
+    0 0 18px rgba(48,217,255,0.35),
+    0 8px 16px rgba(0,0,0,0.35);
   padding: 0;
-  font-size: clamp(0.9rem, 1.4vw, 1.05rem);
-  font-weight: 900;
+  font-size: 0.96rem;
+  font-weight: 950;
   letter-spacing: 0;
-  text-shadow: 0 0 12px rgba(48, 217, 255, 0.7), 0 2px 8px rgba(0,0,0,0.85);
+  line-height: 1;
+  text-shadow: 0 0 12px rgba(48, 217, 255, 0.7);
   pointer-events: none;
 }
 
@@ -6629,6 +6778,14 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
     right: 10px;
   }
 
+  .octarun-countdown {
+    top: 10px;
+    left: 10px;
+    width: 44px;
+    height: 44px;
+    font-size: 0.86rem;
+  }
+
   .octarun-audio-button {
     width: 44px;
     height: 44px;
@@ -6744,7 +6901,7 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
 .octarun-overlay {
   background: linear-gradient(180deg, rgba(3, 12, 28, 0.30), rgba(3, 12, 28, 0.48)) !important;
   align-content: center;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 .octarun-overlay > * {
@@ -6949,11 +7106,6 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
   height: 100%;
   min-height: 0;
 }
-
-.octarun-hud button[data-octa-fullscreen] {
-  min-width: 126px;
-}
-
 
 .octarun-stage.has-neon canvas {
   filter: drop-shadow(0 0 10px rgba(48, 217, 255, 0.18));
@@ -7465,19 +7617,6 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
 
 
 
-/* OctaRun barrier and hard-mode polish */
-.octarun-hud button[data-octa-hard].is-active,
-.octarun-hud button[data-octa-hard][aria-pressed="true"] {
-  border-color: rgba(255, 210, 60, 0.95);
-  color: #120b00;
-  background: linear-gradient(180deg, #fff3a0, #ffb32f 48%, #c76b00 100%);
-  box-shadow:
-    0 0 22px rgba(255, 190, 45, 0.36),
-    inset 0 1px 0 rgba(255,255,255,0.7),
-    inset 0 -8px 18px rgba(75, 36, 0, 0.18);
-}
-
-
 /* OctaRun v3 control and browser fallback polish */
 .octarun-overlay-copy {
   display: grid;
@@ -7541,6 +7680,15 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
 
 .octarun-countdown.is-urgent {
   color: #ff3b3b;
+  border-color: rgba(255, 58, 80, 0.78);
+  background:
+    radial-gradient(circle at 36% 24%, rgba(255,255,255,0.3), transparent 24%),
+    radial-gradient(circle at 50% 60%, rgba(255, 44, 68, 0.38), transparent 58%),
+    linear-gradient(145deg, rgba(58, 7, 14, 0.98), rgba(12, 2, 5, 0.98));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.18),
+    0 0 18px rgba(255,58,80,0.38),
+    0 8px 16px rgba(0,0,0,0.35);
   text-shadow: 0 0 12px rgba(255, 59, 59, 0.72);
 }
 

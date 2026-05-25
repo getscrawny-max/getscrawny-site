@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>OctaRun | Get Scrawny Arcade</title>
     <meta name="description" content="A neon eight-lane reflex tunnel game from Get Scrawny Arcade.">
-    <link rel="preload" href="styles.css?v=20260512c" as="style">
-    <link rel="stylesheet" href="styles.css?v=20260512c">
+    <link rel="preload" href="styles.css?v=octarun-start-click-fix-5" as="style">
+    <link rel="stylesheet" href="styles.css?v=octarun-start-click-fix-5">
   </head>
   <body class="octarun-body">
     <header class="site-header" data-header>
@@ -52,11 +52,17 @@
         <div class="octarun-hud">
           <span>Score <strong data-octa-score>0</strong></span>
           <button type="button" data-octa-level-pick>Level 1</button>
-          <button type="button" data-octa-hard aria-pressed="false">Normal</button>
           <button type="button" data-octa-path-palette aria-pressed="false">Neon</button>
-          <button type="button" data-octa-start>Start</button>
           <button type="button" data-octa-restart>Restart</button>
-          <button type="button" data-octa-fullscreen>Fullscreen</button>
+          <div class="octarun-hud-actions">
+            <button type="button" class="octarun-ball-color-button" data-octa-ball-color aria-label="Choose ball color">
+              <span class="octarun-ball-swatch" data-octa-ball-swatch aria-hidden="true"></span>
+            </button>
+            <input class="octarun-color-input" type="color" value="#8eeaff" data-octa-ball-color-input aria-label="Choose ball color hex code">
+            <button type="button" class="octarun-fullscreen-button" data-octa-fullscreen aria-label="Toggle fullscreen">
+              <img class="octarun-action-icon" src="assets/fullscreen.png" alt="" aria-hidden="true">
+            </button>
+          </div>
         </div>
         <div class="octarun-stage has-neon" data-octa-stage>
           <div class="octarun-countdown" data-octa-countdown>30</div>
@@ -89,7 +95,7 @@
       }
     </script>
     <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
-    <script src="assets/neon-octarun/game.js?v=octarun-glb-ball-2"></script>
+    <script src="assets/neon-octarun/game.js?v=octarun-start-click-fix-7"></script>
     <script src="script.js?v=game-mobile-polish-1"></script>
   </body>
 </html>
