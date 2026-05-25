@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>OctaRun | Get Scrawny Arcade</title>
     <meta name="description" content="A neon eight-lane reflex tunnel game from Get Scrawny Arcade.">
-    <link rel="preload" href="styles.css?v=octarun-start-click-fix-10" as="style">
-    <link rel="stylesheet" href="styles.css?v=octarun-start-click-fix-10">
+    <link rel="preload" href="styles.css?v=octarun-hud-start-1" as="style">
+    <link rel="stylesheet" href="styles.css?v=octarun-hud-start-1">
   </head>
   <body class="octarun-body">
     <header class="site-header" data-header>
@@ -52,8 +52,10 @@
         <div class="octarun-hud">
           <span>Score <strong data-octa-score>0</strong></span>
           <span>Level <strong data-octa-level>1</strong></span>
-          <button type="button" data-octa-path-palette aria-pressed="false">Neon</button>
+          <button type="button" data-octa-start>Start</button>
+          <button type="button" class="octarun-mode-toggle" data-octa-mode-toggle aria-pressed="false">Normal</button>
           <button type="button" data-octa-restart>Restart</button>
+          <button type="button" data-octa-path-palette aria-pressed="false">Neon</button>
           <div class="octarun-hud-actions">
             <button type="button" class="octarun-ball-color-button" data-octa-ball-color aria-label="Choose ball color">
               <span class="octarun-ball-swatch" data-octa-ball-swatch aria-hidden="true"></span>
@@ -79,10 +81,6 @@
             <button type="button" data-octa-overlay-start>Start Run</button>
           </div>
         </div>
-        <div class="octarun-start-mode-group octarun-shell-start-modes" data-octa-start-modes aria-label="Choose OctaRun starting mode" hidden>
-          <button type="button" class="octarun-start-mode octarun-start-mode-easy" data-octa-overlay-start-mode="easy">Level 1: Easy</button>
-          <button type="button" class="octarun-start-mode octarun-start-mode-hard" data-octa-overlay-start-mode="hard">Level 1: Hard</button>
-        </div>
       </section>
     </main>
 
@@ -92,7 +90,7 @@
     </footer>
 
     <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
-    <script src="assets/neon-octarun/game.js?v=octarun-start-click-fix-18"></script>
+    <script src="assets/neon-octarun/game.js?v=octarun-hud-start-1"></script>
     <script src="script.js?v=game-mobile-polish-1"></script>
   </body>
 </html>

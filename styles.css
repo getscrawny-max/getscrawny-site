@@ -6357,7 +6357,6 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
   justify-content: center;
   gap: 0.65rem;
   min-height: 42px;
-  padding-right: 100px;
   margin-bottom: 0.85rem;
 }
 
@@ -6376,6 +6375,36 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
 
 .octarun-hud button {
   cursor: pointer;
+}
+
+.octarun-hud button:disabled {
+  cursor: default;
+  opacity: 0.62;
+}
+
+.octarun-hud > button.octarun-mode-toggle {
+  min-width: 78px;
+  border-width: 2px;
+  color: #ffffff;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.82);
+}
+
+.octarun-hud > button.octarun-mode-toggle.is-normal {
+  border-color: rgba(82, 255, 152, 0.9);
+  background: linear-gradient(180deg, rgba(14, 74, 39, 0.96), rgba(3, 22, 12, 0.98));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.18),
+    0 0 16px rgba(82, 255, 152, 0.26),
+    0 7px 14px rgba(0,0,0,0.28);
+}
+
+.octarun-hud > button.octarun-mode-toggle.is-hard {
+  border-color: rgba(255, 69, 92, 0.92);
+  background: linear-gradient(180deg, rgba(118, 22, 34, 0.96), rgba(28, 4, 8, 0.98));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.18),
+    0 0 16px rgba(255, 69, 92, 0.28),
+    0 7px 14px rgba(0,0,0,0.28);
 }
 
 .octarun-start-mode-group {
@@ -6457,9 +6486,6 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
 }
 
 .octarun-hud-actions {
-  position: absolute;
-  top: 0;
-  right: 0;
   display: flex;
   align-items: center;
   gap: 0.55rem;

@@ -6,6 +6,8 @@
     score: document.querySelector('[data-octa-score]'),
     level: document.querySelector('[data-octa-level]'),
     countdown: document.querySelector('[data-octa-countdown]'),
+    start: document.querySelector('[data-octa-start]'),
+    modeToggle: document.querySelector('[data-octa-mode-toggle]'),
     restart: document.querySelector('[data-octa-restart]'),
     fullscreen: document.querySelector('[data-octa-fullscreen]'),
     ballColor: document.querySelector('[data-octa-ball-color]'),
@@ -18,7 +20,6 @@
     pathPalette: document.querySelector('[data-octa-path-palette]'),
     music: document.querySelector('[data-octa-music]'),
     fx: document.querySelector('[data-octa-fx]'),
-    startModes: document.querySelector('[data-octa-start-modes]'),
     overlay: document.querySelector('[data-octa-overlay]'),
     overlayStart: document.querySelector('[data-octa-overlay-start]')
   };
@@ -317,8 +318,6 @@
   let laneInputCooldown = 0;
   const laneInputDelay = 0.075;
   let last = performance.now();
-  let queuedStartMode = new URLSearchParams(window.location.search).get('octaStart');
-  if (queuedStartMode !== 'easy' && queuedStartMode !== 'hard') queuedStartMode = null;
 
   const musicTracks = ['OctoRun.mp3', 'OctoRun-2.mp3', 'OctoRun-3.mp3', 'OctoRun-4.mp3'].map((file) => {
     const audio = new Audio('assets/octarun_music/' + file);
@@ -458,46 +457,6 @@
     start();
   }
   window.octaStartMode = startWithMode;
-
-  function startFromModeControl(event) {
-    const directModeButton = event.currentTarget?.matches?.('[data-octa-overlay-start-mode]') ? event.currentTarget : null;
-    const targetElement = event.target?.nodeType === 1 ? event.target : event.target?.parentElement;
-    const targetModeButton = targetElement?.closest?.('[data-octa-overlay-start-mode]');
-    const pointModeButton = modeButtonFromPoint(event);
-    const startModeButton = directModeButton || targetModeButton || pointModeButton;
-    if (!startModeButton) return;
-    event.preventDefault();
-    event.stopPropagation();
-    hardMode = startModeButton.dataset.octaOverlayStartMode === 'hard';
-    handlePrimaryAction();
-  }
-
-  function modeButtonFromPoint(event) {
-    if (!Number.isFinite(event.clientX) || !Number.isFinite(event.clientY)) return null;
-    for (const button of document.querySelectorAll('[data-octa-overlay-start-mode]')) {
-      if (button.closest('[hidden]')) continue;
-      const rect = button.getBoundingClientRect();
-      const insideX = event.clientX >= rect.left && event.clientX <= rect.right;
-      const insideY = event.clientY >= rect.top && event.clientY <= rect.bottom;
-      if (insideX && insideY) return button;
-    }
-    return null;
-  }
-
-  function startModeUrl(mode) {
-    const url = new URL(window.location.href);
-    url.searchParams.set('octaStart', mode);
-    return url.pathname + url.search + url.hash;
-  }
-
-  function clearQueuedStartModeUrl() {
-    const url = new URL(window.location.href);
-    if (!url.searchParams.has('octaStart')) return;
-    url.searchParams.delete('octaStart');
-    try {
-      history.replaceState(null, '', url.pathname + url.search + url.hash);
-    } catch (_) {}
-  }
 
   function handleStartHash() {
     if (window.location.hash === '#octarun-start-easy') startWithMode('easy');
@@ -695,13 +654,6 @@
     setOverlay('Ready', 'Find the safe lane.', readyOverlayCopy(), true, null);
     syncStartButton();
     syncMusic();
-    if (queuedStartMode) {
-      const mode = queuedStartMode;
-      queuedStartMode = null;
-      clearQueuedStartModeUrl();
-      hardMode = mode === 'hard';
-      handlePrimaryAction();
-    }
   }
 
   function setOverlay(kicker, title, copy, visible, buttonText) {
@@ -711,26 +663,24 @@
     hud.overlay.innerHTML = '<p class="eyebrow">' + kicker + '</p><h2>' + title + '</h2><div class="octarun-overlay-copy">' + copy + '</div>' + buttonMarkup;
     const overlayButton = hud.overlay.querySelector('[data-octa-overlay-start]');
     if (overlayButton) overlayButton.addEventListener('click', handlePrimaryAction);
-    hud.overlay.querySelectorAll('[data-octa-overlay-start-mode]').forEach((button) => {
-      button.addEventListener('pointerdown', startFromModeControl);
-      button.addEventListener('pointerup', startFromModeControl);
-      button.addEventListener('mousedown', startFromModeControl);
-      button.addEventListener('mouseup', startFromModeControl);
-      button.addEventListener('touchend', startFromModeControl);
-      button.addEventListener('click', startFromModeControl);
-    });
   }
 
   function syncStartButton() {
-    if (hud.startModes) hud.startModes.hidden = state !== 'ready';
-    document.querySelectorAll('[data-octa-overlay-start-mode]').forEach((button) => {
-      const mode = button.dataset.octaOverlayStartMode === 'hard' ? 'Hard' : 'Easy';
-      button.textContent = 'Level ' + currentConfig().level + ': ' + mode;
-      if ('disabled' in button) button.disabled = state === 'playing' || state === 'paused';
-      button.setAttribute('aria-disabled', String(state === 'playing' || state === 'paused'));
-      button.setAttribute('aria-pressed', String((mode === 'Hard') === hardMode));
-      if (button.tagName === 'A') button.setAttribute('href', startModeUrl(button.dataset.octaOverlayStartMode));
-    });
+    if (hud.start) {
+      const label = state === 'paused' ? 'Resume' : state === 'dead' ? 'Restart' : state === 'level-complete' ? 'Continue' : 'Start';
+      hud.start.textContent = label;
+      hud.start.disabled = state === 'playing';
+      hud.start.setAttribute('aria-disabled', String(state === 'playing'));
+    }
+    if (hud.modeToggle) {
+      hud.modeToggle.textContent = hardMode ? 'Hard' : 'Normal';
+      hud.modeToggle.classList.toggle('is-hard', hardMode);
+      hud.modeToggle.classList.toggle('is-normal', !hardMode);
+      hud.modeToggle.setAttribute('aria-pressed', String(hardMode));
+      const locked = state === 'playing' || state === 'paused';
+      hud.modeToggle.disabled = locked;
+      hud.modeToggle.setAttribute('aria-disabled', String(locked));
+    }
   }
 
   function beginLevel(nextIndex) {
@@ -1083,6 +1033,13 @@
     event.preventDefault();
     queueJump();
   });
+  hud.start?.addEventListener('click', handlePrimaryAction);
+  hud.modeToggle?.addEventListener('click', () => {
+    if (state === 'playing' || state === 'paused') return;
+    hardMode = !hardMode;
+    updateHud();
+    playTone(hardMode ? 220 : 520, 0.06, 'square', 0.018);
+  });
   hud.restart?.addEventListener('click', () => { reset(); beginLevel(levelIndex); });
   hud.levelPick?.addEventListener('click', cycleSelectedLevel);
   hud.fullscreen?.addEventListener('click', toggleFullscreen);
@@ -1093,24 +1050,6 @@
     setBallColor(event.target.value);
   });
   hud.overlayStart?.addEventListener('click', () => { primeSpaceVideo(); start(); });
-  hud.startModes?.addEventListener('pointerdown', startFromModeControl);
-  hud.startModes?.addEventListener('pointerup', startFromModeControl);
-  hud.startModes?.addEventListener('mousedown', startFromModeControl);
-  hud.startModes?.addEventListener('click', startFromModeControl);
-  hud.startModes?.addEventListener('focusin', startFromModeControl);
-  document.addEventListener('pointerdown', startFromModeControl, { capture: true });
-  document.addEventListener('pointerup', startFromModeControl, { capture: true });
-  document.addEventListener('mousedown', startFromModeControl, { capture: true });
-  document.addEventListener('click', startFromModeControl, { capture: true });
-  document.querySelectorAll('[data-octa-overlay-start-mode]').forEach((button) => {
-    button.addEventListener('pointerdown', startFromModeControl);
-    button.addEventListener('pointerup', startFromModeControl);
-    button.addEventListener('mousedown', startFromModeControl);
-    button.addEventListener('mouseup', startFromModeControl);
-    button.addEventListener('touchend', startFromModeControl);
-    button.addEventListener('click', startFromModeControl);
-    button.addEventListener('focus', startFromModeControl);
-  });
   window.addEventListener('hashchange', handleStartHash);
   hud.music?.addEventListener('click', toggleMusic);
   hud.fx?.addEventListener('click', toggleFX);
