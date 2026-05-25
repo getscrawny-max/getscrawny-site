@@ -82,7 +82,8 @@
   const playerCollisionRadius = 0.58;
   const gapFrontCollisionDepth = chunkDepth / 2 + 0.16 + playerCollisionRadius;
   const gapBackCollisionDepth = chunkDepth / 2 - 0.42;
-  const wallCollisionDepth = 0.82 + playerCollisionRadius;
+  const wallHalfDepth = 0.22;
+  const wallCollisionDepth = 0.34;
   const gapClearance = 0.42;
   const wallClearance = 0.72;
   const levelConfigs = [
@@ -141,8 +142,8 @@
     const edgeInset = 0.04;
     const a0 = -laneArc / 2 + edgeInset;
     const a1 = laneArc / 2 - edgeInset;
-    const z0 = -0.82;
-    const z1 = 0.82;
+    const z0 = -wallHalfDepth;
+    const z1 = wallHalfDepth;
     const outer = radius + 0.06;
     const inner = radius - 1.34;
     const verts = [
@@ -169,22 +170,20 @@
     return geom;
   }
 
-  function makeWallXGeometry(lane, flip) {
+  function makeWallStripeGeometry(lane, centerRatio) {
     const edgeInset = 0.082;
     const a0 = -laneArc / 2 + edgeInset;
     const a1 = laneArc / 2 - edgeInset;
     const outer = radius + 0.11;
     const inner = radius - 1.16;
-    const z = 0.84;
-    const da = 0.04;
-    const dr = 0.12;
-    const pA = flip ? { a: a1, r: outer } : { a: a0, r: outer };
-    const pB = flip ? { a: a0, r: inner } : { a: a1, r: inner };
+    const z = wallHalfDepth + 0.02;
+    const stripeRadius = inner + (outer - inner) * centerRatio;
+    const stripeHalfHeight = 0.065;
     const verts = [
-      ...lanePoint(lane, pA.a - da, pA.r - dr, z),
-      ...lanePoint(lane, pA.a + da, pA.r + dr, z),
-      ...lanePoint(lane, pB.a + da, pB.r + dr, z),
-      ...lanePoint(lane, pB.a - da, pB.r - dr, z)
+      ...lanePoint(lane, a0, stripeRadius - stripeHalfHeight, z),
+      ...lanePoint(lane, a1, stripeRadius - stripeHalfHeight, z),
+      ...lanePoint(lane, a1, stripeRadius + stripeHalfHeight, z),
+      ...lanePoint(lane, a0, stripeRadius + stripeHalfHeight, z)
     ];
     const geom = new THREE.BufferGeometry();
     geom.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3));
@@ -195,11 +194,11 @@
 
   const panelGeometries = Array.from({ length: lanes }, (_, lane) => makeLaneSurfaceGeometry(lane));
   const wallGeometries = Array.from({ length: lanes }, (_, lane) => makeLaneWallGeometry(lane));
-  const wallXGeometries = Array.from({ length: lanes }, (_, lane) => [makeWallXGeometry(lane, false), makeWallXGeometry(lane, true)]);
+  const wallStripeGeometries = Array.from({ length: lanes }, (_, lane) => [0.28, 0.5, 0.72].map((ratio) => makeWallStripeGeometry(lane, ratio)));
   const colors = [0x31a6ff, 0xa838ff, 0x4db8ff, 0xd23dff, 0x385dcb];
   const materials = colors.map((color) => new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.33, roughness: 0.38, metalness: 0.18, side: THREE.DoubleSide, flatShading: true }));
   const wallMaterials = Array.from({ length: materials.length }, () => new THREE.MeshStandardMaterial({ color: 0xffd23c, emissive: 0xff8a00, emissiveIntensity: 0.48, roughness: 0.34, metalness: 0.08, side: THREE.DoubleSide, flatShading: true }));
-  const wallXMaterials = Array.from({ length: materials.length }, () => new THREE.MeshBasicMaterial({ color: 0x050505, transparent: false, opacity: 1, side: THREE.DoubleSide, depthWrite: false }));
+  const wallStripeMaterials = Array.from({ length: materials.length }, () => new THREE.MeshBasicMaterial({ color: 0x050505, transparent: false, opacity: 1, side: THREE.DoubleSide, depthWrite: false }));
 
   function colorLuminance(hex) {
     const color = new THREE.Color(hex);
@@ -244,8 +243,8 @@
       material.emissiveIntensity = 0.48;
       material.needsUpdate = true;
       const markerColor = contrastRatio(0x050505, barrierColor) > contrastRatio(0xffffff, barrierColor) ? 0x050505 : 0xffffff;
-      wallXMaterials[index].color.setHex(markerColor);
-      wallXMaterials[index].needsUpdate = true;
+      wallStripeMaterials[index].color.setHex(markerColor);
+      wallStripeMaterials[index].needsUpdate = true;
     });
   }
   let ballGlowColor = 0x8eeaff;
@@ -544,10 +543,10 @@
         const wall = new THREE.Mesh(wallGeometries[lane], wallMaterials[band]);
         wall.position.z = z;
         group.add(wall);
-        wallXGeometries[lane].forEach((geom) => {
-          const mark = new THREE.Mesh(geom, wallXMaterials[band]);
-          mark.position.z = z;
-          group.add(mark);
+        wallStripeGeometries[lane].forEach((geom) => {
+          const stripe = new THREE.Mesh(geom, wallStripeMaterials[band]);
+          stripe.position.z = z;
+          group.add(stripe);
         });
       }
     });
@@ -1040,7 +1039,9 @@
     updateHud();
     playTone(hardMode ? 220 : 520, 0.06, 'square', 0.018);
   });
-  hud.restart?.addEventListener('click', () => { reset(); beginLevel(levelIndex); });
+  hud.restart?.addEventListener('click', () => {
+    reset();
+  });
   hud.levelPick?.addEventListener('click', cycleSelectedLevel);
   hud.fullscreen?.addEventListener('click', toggleFullscreen);
   hud.ballColor?.addEventListener('click', () => {

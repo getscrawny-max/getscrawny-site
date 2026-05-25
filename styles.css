@@ -3591,7 +3591,8 @@ body:has(.game-page) .brand-combined,
     height: 58px;
     white-space: normal;
     line-height: 0.92;
-    overflow-wrap: anywhere;
+    overflow-wrap: normal;
+    word-break: normal;
   }
 
   .page-menu,
