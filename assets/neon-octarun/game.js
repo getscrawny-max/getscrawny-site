@@ -24,6 +24,33 @@
     overlayStart: document.querySelector('[data-octa-overlay-start]')
   };
 
+  function ensureHudControl(selector, createControl) {
+    let control = document.querySelector(selector);
+    if (control || !hud.restart?.parentElement) return control;
+    control = createControl();
+    hud.restart.parentElement.insertBefore(control, hud.restart);
+    return control;
+  }
+
+  hud.start = ensureHudControl('[data-octa-start]', () => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'octarun-start-button';
+    button.dataset.octaStart = '';
+    button.textContent = 'Start';
+    return button;
+  });
+
+  hud.modeToggle = ensureHudControl('[data-octa-mode-toggle]', () => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'octarun-mode-toggle';
+    button.dataset.octaModeToggle = '';
+    button.setAttribute('aria-pressed', 'false');
+    button.textContent = 'Normal';
+    return button;
+  });
+
   const mobileJumpButton = document.createElement('button');
   mobileJumpButton.type = 'button';
   mobileJumpButton.className = 'octarun-jump-button';
