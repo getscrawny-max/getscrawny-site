@@ -20,6 +20,9 @@
     pathPalette: document.querySelector('[data-octa-path-palette]'),
     music: document.querySelector('[data-octa-music]'),
     fx: document.querySelector('[data-octa-fx]'),
+    scoreForm: document.querySelector('[data-octa-score-form]'),
+    initials: document.querySelector('[data-octa-initials]'),
+    scoreList: document.querySelector('[data-octa-score-list]'),
     overlay: document.querySelector('[data-octa-overlay]'),
     overlayStart: document.querySelector('[data-octa-overlay-start]')
   };
@@ -118,7 +121,7 @@
     { level: 2, duration: 60, speed: 5.95, hazards: [2, 3], wallChance: 0.22, gapRunChance: 0.16, safeStart: 7, copy: 'Level 3 runs 90 seconds and asks for cleaner jumps.' },
     { level: 3, duration: 90, speed: 6.75, hazards: [3, 4], wallChance: 0.23, gapRunChance: 0.48, safeStart: 6, copy: 'Level 4 stretches to two minutes with tighter timing.' },
     { level: 4, duration: 120, speed: 7.55, hazards: [4, 5], wallChance: 0.40, gapRunChance: 0.22, safeStart: 5, copy: 'Level 5 is the two-and-a-half-minute final run.' },
-    { level: 5, duration: 150, speed: 8.35, hazards: [5, 6], wallChance: 0.48, gapRunChance: 0.18, safeStart: 5, copy: 'You cleared the full OctaRun set.' }
+    { level: 5, duration: Infinity, speed: 8.35, hazards: [5, 6], wallChance: 0.48, gapRunChance: 0.18, safeStart: 5, copy: 'Level 5 runs endlessly. Chase the highest score you can hold.' }
   ];
 
   const pathPalettes = [
@@ -340,6 +343,7 @@
   let audioContext = null;
   let activeMusic = null;
   let activeMusicIndex = -1;
+  let pendingScore = 0;
   let movementQueue = [];
   let jumpQueued = false;
   let laneInputCooldown = 0;
@@ -362,9 +366,11 @@
 
   const hardModeMultiplier = () => (hardMode ? 1.5 : 1);
   const currentConfig = () => levelConfigs[levelIndex];
+  const isEndlessLevel = () => !Number.isFinite(currentConfig().duration);
   const levelProgress = () => levelElapsed * hardModeMultiplier();
-  const levelSecondsLeft = () => Math.max(0, Math.ceil(currentConfig().duration - levelProgress()));
+  const levelSecondsLeft = () => isEndlessLevel() ? null : Math.max(0, Math.ceil(currentConfig().duration - levelProgress()));
   const unlockStorageKey = 'octarunUnlockedLevel';
+  const leaderboardStorageKey = 'octarunLeaderboard';
 
   function clampLevelNumber(value) {
     const parsed = Number.parseInt(value, 10);
@@ -391,6 +397,48 @@
 
   function unlockNextLevel() {
     saveUnlockedLevel(Math.min(levelConfigs.length, currentConfig().level + 1));
+  }
+
+  function readLeaderboard() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(leaderboardStorageKey) || '[]');
+      return Array.isArray(parsed) ? parsed.filter((entry) => entry && entry.initials && Number.isFinite(entry.score)) : [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  function saveLeaderboard(entries) {
+    try {
+      localStorage.setItem(leaderboardStorageKey, JSON.stringify(entries.slice(0, 10)));
+    } catch (_) {}
+  }
+
+  function cleanInitials(value) {
+    return String(value || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5);
+  }
+
+  function renderLeaderboard() {
+    if (!hud.scoreList) return;
+    const entries = readLeaderboard().sort((a, b) => b.score - a.score).slice(0, 10);
+    hud.scoreList.innerHTML = entries.length
+      ? entries.map((entry) => '<li><span>' + entry.initials + '</span><strong>' + entry.score + '</strong></li>').join('')
+      : '<li class="is-empty"><span>-----</span><strong>0</strong></li>';
+    const submitButton = hud.scoreForm?.querySelector('button');
+    if (submitButton) submitButton.disabled = pendingScore <= 0;
+  }
+
+  function submitScore(event) {
+    event.preventDefault();
+    const initials = cleanInitials(hud.initials?.value);
+    if (!initials || pendingScore <= 0) return;
+    const entries = readLeaderboard();
+    entries.push({ initials, score: pendingScore });
+    entries.sort((a, b) => b.score - a.score);
+    saveLeaderboard(entries);
+    pendingScore = 0;
+    if (hud.initials) hud.initials.value = '';
+    renderLeaderboard();
   }
 
   function speedForLevel() {
@@ -784,6 +832,7 @@
     state = 'level-complete';
     stopMusic();
     unlockNextLevel();
+    pendingScore = Math.max(pendingScore, Math.floor(score));
     playTone(740, 0.11, 'triangle', 0.03);
     playTone(980, 0.16, 'triangle', 0.025);
     playLevelCompleteSound();
@@ -795,6 +844,7 @@
     setOverlay(isFinal ? 'Complete' : 'Level complete', title, copy, true, button);
     syncStartButton();
     updateHud();
+    renderLeaderboard();
   }
 
   function die() {
@@ -807,6 +857,8 @@
     playGameOverSound();
     updateHud();
     setOverlay('Run ended', 'The tunnel caught you.', '<p>Press Enter or Spacebar to restart this level. Look one lane ahead; the safe path always exists.</p>', true, 'Restart Run');
+    pendingScore = Math.max(pendingScore, Math.floor(score));
+    renderLeaderboard();
     syncStartButton();
   }
 
@@ -815,8 +867,8 @@
     if (hud.level) hud.level.textContent = String(currentConfig().level);
     if (hud.countdown) {
       const secondsLeft = levelSecondsLeft();
-      hud.countdown.textContent = String(secondsLeft);
-      hud.countdown.classList.toggle('is-urgent', secondsLeft <= 10);
+      hud.countdown.textContent = secondsLeft === null ? '∞' : String(secondsLeft);
+      hud.countdown.classList.toggle('is-urgent', secondsLeft !== null && secondsLeft <= 10);
     }
     syncLevelSelect();
     syncStartButton();
@@ -920,7 +972,7 @@
         const lastChunk = chunks[chunks.length - 1];
         chunks.push(makeChunk(lastChunk.z - chunkSpacing, chunkSerial++));
       }
-      if (state === 'playing' && levelProgress() >= currentConfig().duration) completeLevel();
+      if (state === 'playing' && !isEndlessLevel() && levelProgress() >= currentConfig().duration) completeLevel();
       updateHud();
     }
     visualAngle += (targetAngle - visualAngle) * Math.min(1, dt * 12);
@@ -1078,6 +1130,10 @@
   hud.ballColorInput?.addEventListener('input', (event) => {
     setBallColor(event.target.value);
   });
+  hud.initials?.addEventListener('input', (event) => {
+    event.target.value = cleanInitials(event.target.value);
+  });
+  hud.scoreForm?.addEventListener('submit', submitScore);
   hud.overlayStart?.addEventListener('click', () => { primeSpaceVideo(); start(); });
   window.addEventListener('hashchange', handleStartHash);
   hud.music?.addEventListener('click', toggleMusic);
@@ -1121,6 +1177,7 @@
   });
   applyBallColor();
   applyLevelPalette();
+  renderLeaderboard();
   resize();
   reset();
   requestAnimationFrame(loop);
