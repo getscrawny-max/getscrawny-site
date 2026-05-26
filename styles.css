@@ -6410,6 +6410,11 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
   text-shadow: 0 1px 8px rgba(0,0,0,0.82);
 }
 
+.octarun-hud > button[data-octa-path-palette] {
+  width: 136px;
+  min-width: 136px;
+}
+
 .octarun-hud > button.octarun-mode-toggle.is-normal {
   border-color: rgba(82, 255, 152, 0.9);
   background: linear-gradient(180deg, rgba(14, 74, 39, 0.96), rgba(3, 22, 12, 0.98));

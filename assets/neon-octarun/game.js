@@ -128,6 +128,7 @@
     { id: 'fiona', name: 'Fiona', colors: [0x1e5b0b, 0xc8d707, 0x7cc427, 0xba0012, 0xf0c17f] },
     { id: 'barca', name: 'Barca', colors: [0xa50044, 0x004d98, 0xedbb00, 0xffed02, 0xdb0030] },
     { id: 'color-blind', name: 'Color Blind', colors: [0xd55e00, 0xcc79a7, 0x0072b2, 0xf0e442, 0x009e73] },
+    { id: 'plucky-parrot', name: 'Plucky Parrot', colors: [0xfdd413, 0xf6a716, 0x91bf7e, 0x1cafec, 0x216a8d] },
     { id: 'omni-vincible', name: 'Omni-Vincible', colors: [0xffe556, 0x00bcf0, 0x303539, 0xc8412d, 0xe1ebed] }
   ];
   let pathPaletteMode = 'neon';
@@ -288,25 +289,12 @@
       side: THREE.DoubleSide
     })
   );
-  const playerHighlight = new THREE.Mesh(
-    new THREE.CircleGeometry(0.14, 32),
-    new THREE.MeshBasicMaterial({
-      color: 0xffffff,
-      transparent: true,
-      opacity: 0.9,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false
-    })
-  );
-  playerHighlight.position.set(-0.2, 0.24, 0.015);
   player.add(playerRoll);
   playerRoll.add(playerFallback);
-  playerRoll.add(playerHighlight);
   const playerGlow = new THREE.Mesh(new THREE.SphereGeometry(0.78, 40, 20), new THREE.MeshBasicMaterial({ color: ballGlowColor, transparent: true, opacity: 0.24, blending: THREE.AdditiveBlending, depthWrite: false }));
   const trail = new THREE.Mesh(new THREE.TorusGeometry(1.26, 0.035, 8, 72), new THREE.MeshBasicMaterial({ color: ballGlowColor, transparent: true, opacity: 0, blending: THREE.AdditiveBlending }));
   player.renderOrder = 4;
   playerFallback.renderOrder = 4;
-  playerHighlight.renderOrder = 5;
   playerGlow.renderOrder = 2;
   trail.renderOrder = 1;
   const world = new THREE.Group();
