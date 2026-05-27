@@ -106,6 +106,7 @@
   }
   renderer.setClearColor(0x000000, 0);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, window.matchMedia && window.matchMedia('(pointer: coarse)').matches ? 1.5 : 2));
+  const textureLoader = new THREE.TextureLoader();
 
   const lanes = 8;
   const radius = 4.15;
@@ -128,11 +129,21 @@
     { level: 5, duration: Infinity, speed: 8.35, hazards: [4, 4], wallChance: 0.34, gapRunChance: 0.18, safeStart: 5, copy: 'Level 5 runs endlessly. Chase the highest score you can hold.' }
   ];
   const defaultSpaceVideoSrc = 'assets/neon_space_loop.mp4';
-  const secretBackgrounds = new Map([
-    ['downtown', 'assets/secret_downtown.mp4'],
-    ['vortex', 'assets/secret_vortex.mp4']
+  const secretAssetBase = 'assets/OctaRun%20Secret%20Codes/';
+  const secretEffects = new Map([
+    ['downtown', { background: secretAssetBase + 'SecretCode_Downtown_ChangeBackground.mp4' }],
+    ['vortex', { background: secretAssetBase + 'SecretCode_Vortex_ChangeBackground.mp4' }],
+    ['moo', { track: secretAssetBase + 'SecretCode_Moo_ChangeTrack.jpg' }],
+    ['lava', { track: secretAssetBase + 'SecretCode_Lava_ChangeTrack.JPG' }],
+    ['shmorgs', { track: secretAssetBase + 'SecretCode_Shmorgs_ChangeTrack.WEBP', ball: secretAssetBase + 'SecretCode_Shmorgs_ChangeBall.png' }],
+    ['tron', { track: secretAssetBase + 'SecretCode_Tron_ChangeTrack.JPG', ball: secretAssetBase + 'SecretCode_Tron_ChangeBall.png' }],
+    ['treble', { ball: secretAssetBase + 'SecretCode_Treble_ChangeBall.PNG' }]
   ]);
   let activeSpaceVideoSrc = defaultSpaceVideoSrc;
+  let activeTrackTextureSrc = '';
+  let activeBallTextureSrc = '';
+  let activeTrackTexture = null;
+  let activeBallTexture = null;
 
   const pathPalettes = [
     { id: 'neon', name: 'Neon', colors: [0xfe0000, 0xfdfe02, 0x0bff01, 0x011efe, 0xfe00f6] },
@@ -175,6 +186,7 @@
     ];
     const geom = new THREE.BufferGeometry();
     geom.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3));
+    geom.setAttribute('uv', new THREE.Float32BufferAttribute([0, 0, 1, 0, 1, 1, 0, 1], 2));
     geom.setIndex([0, 1, 2, 0, 2, 3]);
     geom.computeVertexNormals();
     return geom;
@@ -271,8 +283,10 @@
     const barrierCandidates = allPaletteColors().filter((color) => !trackColorSet.has(color));
     materials.forEach((material, index) => {
       const color = trackColors[index];
-      material.color.setHex(color);
+      material.color.setHex(activeTrackTexture ? 0xffffff : color);
       material.emissive.setHex(color);
+      material.emissiveIntensity = activeTrackTexture ? 0.16 : 0.33;
+      material.map = activeTrackTexture;
       material.needsUpdate = true;
     });
     const fogColor = new THREE.Color(palette[(levelIndex + 4) % palette.length] || palette[0]).lerp(new THREE.Color(0x030615), 0.72);
@@ -513,12 +527,10 @@
     renderLeaderboard();
   }
 
-  async function submitScore(event) {
-    event.preventDefault();
-    const initials = cleanInitials(hud.initials?.value);
+  async function submitLeaderboardScore(rawInitials) {
+    const initials = cleanInitials(rawInitials);
     if (!initials || isInappropriateInitials(initials) || pendingScore <= 0 || !scoreQualifiesForLeaderboard(Math.floor(pendingScore))) {
-      if (hud.initials) hud.initials.value = '';
-      return;
+      return false;
     }
     const entry = { initials, score: Math.floor(pendingScore), mode: hardMode ? 'hard' : 'normal' };
     leaderboardEntries.push(entry);
@@ -540,6 +552,13 @@
       leaderboardStatus = 'Saved locally';
       renderLeaderboard();
     }
+    return true;
+  }
+
+  async function submitScore(event) {
+    event.preventDefault();
+    const submitted = await submitLeaderboardScore(hud.initials?.value);
+    if (!submitted && hud.initials) hud.initials.value = '';
   }
 
   function speedForLevel() {
@@ -661,29 +680,96 @@
     primeSpaceVideo();
   }
 
+  function configureSecretTexture(texture, repeatX = 1, repeatY = 1) {
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(repeatX, repeatY);
+    texture.anisotropy = Math.min(8, renderer.capabilities?.getMaxAnisotropy?.() || 1);
+    if ('colorSpace' in texture && THREE.SRGBColorSpace) texture.colorSpace = THREE.SRGBColorSpace;
+    else if ('encoding' in texture && THREE.sRGBEncoding) texture.encoding = THREE.sRGBEncoding;
+    texture.needsUpdate = true;
+    return texture;
+  }
+
+  function loadSecretTexture(src, repeatX = 1, repeatY = 1) {
+    const texture = textureLoader.load(src, (loadedTexture) => {
+      configureSecretTexture(loadedTexture, repeatX, repeatY);
+      applyLevelPalette();
+      applyBallColor();
+    });
+    return configureSecretTexture(texture, repeatX, repeatY);
+  }
+
+  function setTrackTexture(src) {
+    if (!src || activeTrackTextureSrc === src) return;
+    if (activeTrackTexture) activeTrackTexture.dispose?.();
+    activeTrackTextureSrc = src;
+    activeTrackTexture = loadSecretTexture(src, 2.2, 2.2);
+    applyLevelPalette();
+  }
+
+  function clearTrackTexture() {
+    activeTrackTextureSrc = '';
+    if (activeTrackTexture) activeTrackTexture.dispose?.();
+    activeTrackTexture = null;
+    materials.forEach((material) => {
+      material.map = null;
+      material.emissiveIntensity = 0.33;
+      material.needsUpdate = true;
+    });
+    applyLevelPalette();
+  }
+
+  function setBallTexture(src) {
+    if (!src || activeBallTextureSrc === src) return;
+    if (activeBallTexture) activeBallTexture.dispose?.();
+    activeBallTextureSrc = src;
+    activeBallTexture = loadSecretTexture(src, 1, 1);
+    applyBallColor();
+  }
+
+  function clearBallTexture() {
+    activeBallTextureSrc = '';
+    if (activeBallTexture) activeBallTexture.dispose?.();
+    activeBallTexture = null;
+    if (playerFallback.material) {
+      playerFallback.material.map = null;
+      playerFallback.material.needsUpdate = true;
+    }
+    applyBallColor();
+  }
+
   function secretCodeValue() {
     return String(hud.secretCode?.value || '').trim().toLowerCase();
   }
 
-  function syncSecretPanelState() {
-    if (!hud.secretActivate) return;
-    hud.secretActivate.checked = activeSpaceVideoSrc !== defaultSpaceVideoSrc;
+  function hasSecretEffects() {
+    return activeSpaceVideoSrc !== defaultSpaceVideoSrc || Boolean(activeTrackTextureSrc) || Boolean(activeBallTextureSrc);
   }
 
-  function applySecretBackground() {
-    const src = secretBackgrounds.get(secretCodeValue());
-    if (!src) {
-      if (hud.secretActivate) hud.secretActivate.checked = false;
+  function syncSecretPanelState() {
+    if (!hud.secretActivate) return;
+    hud.secretActivate.checked = hasSecretEffects();
+  }
+
+  function applySecretCode() {
+    const effect = secretEffects.get(secretCodeValue());
+    if (!effect) {
       hud.secretCode?.classList.add('is-invalid');
+      syncSecretPanelState();
       return;
     }
     hud.secretCode?.classList.remove('is-invalid');
-    setSpaceVideo(src);
+    if (effect.background) setSpaceVideo(effect.background);
+    if (effect.track) setTrackTexture(effect.track);
+    if (effect.ball) setBallTexture(effect.ball);
     syncSecretPanelState();
   }
 
-  function revertSecretBackground() {
+  function revertSecretEffects() {
     setSpaceVideo(defaultSpaceVideoSrc);
+    clearTrackTexture();
+    clearBallTexture();
     if (hud.secretActivate) hud.secretActivate.checked = false;
     hud.secretCode?.classList.remove('is-invalid');
   }
@@ -900,6 +986,34 @@
     hud.overlay.innerHTML = '<p class="eyebrow">' + kicker + '</p><h2>' + title + '</h2><div class="octarun-overlay-copy">' + copy + '</div>' + buttonMarkup;
     const overlayButton = hud.overlay.querySelector('[data-octa-overlay-start]');
     if (overlayButton) overlayButton.addEventListener('click', handlePrimaryAction);
+    attachOverlayScoreForm();
+  }
+
+  function overlayScoreFormMarkup(score, placement) {
+    return '<form class="octarun-overlay-score-form" data-octa-overlay-score-form><label for="octarun-overlay-initials">Top 10 #' + placement + '</label><div class="octarun-overlay-score-fields"><input id="octarun-overlay-initials" data-octa-overlay-initials maxlength="7" autocomplete="off" inputmode="latin" placeholder="NAME" aria-label="Enter leaderboard name for score ' + score + '"><button type="submit">Post ' + score + '</button></div></form>';
+  }
+
+  function attachOverlayScoreForm() {
+    const form = hud.overlay?.querySelector('[data-octa-overlay-score-form]');
+    const input = hud.overlay?.querySelector('[data-octa-overlay-initials]');
+    if (!form || !input) return;
+    input.addEventListener('input', (event) => {
+      event.target.value = cleanInitials(event.target.value);
+      event.target.classList.remove('is-invalid');
+    });
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const submitted = await submitLeaderboardScore(input.value);
+      if (!submitted) {
+        input.value = '';
+        input.classList.add('is-invalid');
+        input.focus();
+        return;
+      }
+      form.innerHTML = '<p class="octarun-overlay-score-posted">Score posted.</p>';
+      renderLeaderboard();
+    });
+    window.setTimeout(() => input.focus(), 0);
   }
 
   function syncStartButton() {
@@ -1035,7 +1149,7 @@
     updateHud();
     pendingScore = Math.max(pendingScore, finalScore);
     const placementCopy = placement
-      ? '<p>Score: ' + finalScore + '. Current placement: #' + placement + '. Enter your name below the game to post it.</p>'
+      ? '<p>Score: ' + finalScore + '. Current placement: #' + placement + '.</p>' + overlayScoreFormMarkup(finalScore, placement)
       : '<p>Score: ' + finalScore + '. No top 10 placement this run.</p>';
     setOverlay('Run ended', 'The tunnel caught you.', placementCopy + '<p>Press Spacebar or Enter to retry this level. Look one lane ahead; the safe path always exists.</p>', true, 'Restart Run');
     renderLeaderboard();
@@ -1317,22 +1431,22 @@
   hud.secretPanel?.addEventListener('click', (event) => event.stopPropagation());
   hud.secretCode?.addEventListener('input', () => {
     hud.secretCode?.classList.remove('is-invalid');
-    if (hud.secretActivate?.checked && secretBackgrounds.has(secretCodeValue())) applySecretBackground();
+    if (hud.secretActivate?.checked && secretEffects.has(secretCodeValue())) applySecretCode();
   });
   hud.secretCode?.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
       event.preventDefault();
-      applySecretBackground();
+      applySecretCode();
     }
   });
   hud.secretActivate?.addEventListener('change', () => {
-    if (hud.secretActivate.checked) applySecretBackground();
-    else revertSecretBackground();
+    if (hud.secretActivate.checked) applySecretCode();
+    else revertSecretEffects();
   });
   hud.secretActivate?.addEventListener('click', () => {
-    if (hud.secretActivate.checked) applySecretBackground();
+    if (hud.secretActivate.checked) applySecretCode();
   });
-  hud.secretRevert?.addEventListener('click', revertSecretBackground);
+  hud.secretRevert?.addEventListener('click', revertSecretEffects);
   hud.ballColor?.addEventListener('click', () => {
     hud.ballColorInput?.click();
   });
@@ -1364,8 +1478,10 @@
     playerGlow.material.color.setHex(ballGlowColor);
     trail.material.color.setHex(ballGlowColor);
     if (playerFallback.material) {
-      playerFallback.material.color.setHex(ballGlowColor);
+      playerFallback.material.map = activeBallTexture;
+      playerFallback.material.color.setHex(activeBallTexture ? 0xffffff : ballGlowColor);
       playerFallback.material.emissive.setHex(ballGlowColor);
+      playerFallback.material.emissiveIntensity = activeBallTexture ? 0.12 : 0.34;
       playerFallback.material.needsUpdate = true;
     }
     const hex = '#' + ballGlowColor.toString(16).padStart(6, '0');

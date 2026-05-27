@@ -7421,6 +7421,61 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
   opacity: 0.48;
 }
 
+.octarun-overlay-score-form {
+  display: grid;
+  gap: 0.55rem;
+  width: min(100%, 25rem);
+  margin: 0.8rem auto;
+}
+
+.octarun-overlay-score-form label {
+  color: #e8f7ff;
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.octarun-overlay-score-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.5rem;
+}
+
+.octarun-overlay-score-form input,
+.octarun-overlay-score-form button {
+  min-height: 42px;
+  border: 1px solid rgba(79, 202, 255, 0.58);
+  border-radius: 8px;
+  color: #e8f7ff;
+  background: rgba(3, 12, 28, 0.9);
+  font: inherit;
+  font-weight: 900;
+}
+
+.octarun-overlay-score-form input {
+  min-width: 0;
+  padding: 0.5rem 0.7rem;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.octarun-overlay-score-form input.is-invalid {
+  border-color: rgba(255, 84, 112, 0.9);
+}
+
+.octarun-overlay-score-form button {
+  padding: 0.5rem 0.85rem;
+  cursor: pointer;
+}
+
+.octarun-overlay-score-posted {
+  margin: 0;
+  color: #8fffd2;
+  font-weight: 900;
+  text-align: center;
+}
+
 .octarun-score-list {
   display: grid;
   grid-template-columns: 1fr;
