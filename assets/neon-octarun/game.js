@@ -17,6 +17,10 @@
     shell: document.querySelector('.octarun-shell'),
     stage: document.querySelector('[data-octa-stage]'),
     spaceVideo: document.querySelector('.octarun-space-video'),
+    secretPanel: document.querySelector('[data-octa-secret-panel]'),
+    secretCode: document.querySelector('[data-octa-secret-code]'),
+    secretActivate: document.querySelector('[data-octa-secret-activate]'),
+    secretRevert: document.querySelector('[data-octa-secret-revert]'),
     pathPalette: document.querySelector('[data-octa-path-palette]'),
     music: document.querySelector('[data-octa-music]'),
     fx: document.querySelector('[data-octa-fx]'),
@@ -123,6 +127,12 @@
     { level: 4, duration: 120, speed: 7.55, hazards: [3, 4], wallChance: 0.30, gapRunChance: 0.22, safeStart: 5, copy: 'Level 5 is the two-and-a-half-minute final run.' },
     { level: 5, duration: Infinity, speed: 8.35, hazards: [4, 4], wallChance: 0.34, gapRunChance: 0.18, safeStart: 5, copy: 'Level 5 runs endlessly. Chase the highest score you can hold.' }
   ];
+  const defaultSpaceVideoSrc = 'assets/neon_space_loop.mp4';
+  const secretBackgrounds = new Map([
+    ['downtown', 'assets/secret_downtown.mp4'],
+    ['vortex', 'assets/secret_vortex.mp4']
+  ]);
+  let activeSpaceVideoSrc = defaultSpaceVideoSrc;
 
   const pathPalettes = [
     { id: 'neon', name: 'Neon', colors: [0xfe0000, 0xfdfe02, 0x0bff01, 0x011efe, 0xfe00f6] },
@@ -544,6 +554,61 @@
       try {
         history.replaceState(null, '', window.location.pathname + window.location.search);
       } catch (_) {}
+    }
+  }
+
+  function primeSpaceVideo() {
+    if (!hud.spaceVideo) return;
+    hud.spaceVideo.play?.().catch(() => {});
+  }
+
+  function setSpaceVideo(src) {
+    if (!hud.spaceVideo || !src) return;
+    activeSpaceVideoSrc = src;
+    const resolvedCurrent = new URL(hud.spaceVideo.getAttribute('src') || '', window.location.href).href;
+    const resolvedNext = new URL(src, window.location.href).href;
+    if (resolvedCurrent !== resolvedNext) {
+      hud.spaceVideo.setAttribute('src', src);
+      hud.spaceVideo.load?.();
+    }
+    primeSpaceVideo();
+  }
+
+  function secretCodeValue() {
+    return String(hud.secretCode?.value || '').trim().toLowerCase();
+  }
+
+  function syncSecretPanelState() {
+    if (!hud.secretActivate) return;
+    hud.secretActivate.checked = activeSpaceVideoSrc !== defaultSpaceVideoSrc;
+  }
+
+  function applySecretBackground() {
+    const src = secretBackgrounds.get(secretCodeValue());
+    if (!src) {
+      if (hud.secretActivate) hud.secretActivate.checked = false;
+      hud.secretCode?.classList.add('is-invalid');
+      return;
+    }
+    hud.secretCode?.classList.remove('is-invalid');
+    setSpaceVideo(src);
+    syncSecretPanelState();
+  }
+
+  function revertSecretBackground() {
+    setSpaceVideo(defaultSpaceVideoSrc);
+    if (hud.secretActivate) hud.secretActivate.checked = false;
+    hud.secretCode?.classList.remove('is-invalid');
+  }
+
+  function toggleSecretPanel() {
+    if (!hud.secretPanel) return;
+    const shouldOpen = hud.secretPanel.hidden;
+    hud.secretPanel.hidden = !shouldOpen;
+    hud.countdown?.classList.toggle('has-secret-panel', shouldOpen);
+    if (shouldOpen) {
+      syncSecretPanelState();
+      window.setTimeout(() => hud.secretCode?.focus(), 0);
     }
   }
 
@@ -1152,6 +1217,30 @@
   });
   hud.levelPick?.addEventListener('click', cycleSelectedLevel);
   hud.fullscreen?.addEventListener('click', toggleFullscreen);
+  hud.countdown?.addEventListener('dblclick', (event) => {
+    event.preventDefault();
+    toggleSecretPanel();
+  });
+  hud.secretPanel?.addEventListener('pointerdown', (event) => event.stopPropagation());
+  hud.secretPanel?.addEventListener('click', (event) => event.stopPropagation());
+  hud.secretCode?.addEventListener('input', () => {
+    hud.secretCode?.classList.remove('is-invalid');
+    if (hud.secretActivate?.checked && secretBackgrounds.has(secretCodeValue())) applySecretBackground();
+  });
+  hud.secretCode?.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      applySecretBackground();
+    }
+  });
+  hud.secretActivate?.addEventListener('change', () => {
+    if (hud.secretActivate.checked) applySecretBackground();
+    else revertSecretBackground();
+  });
+  hud.secretActivate?.addEventListener('click', () => {
+    if (hud.secretActivate.checked) applySecretBackground();
+  });
+  hud.secretRevert?.addEventListener('click', revertSecretBackground);
   hud.ballColor?.addEventListener('click', () => {
     hud.ballColorInput?.click();
   });

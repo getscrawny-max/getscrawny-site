@@ -68,6 +68,14 @@
         </div>
         <div class="octarun-stage has-neon" data-octa-stage>
           <div class="octarun-countdown" data-octa-countdown>45s left</div>
+          <div class="octarun-secret-panel" data-octa-secret-panel hidden>
+            <input type="text" data-octa-secret-code autocomplete="off" spellcheck="false" aria-label="Secret background code" placeholder="secret code">
+            <label class="octarun-secret-check" aria-label="Activate secret background">
+              <input type="checkbox" data-octa-secret-activate>
+              <span aria-hidden="true">✓</span>
+            </label>
+            <button type="button" data-octa-secret-revert>Revert</button>
+          </div>
           <video class="octarun-space-video" src="assets/neon_space_loop.mp4" autoplay muted loop playsinline aria-hidden="true"></video>
           <div class="octarun-audio-toggles" aria-label="Game audio controls">
             <button class="octarun-audio-button" type="button" data-octa-music aria-pressed="true" aria-label="Toggle music">♫</button>
@@ -101,7 +109,7 @@
     </footer>
 
     <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
-    <script src="assets/neon-octarun/game.js?v=octarun-space-primary-1"></script>
+    <script src="assets/neon-octarun/game.js?v=octarun-secret-bg-1"></script>
     <script src="script.js?v=arcade-dark-only-1"></script>
   </body>
 </html>

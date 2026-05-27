@@ -68,9 +68,10 @@ const syncThemeLinks = () => {
 const syncThemeToggle = () => {
   if (!themeToggle) return;
   if (isArcadeSurface) {
-    themeToggle.setAttribute("aria-label", "Arcade pages stay in dark mode");
-    themeToggle.setAttribute("aria-pressed", "true");
-    themeToggle.disabled = true;
+    const nextTheme = themes[(themes.indexOf(preferredTheme) + 1) % themes.length];
+    themeToggle.setAttribute("aria-label", "Switch to " + nextTheme + " mode outside Arcade");
+    themeToggle.setAttribute("aria-pressed", preferredTheme !== "light" ? "true" : "false");
+    themeToggle.disabled = false;
     return;
   }
   const currentTheme = document.documentElement.dataset.theme;
@@ -157,7 +158,14 @@ document.addEventListener("pointerdown", (event) => {
 
 if (themeToggle) {
   themeToggle.addEventListener("click", () => {
-    if (isArcadeSurface) return;
+    if (isArcadeSurface) {
+      const nextTheme = themes[(themes.indexOf(preferredTheme) + 1) % themes.length];
+      preferredTheme = nextTheme;
+      writeStoredTheme(nextTheme);
+      syncThemeToggle();
+      syncThemeLinks();
+      return;
+    }
     const currentTheme = document.documentElement.dataset.theme;
     const nextTheme = themes[(themes.indexOf(currentTheme) + 1) % themes.length];
     preferredTheme = nextTheme;
