@@ -251,6 +251,8 @@
   const wallStripeGeometries = Array.from({ length: lanes }, (_, lane) => [0.28, 0.5, 0.72].map((ratio) => makeWallStripeGeometry(lane, ratio)));
   const colors = [0x31a6ff, 0xa838ff, 0x4db8ff, 0xd23dff, 0x385dcb];
   const materials = colors.map((color) => new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.33, roughness: 0.38, metalness: 0.18, side: THREE.DoubleSide, flatShading: true }));
+  const secretTrackTints = [0xffffff, 0xf5f8ff, 0xffffff, 0xeef3fb, 0xffffff];
+  const secretTrackMaterials = secretTrackTints.map((color) => new THREE.MeshBasicMaterial({ color, fog: false, side: THREE.DoubleSide, toneMapped: false }));
   const wallMaterials = Array.from({ length: materials.length }, () => new THREE.MeshStandardMaterial({ color: 0xffd23c, emissive: 0xff8a00, emissiveIntensity: 0.48, roughness: 0.34, metalness: 0.08, side: THREE.DoubleSide, flatShading: true }));
   const wallStripeMaterials = Array.from({ length: materials.length }, () => new THREE.MeshBasicMaterial({ color: 0x050505, transparent: false, opacity: 1, side: THREE.DoubleSide, depthWrite: false }));
 
@@ -283,22 +285,34 @@
     const barrierCandidates = allPaletteColors().filter((color) => !trackColorSet.has(color));
     materials.forEach((material, index) => {
       const color = trackColors[index];
-      material.color.setHex(activeTrackTexture ? 0xffffff : color);
-      material.emissive.setHex(activeTrackTexture ? 0x000000 : color);
-      material.emissiveIntensity = activeTrackTexture ? 0 : 0.33;
-      material.map = activeTrackTexture;
-      material.roughness = activeTrackTexture ? 0.62 : 0.38;
-      material.metalness = activeTrackTexture ? 0 : 0.18;
+      material.color.setHex(color);
+      material.emissive.setHex(color);
+      material.emissiveIntensity = 0.33;
+      material.map = null;
+      material.roughness = 0.38;
+      material.metalness = 0.18;
       material.needsUpdate = true;
     });
-    const fogColor = new THREE.Color(palette[(levelIndex + 4) % palette.length] || palette[0]).lerp(new THREE.Color(0x030615), 0.72);
-    scene.fog.color.copy(fogColor);
+    secretTrackMaterials.forEach((material, index) => {
+      material.map = activeTrackTexture;
+      material.color.setHex(secretTrackTints[index % secretTrackTints.length]);
+      material.needsUpdate = true;
+    });
+    syncTrackPanelMaterials();
+    if (activeTrackTexture) {
+      scene.fog.color.setHex(0x030615);
+      scene.fog.density = 0.004;
+    } else {
+      const fogColor = new THREE.Color(palette[(levelIndex + 4) % palette.length] || palette[0]).lerp(new THREE.Color(0x030615), 0.72);
+      scene.fog.color.copy(fogColor);
+      scene.fog.density = 0.016;
+    }
 
     wallMaterials.forEach((material, index) => {
-      const barrierColor = contrastingPaletteColor(barrierCandidates, trackColors[index]);
+      const barrierColor = activeTrackTexture ? 0xf3f5f6 : contrastingPaletteColor(barrierCandidates, trackColors[index]);
       material.color.setHex(barrierColor);
-      material.emissive.setHex(barrierColor);
-      material.emissiveIntensity = 0.48;
+      material.emissive.setHex(activeTrackTexture ? 0x000000 : barrierColor);
+      material.emissiveIntensity = activeTrackTexture ? 0 : 0.48;
       material.needsUpdate = true;
       const markerColor = contrastRatio(0x050505, barrierColor) > contrastRatio(0xffffff, barrierColor) ? 0x050505 : 0xffffff;
       wallStripeMaterials[index].color.setHex(markerColor);
@@ -308,17 +322,22 @@
   let ballGlowColor = 0x8eeaff;
   const player = new THREE.Group();
   const playerRoll = new THREE.Group();
-  const playerFallback = new THREE.Mesh(
-    new THREE.CircleGeometry(0.62, 64),
-    new THREE.MeshStandardMaterial({
-      color: ballGlowColor,
-      emissive: 0x2ddcff,
-      emissiveIntensity: 0.34,
-      roughness: 0.26,
-      metalness: 0.2,
-      side: THREE.DoubleSide
-    })
-  );
+  const playerColorMaterial = new THREE.MeshStandardMaterial({
+    color: ballGlowColor,
+    emissive: 0x2ddcff,
+    emissiveIntensity: 0.34,
+    roughness: 0.26,
+    metalness: 0.2,
+    side: THREE.DoubleSide
+  });
+  const playerTextureMaterial = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    transparent: true,
+    alphaTest: 0.02,
+    side: THREE.DoubleSide,
+    toneMapped: false
+  });
+  const playerFallback = new THREE.Mesh(new THREE.CircleGeometry(0.62, 64), playerColorMaterial);
   player.add(playerRoll);
   playerRoll.add(playerFallback);
   const playerGlow = new THREE.Mesh(new THREE.SphereGeometry(0.78, 40, 20), new THREE.MeshBasicMaterial({ color: ballGlowColor, transparent: true, opacity: 0.24, blending: THREE.AdditiveBlending, depthWrite: false }));
@@ -708,18 +727,20 @@
     activeTrackTextureSrc = src;
     activeTrackTexture = loadSecretTexture(src, 2.2, 2.2);
     applyLevelPalette();
+    syncTrackSkinControls();
   }
 
   function clearTrackTexture() {
     activeTrackTextureSrc = '';
     if (activeTrackTexture) activeTrackTexture.dispose?.();
     activeTrackTexture = null;
-    materials.forEach((material) => {
+    [...materials, ...secretTrackMaterials].forEach((material) => {
       material.map = null;
-      material.emissiveIntensity = 0.33;
+      if ('emissiveIntensity' in material) material.emissiveIntensity = 0.33;
       material.needsUpdate = true;
     });
     applyLevelPalette();
+    syncTrackSkinControls();
   }
 
   function setBallTexture(src) {
@@ -734,10 +755,8 @@
     activeBallTextureSrc = '';
     if (activeBallTexture) activeBallTexture.dispose?.();
     activeBallTexture = null;
-    if (playerFallback.material) {
-      playerFallback.material.map = null;
-      playerFallback.material.needsUpdate = true;
-    }
+    playerTextureMaterial.map = null;
+    playerTextureMaterial.needsUpdate = true;
     applyBallColor();
   }
 
@@ -747,6 +766,19 @@
 
   function hasSecretEffects() {
     return activeSpaceVideoSrc !== defaultSpaceVideoSrc || Boolean(activeTrackTextureSrc) || Boolean(activeBallTextureSrc);
+  }
+
+  function hasTrackSkin() {
+    return Boolean(activeTrackTextureSrc);
+  }
+
+  function syncTrackSkinControls() {
+    const trackSkinActive = hasTrackSkin();
+    hud.stage?.classList.toggle('has-neon', neonOn && !trackSkinActive);
+    if (!hud.pathPalette) return;
+    hud.pathPalette.classList.toggle('is-locked', trackSkinActive);
+    hud.pathPalette.removeAttribute('aria-disabled');
+    hud.pathPalette.title = trackSkinActive ? 'Revert the track skin to change tunnel colors' : 'Change tunnel colors';
   }
 
   function syncSecretPanelState() {
@@ -848,13 +880,27 @@
     return states;
   }
 
+  function trackMaterialForBand(band) {
+    return activeTrackTexture ? secretTrackMaterials[band] : materials[band];
+  }
+
+  function syncTrackPanelMaterials() {
+    chunks.forEach((chunk) => {
+      chunk.group.children.forEach((mesh) => {
+        if (mesh.userData?.isTrackPanel) mesh.material = trackMaterialForBand(mesh.userData.trackBand || 0);
+      });
+    });
+  }
+
   function makeChunk(z, index) {
     const group = new THREE.Group();
     const states = makeChunkStates(index);
     states.forEach((cell, lane) => {
       if (cell !== 1) {
         const band = (lane + levelIndex) % materials.length;
-        const panel = new THREE.Mesh(panelGeometries[lane], materials[band]);
+        const panel = new THREE.Mesh(panelGeometries[lane], trackMaterialForBand(band));
+        panel.userData.isTrackPanel = true;
+        panel.userData.trackBand = band;
         panel.position.z = z;
         group.add(panel);
       }
@@ -1174,6 +1220,7 @@
       hud.pathPalette.setAttribute('aria-pressed', pathPaletteMode !== 'neon' ? 'true' : 'false');
       hud.pathPalette.classList.toggle('is-active', pathPaletteMode !== 'neon');
     }
+    syncTrackSkinControls();
   }
 
   function syncLevelSelect() {
@@ -1282,7 +1329,7 @@
     trail.position.copy(player.position);
     trail.position.z = 0.11;
     trail.rotation.z += dt * (8 + trailEnergy * 20);
-    playerGlow.visible = neonOn;
+    playerGlow.visible = neonOn && !activeBallTexture;
     trail.visible = neonOn;
     const glowPulse = Math.max(0, trailEnergy);
     playerGlow.scale.setScalar(1 + glowPulse * 0.09);
@@ -1291,8 +1338,8 @@
     trailEnergy = Math.max(0, trailEnergy - dt * 1.8);
     ballSpin += ballSpinVel * dt;
     ballSpinVel *= Math.pow(0.035, dt);
-    if (state === 'playing') ballRollAngle += dt * Math.max(8, speed * 2.1);
-    playerRoll.rotation.set(0, 0, ballRollAngle + ballSpin);
+    if (state === 'playing' && !activeBallTexture) ballRollAngle += dt * Math.max(8, speed * 2.1);
+    playerRoll.rotation.set(0, 0, activeBallTexture ? 0 : ballRollAngle + ballSpin);
     if (shake > 0) shake = Math.max(0, shake - dt);
     camera.position.x = (Math.random() - 0.5) * shake;
     camera.position.y = (Math.random() - 0.5) * shake;
@@ -1479,14 +1526,21 @@
   function applyBallColor() {
     playerGlow.material.color.setHex(ballGlowColor);
     trail.material.color.setHex(ballGlowColor);
-    if (playerFallback.material) {
-      playerFallback.material.map = activeBallTexture;
-      playerFallback.material.color.setHex(activeBallTexture ? 0xffffff : ballGlowColor);
-      playerFallback.material.emissive.setHex(activeBallTexture ? 0x000000 : ballGlowColor);
-      playerFallback.material.emissiveIntensity = activeBallTexture ? 0 : 0.34;
-      playerFallback.material.roughness = activeBallTexture ? 0.58 : 0.26;
-      playerFallback.material.metalness = activeBallTexture ? 0 : 0.2;
-      playerFallback.material.needsUpdate = true;
+    if (activeBallTexture) {
+      playerTextureMaterial.map = activeBallTexture;
+      playerTextureMaterial.color.setHex(0xffffff);
+      playerTextureMaterial.needsUpdate = true;
+      playerFallback.material = playerTextureMaterial;
+      playerRoll.rotation.set(0, 0, 0);
+    } else {
+      playerColorMaterial.map = null;
+      playerColorMaterial.color.setHex(ballGlowColor);
+      playerColorMaterial.emissive.setHex(ballGlowColor);
+      playerColorMaterial.emissiveIntensity = 0.34;
+      playerColorMaterial.roughness = 0.26;
+      playerColorMaterial.metalness = 0.2;
+      playerColorMaterial.needsUpdate = true;
+      playerFallback.material = playerColorMaterial;
     }
     const hex = '#' + ballGlowColor.toString(16).padStart(6, '0');
     if (hud.ballColorInput && hud.ballColorInput.value.toLowerCase() !== hex) hud.ballColorInput.value = hex;
@@ -1498,6 +1552,11 @@
   }
 
   hud.pathPalette?.addEventListener('click', () => {
+    if (hasTrackSkin()) {
+      playTone(180, 0.05, 'sine', 0.012);
+      syncTrackSkinControls();
+      return;
+    }
     const currentIndex = Math.max(0, pathPalettes.findIndex((palette) => palette.id === pathPaletteMode));
     pathPaletteMode = pathPalettes[(currentIndex + 1) % pathPalettes.length].id;
     applyLevelPalette();
@@ -1506,6 +1565,7 @@
   });
   applyBallColor();
   applyLevelPalette();
+  syncTrackSkinControls();
   loadLeaderboard();
   resize();
   reset();
