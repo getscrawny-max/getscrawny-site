@@ -44,29 +44,35 @@ const storedTheme = readStoredTheme();
 const defaultTheme = "dark";
 const themes = ["light", "dark"];
 const initialTheme = themes.includes(storedTheme) ? storedTheme : defaultTheme;
+const arcadeThemePages = new Set(["arcade.html", "keyboard-flight.html", "neon-octarun.html", "neon-octorun.html"]);
+const isArcadeSurface = Boolean(document.querySelector(".arcade-page, .game-page, .octarun-page"));
+let preferredTheme = initialTheme;
 let activeTag = "";
 let submittedTerms = [];
 
-document.documentElement.dataset.theme = initialTheme;
-writeStoredTheme(initialTheme);
-
-if (document.querySelector(".arcade-page")) {
-  document.documentElement.dataset.theme = "dark";
-}
+document.documentElement.dataset.theme = isArcadeSurface ? "dark" : preferredTheme;
+writeStoredTheme(preferredTheme);
 
 const syncThemeLinks = () => {
-  const currentTheme = document.documentElement.dataset.theme;
-  document.querySelectorAll('a[href^="index.html"], a[href^="explore.html"], a[href^="lessons.html"], a[href^="arcade.html"], a[href^="keyboard-flight.html"], a[href^="muscle-map.html"], a[href^="muscle-map-education.html"], a[href^="muscle-map-log.html"]').forEach((link) => {
+  const currentTheme = isArcadeSurface ? preferredTheme : document.documentElement.dataset.theme;
+  document.querySelectorAll('a[href^="index.html"], a[href^="explore.html"], a[href^="lessons.html"], a[href^="arcade.html"], a[href^="keyboard-flight.html"], a[href^="neon-octarun.html"], a[href^="neon-octorun.html"], a[href^="muscle-map.html"], a[href^="muscle-map-education.html"], a[href^="muscle-map-log.html"]').forEach((link) => {
     const rawHref = link.getAttribute("href");
     if (!rawHref || rawHref.includes("assets/")) return;
     const url = new URL(rawHref, window.location.href);
-    url.searchParams.set("theme", currentTheme);
+    const page = url.pathname.split("/").pop();
+    url.searchParams.set("theme", arcadeThemePages.has(page) ? "dark" : currentTheme);
     link.setAttribute("href", url.pathname.split("/").pop() + url.search + url.hash);
   });
 };
 
 const syncThemeToggle = () => {
   if (!themeToggle) return;
+  if (isArcadeSurface) {
+    themeToggle.setAttribute("aria-label", "Arcade pages stay in dark mode");
+    themeToggle.setAttribute("aria-pressed", "true");
+    themeToggle.disabled = true;
+    return;
+  }
   const currentTheme = document.documentElement.dataset.theme;
   const nextTheme = themes[(themes.indexOf(currentTheme) + 1) % themes.length];
   themeToggle.setAttribute("aria-label", "Switch to " + nextTheme + " mode");
@@ -151,8 +157,10 @@ document.addEventListener("pointerdown", (event) => {
 
 if (themeToggle) {
   themeToggle.addEventListener("click", () => {
+    if (isArcadeSurface) return;
     const currentTheme = document.documentElement.dataset.theme;
     const nextTheme = themes[(themes.indexOf(currentTheme) + 1) % themes.length];
+    preferredTheme = nextTheme;
     document.documentElement.dataset.theme = nextTheme;
     writeStoredTheme(nextTheme);
     syncThemeToggle();

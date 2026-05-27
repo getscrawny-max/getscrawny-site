@@ -5269,7 +5269,9 @@ body:has(.muscle-map-page) .app {
   padding-top: clamp(1rem, 3vw, 2rem);
 }
 
-body:has(.arcade-page) .theme-toggle {
+body:has(.arcade-page) .theme-toggle,
+body:has(.game-page) .theme-toggle,
+body:has(.octarun-page) .theme-toggle {
   display: none;
 }
 
@@ -8066,4 +8068,11 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
   .muscle-map-log-shell .receipt-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
+}
+
+/* Arcade pages are intentionally dark-only. */
+body:has(.arcade-page) .theme-toggle,
+body:has(.game-page) .theme-toggle,
+body:has(.octarun-page) .theme-toggle {
+  display: none !important;
 }
