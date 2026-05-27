@@ -119,9 +119,9 @@
   const levelConfigs = [
     { level: 1, duration: 30, speed: 5.15, hazards: [2, 2], wallChance: 0.14, gapRunChance: 0.08, safeStart: 7, copy: 'Level 2 opens up after 30 seconds with more lane reads.' },
     { level: 2, duration: 60, speed: 5.95, hazards: [2, 3], wallChance: 0.22, gapRunChance: 0.16, safeStart: 7, copy: 'Level 3 runs 90 seconds and asks for cleaner jumps.' },
-    { level: 3, duration: 90, speed: 6.75, hazards: [3, 4], wallChance: 0.23, gapRunChance: 0.48, safeStart: 6, copy: 'Level 4 stretches to two minutes with tighter timing.' },
-    { level: 4, duration: 120, speed: 7.55, hazards: [4, 5], wallChance: 0.40, gapRunChance: 0.22, safeStart: 5, copy: 'Level 5 is the two-and-a-half-minute final run.' },
-    { level: 5, duration: Infinity, speed: 8.35, hazards: [5, 6], wallChance: 0.48, gapRunChance: 0.18, safeStart: 5, copy: 'Level 5 runs endlessly. Chase the highest score you can hold.' }
+    { level: 3, duration: 90, speed: 6.75, hazards: [3, 3], wallChance: 0.23, gapRunChance: 0.18, safeStart: 6, copy: 'Level 4 stretches to two minutes with tighter timing.' },
+    { level: 4, duration: 120, speed: 7.55, hazards: [3, 4], wallChance: 0.30, gapRunChance: 0.22, safeStart: 5, copy: 'Level 5 is the two-and-a-half-minute final run.' },
+    { level: 5, duration: Infinity, speed: 8.35, hazards: [4, 4], wallChance: 0.34, gapRunChance: 0.18, safeStart: 5, copy: 'Level 5 runs endlessly. Chase the highest score you can hold.' }
   ];
 
   const pathPalettes = [
@@ -132,6 +132,7 @@
     { id: 'barca', name: 'Barca', colors: [0xa50044, 0x004d98, 0xedbb00, 0xffed02, 0xdb0030] },
     { id: 'color-blind', name: 'Color Blind', colors: [0xd55e00, 0xcc79a7, 0x0072b2, 0xf0e442, 0x009e73] },
     { id: 'plucky-parrot', name: 'Plucky Parrot', colors: [0xfdd413, 0xf6a716, 0x91bf7e, 0x1cafec, 0x216a8d] },
+    { id: 'aston', name: 'Aston', colors: [0x1e2925, 0x3d524b, 0x416269, 0x5f8586, 0x9cbbb3] },
     { id: 'omni-vincible', name: 'Omni-Vincible', colors: [0xffe556, 0x00bcf0, 0x303539, 0xc8412d, 0xe1ebed] }
   ];
   let pathPaletteMode = 'neon';
@@ -363,6 +364,9 @@
   const levelCompleteAudio = new Audio('assets/octarun_music/LevelComplete_Cheer.mp3');
   levelCompleteAudio.preload = 'auto';
   levelCompleteAudio.volume = 0.5;
+  const rollAudio = new Audio('assets/left%3Aright_roll.mp3');
+  rollAudio.preload = 'auto';
+  rollAudio.volume = 0.38;
 
   const hardModeMultiplier = () => (hardMode ? 1.5 : 1);
   const currentConfig = () => levelConfigs[levelIndex];
@@ -455,7 +459,7 @@
   }
 
   function controlsMarkup() {
-    return '<p>Level 1 runs 30 seconds. Each unlocked level lasts longer and asks for quicker reads.</p><div class="octarun-controls-list"><span>Arrow Keys or A/D = Move</span><span>W or Spacebar = Jump</span><span>Enter = Restart / Continue</span><span>Esc = Pause</span><span>M = Toggle Music</span><span>F = Toggle FX</span></div>';
+    return '<p>Level 1 runs 30 seconds. Each unlocked level lasts longer and asks for quicker reads.</p><div class="octarun-controls-list"><span>Arrow Keys or A/D = Move</span><span>Up Arrow or W = Jump</span><span>Spacebar = Restart</span><span>Enter = Continue</span><span>Esc = Pause / Exit Fullscreen</span><span>M/F = Music / FX</span></div>';
   }
 
   function startModeButtonsMarkup() {
@@ -690,6 +694,12 @@
     levelCompleteAudio.play().catch(() => {});
   }
 
+  function playRollSound() {
+    if (!fxOn) return;
+    rollAudio.currentTime = 0;
+    rollAudio.play().catch(() => {});
+  }
+
   function clearChunks() {
     chunks.forEach((chunk) => world.remove(chunk.group));
     chunks = [];
@@ -827,6 +837,19 @@
     }
   }
 
+  async function handleEscapeKey() {
+    if (state === 'playing') {
+      pause();
+      return;
+    }
+    if (state === 'paused' && document.fullscreenElement) {
+      try { await document.exitFullscreen(); } catch (_) {}
+      window.setTimeout(resize, 80);
+      return;
+    }
+    if (state === 'paused') start();
+  }
+
   function completeLevel() {
     if (state !== 'playing') return;
     state = 'level-complete';
@@ -856,7 +879,7 @@
     playTone(92, 0.32, 'sawtooth', 0.055);
     playGameOverSound();
     updateHud();
-    setOverlay('Run ended', 'The tunnel caught you.', '<p>Press Enter or Spacebar to restart this level. Look one lane ahead; the safe path always exists.</p>', true, 'Restart Run');
+    setOverlay('Run ended', 'The tunnel caught you.', '<p>Press Spacebar to return to the start screen, or Enter to retry this level. Look one lane ahead; the safe path always exists.</p>', true, 'Restart Run');
     pendingScore = Math.max(pendingScore, Math.floor(score));
     renderLeaderboard();
     syncStartButton();
@@ -907,6 +930,7 @@
     targetAngle = laneStep * laneArc;
     ballSpinVel += -dir * 5;
     trailEnergy = 1;
+    playRollSound();
     playTone(420 + Math.abs(dir) * 90, 0.045, 'square', 0.024);
   }
 
@@ -1069,9 +1093,12 @@
       queueRotate(1);
       return;
     }
-    if (isSpaceKey(event) || normalized === 'w' || code === 'KeyW') {
-      if (state === 'dead') restartCurrentLevel();
-      else if (state === 'playing') queueJump();
+    if (key === 'ArrowUp' || normalized === 'w' || code === 'KeyW') {
+      if (state === 'playing') queueJump();
+      return;
+    }
+    if (isSpaceKey(event)) {
+      reset();
       return;
     }
     if (key === 'Enter') {
@@ -1079,7 +1106,7 @@
       return;
     }
     if (key === 'Escape') {
-      pause();
+      handleEscapeKey();
       return;
     }
     if (normalized === 'm' || code === 'KeyM') {
