@@ -463,17 +463,32 @@
     return bannedLeaderboardPattern.test(String(value || ''));
   }
 
+  function sortedLeaderboardEntries() {
+    return leaderboardEntries.slice().sort((a, b) => b.score - a.score).slice(0, 10);
+  }
+
+  function rankForScore(score) {
+    if (!Number.isFinite(score) || score <= 0) return null;
+    const rank = leaderboardEntries.filter((entry) => entry.score >= score).length + 1;
+    return rank <= 10 ? rank : null;
+  }
+
   function scoreQualifiesForLeaderboard(score) {
-    const sorted = leaderboardEntries.slice().sort((a, b) => b.score - a.score).slice(0, 10);
-    return sorted.length < 10 || score > sorted[sorted.length - 1].score;
+    return Boolean(rankForScore(score));
   }
 
   function renderLeaderboard() {
     if (!hud.scoreList) return;
-    const entries = leaderboardEntries.sort((a, b) => b.score - a.score).slice(0, 10);
-    hud.scoreList.innerHTML = entries.length
-      ? entries.map((entry) => '<li><span>' + entry.initials + '</span><strong>' + entry.score + '</strong></li>').join('')
-      : '<li class="is-empty"><span>' + leaderboardStatus + '</span><strong>0</strong></li>';
+    const entries = sortedLeaderboardEntries();
+    const rows = Array.from({ length: 10 }, (_, index) => {
+      const entry = entries[index];
+      if (!entry) {
+        const label = index === 0 && !entries.length ? leaderboardStatus : '-----';
+        return '<li class="is-empty"><b class="octarun-score-rank">' + (index + 1) + '.</b><span>' + label + '</span><strong>0</strong></li>';
+      }
+      return '<li><b class="octarun-score-rank">' + (index + 1) + '.</b><span>' + entry.initials + '</span><strong>' + entry.score + '</strong></li>';
+    });
+    hud.scoreList.innerHTML = rows.join('');
     const submitButton = hud.scoreForm?.querySelector('button');
     if (submitButton) submitButton.disabled = pendingScore <= 0 || !scoreQualifiesForLeaderboard(Math.floor(pendingScore));
   }
@@ -1010,14 +1025,19 @@
   function die() {
     if (state !== 'playing') return;
     state = 'dead';
+    const finalScore = Math.floor(score);
+    const placement = rankForScore(finalScore);
     clearInputBuffers();
     shake = 0.45;
     stopMusic();
     playTone(92, 0.32, 'sawtooth', 0.055);
     playGameOverSound();
     updateHud();
-    setOverlay('Run ended', 'The tunnel caught you.', '<p>Press Spacebar or Enter to retry this level. Look one lane ahead; the safe path always exists.</p>', true, 'Restart Run');
-    pendingScore = Math.max(pendingScore, Math.floor(score));
+    pendingScore = Math.max(pendingScore, finalScore);
+    const placementCopy = placement
+      ? '<p>Score: ' + finalScore + '. Current placement: #' + placement + '. Enter your name below the game to post it.</p>'
+      : '<p>Score: ' + finalScore + '. No top 10 placement this run.</p>';
+    setOverlay('Run ended', 'The tunnel caught you.', placementCopy + '<p>Press Spacebar or Enter to retry this level. Look one lane ahead; the safe path always exists.</p>', true, 'Restart Run');
     renderLeaderboard();
     syncStartButton();
   }

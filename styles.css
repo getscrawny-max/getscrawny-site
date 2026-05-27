@@ -7287,6 +7287,10 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
   min-height: 0;
 }
 
+.octarun-shell:fullscreen .octarun-leaderboard {
+  display: none;
+}
+
 .octarun-stage.has-neon canvas {
   filter: drop-shadow(0 0 10px rgba(48, 217, 255, 0.18));
 }
@@ -7419,16 +7423,17 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
 
 .octarun-score-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: 1fr;
   gap: 0.45rem;
   margin: 0.8rem 0 0;
   padding: 0;
-  list-style-position: inside;
+  list-style: none;
 }
 
 .octarun-score-list li {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 2.4rem minmax(0, 1fr) minmax(4.5rem, auto);
+  align-items: center;
   gap: 0.75rem;
   border: 1px solid rgba(79, 202, 255, 0.22);
   border-radius: 8px;
@@ -7438,16 +7443,17 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
   font-weight: 900;
 }
 
-.octarun-score-list li::before {
-  content: counter(list-item) ".";
+.octarun-score-rank {
   color: rgba(232, 247, 255, 0.54);
+  font-variant-numeric: tabular-nums;
 }
 
 .octarun-score-list li span {
-  margin-right: auto;
+  min-width: 0;
 }
 
 .octarun-score-list li strong {
+  justify-self: end;
   font-variant-numeric: tabular-nums;
 }
 
