@@ -385,6 +385,12 @@
   const levelSecondsLeft = () => isEndlessLevel() ? null : Math.max(0, Math.ceil(currentConfig().duration - levelProgress()));
   const unlockStorageKey = 'octarunUnlockedLevel';
   const leaderboardStorageKey = 'octarunLeaderboard';
+  const supabaseUrl = 'https://yghobbonabzdkvlnfcgd.supabase.co';
+  const supabaseKey = 'sb_publishable_JlGOTqyivIBOmdhvLWHUBg_-T6yb6Fy';
+  const leaderboardEndpoint = supabaseUrl + '/rest/v1/octarun_scores';
+  const bannedLeaderboardPattern = /(fuck|shit|bitch|cunt|dick|pussy|asshole|nigg|fag|retard|slut|whore|kike|nazi|hitler|rape|sex|xxx)/i;
+  let leaderboardEntries = [];
+  let leaderboardStatus = 'Loading shared scores...';
 
   function clampLevelNumber(value) {
     const parsed = Number.parseInt(value, 10);
@@ -413,46 +419,112 @@
     saveUnlockedLevel(Math.min(levelConfigs.length, currentConfig().level + 1));
   }
 
-  function readLeaderboard() {
+  function readLocalLeaderboard() {
     try {
       const parsed = JSON.parse(localStorage.getItem(leaderboardStorageKey) || '[]');
-      return Array.isArray(parsed) ? parsed.filter((entry) => entry && entry.initials && Number.isFinite(entry.score)) : [];
+      return Array.isArray(parsed) ? parsed.map(normalizeLeaderboardEntry).filter(Boolean) : [];
     } catch (_) {
       return [];
     }
   }
 
-  function saveLeaderboard(entries) {
+  function saveLocalLeaderboard(entries) {
     try {
       localStorage.setItem(leaderboardStorageKey, JSON.stringify(entries.slice(0, 10)));
     } catch (_) {}
   }
 
+  function normalizeLeaderboardEntry(entry) {
+    const initials = cleanInitials(entry?.initials);
+    const score = Number.parseInt(entry?.score, 10);
+    if (!initials || isInappropriateInitials(initials) || !Number.isFinite(score) || score < 0) return null;
+    return {
+      initials,
+      score,
+      mode: entry?.mode === 'hard' ? 'hard' : 'normal',
+      created_at: entry?.created_at || null
+    };
+  }
+
+  function leaderboardHeaders(includeContent = false) {
+    const headers = {
+      apikey: supabaseKey,
+      Authorization: 'Bearer ' + supabaseKey
+    };
+    if (includeContent) headers['Content-Type'] = 'application/json';
+    return headers;
+  }
+
   function cleanInitials(value) {
-    return String(value || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5);
+    return String(value || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 7);
+  }
+
+  function isInappropriateInitials(value) {
+    return bannedLeaderboardPattern.test(String(value || ''));
+  }
+
+  function scoreQualifiesForLeaderboard(score) {
+    const sorted = leaderboardEntries.slice().sort((a, b) => b.score - a.score).slice(0, 10);
+    return sorted.length < 10 || score > sorted[sorted.length - 1].score;
   }
 
   function renderLeaderboard() {
     if (!hud.scoreList) return;
-    const entries = readLeaderboard().sort((a, b) => b.score - a.score).slice(0, 10);
+    const entries = leaderboardEntries.sort((a, b) => b.score - a.score).slice(0, 10);
     hud.scoreList.innerHTML = entries.length
       ? entries.map((entry) => '<li><span>' + entry.initials + '</span><strong>' + entry.score + '</strong></li>').join('')
-      : '<li class="is-empty"><span>-----</span><strong>0</strong></li>';
+      : '<li class="is-empty"><span>' + leaderboardStatus + '</span><strong>0</strong></li>';
     const submitButton = hud.scoreForm?.querySelector('button');
-    if (submitButton) submitButton.disabled = pendingScore <= 0;
+    if (submitButton) submitButton.disabled = pendingScore <= 0 || !scoreQualifiesForLeaderboard(Math.floor(pendingScore));
   }
 
-  function submitScore(event) {
+  async function loadLeaderboard() {
+    leaderboardEntries = readLocalLeaderboard();
+    if (leaderboardEntries.length) leaderboardStatus = 'Local scores';
+    renderLeaderboard();
+
+    try {
+      const response = await fetch(leaderboardEndpoint + '?select=initials,score,mode,created_at&order=score.desc,created_at.asc&limit=10', {
+        headers: leaderboardHeaders()
+      });
+      if (!response.ok) throw new Error('Leaderboard fetch failed');
+      const data = await response.json();
+      leaderboardEntries = Array.isArray(data) ? data.map(normalizeLeaderboardEntry).filter(Boolean) : [];
+      leaderboardStatus = 'No scores yet';
+      saveLocalLeaderboard(leaderboardEntries);
+    } catch (_) {
+      if (!leaderboardEntries.length) leaderboardStatus = 'Offline';
+    }
+    renderLeaderboard();
+  }
+
+  async function submitScore(event) {
     event.preventDefault();
     const initials = cleanInitials(hud.initials?.value);
-    if (!initials || pendingScore <= 0) return;
-    const entries = readLeaderboard();
-    entries.push({ initials, score: pendingScore });
-    entries.sort((a, b) => b.score - a.score);
-    saveLeaderboard(entries);
+    if (!initials || isInappropriateInitials(initials) || pendingScore <= 0 || !scoreQualifiesForLeaderboard(Math.floor(pendingScore))) {
+      if (hud.initials) hud.initials.value = '';
+      return;
+    }
+    const entry = { initials, score: Math.floor(pendingScore), mode: hardMode ? 'hard' : 'normal' };
+    leaderboardEntries.push(entry);
+    leaderboardEntries.sort((a, b) => b.score - a.score);
+    saveLocalLeaderboard(leaderboardEntries);
     pendingScore = 0;
     if (hud.initials) hud.initials.value = '';
     renderLeaderboard();
+
+    try {
+      const response = await fetch(leaderboardEndpoint, {
+        method: 'POST',
+        headers: { ...leaderboardHeaders(true), Prefer: 'return=minimal' },
+        body: JSON.stringify(entry)
+      });
+      if (!response.ok) throw new Error('Leaderboard submit failed');
+      await loadLeaderboard();
+    } catch (_) {
+      leaderboardStatus = 'Saved locally';
+      renderLeaderboard();
+    }
   }
 
   function speedForLevel() {
@@ -1294,7 +1366,7 @@
   });
   applyBallColor();
   applyLevelPalette();
-  renderLeaderboard();
+  loadLeaderboard();
   resize();
   reset();
   requestAnimationFrame(loop);
