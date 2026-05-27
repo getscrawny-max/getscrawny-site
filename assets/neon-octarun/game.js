@@ -384,6 +384,8 @@
   let ballSpin = 0;
   let ballSpinVel = 0;
   let ballRollAngle = 0;
+  let secretBallTwist = 0;
+  let secretBallTwistVel = 0;
   let musicOn = true;
   let fxOn = true;
   let audioContext = null;
@@ -435,7 +437,7 @@
 
   function readUnlockedLevel() {
     try {
-      return clampLevelNumber(sessionStorage.getItem(unlockStorageKey) || '1');
+      return clampLevelNumber(localStorage.getItem(unlockStorageKey) || sessionStorage.getItem(unlockStorageKey) || '1');
     } catch (_) {
       return 1;
     }
@@ -446,6 +448,7 @@
   function saveUnlockedLevel(levelNumber) {
     unlockedLevel = Math.max(unlockedLevel, clampLevelNumber(levelNumber));
     try {
+      localStorage.setItem(unlockStorageKey, String(unlockedLevel));
       sessionStorage.setItem(unlockStorageKey, String(unlockedLevel));
     } catch (_) {}
   }
@@ -1013,6 +1016,8 @@
     ballSpin = 0;
     ballSpinVel = 0;
     ballRollAngle = 0;
+    secretBallTwist = 0;
+    secretBallTwistVel = 0;
     player.rotation.set(0, 0, 0);
     playerRoll.rotation.set(0, 0, 0);
     applyBallColor();
@@ -1096,6 +1101,8 @@
     ballSpin = 0;
     ballSpinVel = 0;
     ballRollAngle = 0;
+    secretBallTwist = 0;
+    secretBallTwistVel = 0;
     player.rotation.set(0, 0, 0);
     playerRoll.rotation.set(0, 0, 0);
     trailEnergy = 0;
@@ -1234,8 +1241,12 @@
 
   function cycleSelectedLevel() {
     if (state === 'playing' || state === 'paused') return;
+    const wasDead = state === 'dead';
     levelIndex = (levelIndex + 1) % unlockedLevel;
+    state = 'ready';
+    if (wasDead) score = 0;
     levelElapsed = 0;
+    clearInputBuffers();
     applyLevelPalette();
     seedChunks();
     updateHud();
@@ -1248,7 +1259,8 @@
     laneIndex = (laneIndex + dir + lanes) % lanes;
     laneStep += dir;
     targetAngle = laneStep * laneArc;
-    ballSpinVel += -dir * 5;
+    if (activeBallTexture) secretBallTwistVel += -dir * 7;
+    else ballSpinVel += -dir * 5;
     trailEnergy = 1;
     playRollSound();
     playTone(420 + Math.abs(dir) * 90, 0.045, 'square', 0.024);
@@ -1338,8 +1350,16 @@
     trailEnergy = Math.max(0, trailEnergy - dt * 1.8);
     ballSpin += ballSpinVel * dt;
     ballSpinVel *= Math.pow(0.035, dt);
-    if (state === 'playing' && !activeBallTexture) ballRollAngle += dt * Math.max(8, speed * 2.1);
-    playerRoll.rotation.set(0, 0, activeBallTexture ? 0 : ballRollAngle + ballSpin);
+    if (activeBallTexture) {
+      secretBallTwist += secretBallTwistVel * dt;
+      secretBallTwistVel += -secretBallTwist * 34 * dt;
+      secretBallTwistVel *= Math.pow(0.018, dt);
+      secretBallTwist = Math.max(-0.22, Math.min(0.22, secretBallTwist));
+      playerRoll.rotation.set(0, 0, secretBallTwist);
+    } else {
+      if (state === 'playing') ballRollAngle += dt * Math.max(8, speed * 2.1);
+      playerRoll.rotation.set(0, 0, ballRollAngle + ballSpin);
+    }
     if (shake > 0) shake = Math.max(0, shake - dt);
     camera.position.x = (Math.random() - 0.5) * shake;
     camera.position.y = (Math.random() - 0.5) * shake;
@@ -1531,6 +1551,8 @@
       playerTextureMaterial.color.setHex(0xffffff);
       playerTextureMaterial.needsUpdate = true;
       playerFallback.material = playerTextureMaterial;
+      secretBallTwist = 0;
+      secretBallTwistVel = 0;
       playerRoll.rotation.set(0, 0, 0);
     } else {
       playerColorMaterial.map = null;
