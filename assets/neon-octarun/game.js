@@ -459,7 +459,7 @@
   }
 
   function controlsMarkup() {
-    return '<p>Level 1 runs 30 seconds. Each unlocked level lasts longer and asks for quicker reads.</p><div class="octarun-controls-list"><span>Arrow Keys or A/D = Move</span><span>Up Arrow or W = Jump</span><span>Spacebar = Restart</span><span>Enter = Continue</span><span>Esc = Pause / Exit Fullscreen</span><span>M/F = Music / FX</span></div>';
+    return '<p>Level 1 runs 30 seconds. Each unlocked level lasts longer and asks for quicker reads.</p><div class="octarun-controls-list"><span>Arrow Keys or A/D = Move</span><span>Up Arrow or W = Jump only</span><span>Spacebar = Start / Jump / Restart</span><span>Enter = Continue</span><span>Esc = Pause / Exit Fullscreen</span><span>M/F = Music / FX</span></div>';
   }
 
   function startModeButtonsMarkup() {
@@ -879,7 +879,7 @@
     playTone(92, 0.32, 'sawtooth', 0.055);
     playGameOverSound();
     updateHud();
-    setOverlay('Run ended', 'The tunnel caught you.', '<p>Press Spacebar to return to the start screen, or Enter to retry this level. Look one lane ahead; the safe path always exists.</p>', true, 'Restart Run');
+    setOverlay('Run ended', 'The tunnel caught you.', '<p>Press Spacebar or Enter to retry this level. Look one lane ahead; the safe path always exists.</p>', true, 'Restart Run');
     pendingScore = Math.max(pendingScore, Math.floor(score));
     renderLeaderboard();
     syncStartButton();
@@ -1098,7 +1098,8 @@
       return;
     }
     if (isSpaceKey(event)) {
-      reset();
+      if (state === 'playing') queueJump();
+      else handlePrimaryAction();
       return;
     }
     if (key === 'Enter') {
