@@ -284,9 +284,11 @@
     materials.forEach((material, index) => {
       const color = trackColors[index];
       material.color.setHex(activeTrackTexture ? 0xffffff : color);
-      material.emissive.setHex(color);
-      material.emissiveIntensity = activeTrackTexture ? 0.16 : 0.33;
+      material.emissive.setHex(activeTrackTexture ? 0x000000 : color);
+      material.emissiveIntensity = activeTrackTexture ? 0 : 0.33;
       material.map = activeTrackTexture;
+      material.roughness = activeTrackTexture ? 0.62 : 0.38;
+      material.metalness = activeTrackTexture ? 0 : 0.18;
       material.needsUpdate = true;
     });
     const fogColor = new THREE.Color(palette[(levelIndex + 4) % palette.length] || palette[0]).lerp(new THREE.Color(0x030615), 0.72);
@@ -1480,8 +1482,10 @@
     if (playerFallback.material) {
       playerFallback.material.map = activeBallTexture;
       playerFallback.material.color.setHex(activeBallTexture ? 0xffffff : ballGlowColor);
-      playerFallback.material.emissive.setHex(ballGlowColor);
-      playerFallback.material.emissiveIntensity = activeBallTexture ? 0.12 : 0.34;
+      playerFallback.material.emissive.setHex(activeBallTexture ? 0x000000 : ballGlowColor);
+      playerFallback.material.emissiveIntensity = activeBallTexture ? 0 : 0.34;
+      playerFallback.material.roughness = activeBallTexture ? 0.58 : 0.26;
+      playerFallback.material.metalness = activeBallTexture ? 0 : 0.2;
       playerFallback.material.needsUpdate = true;
     }
     const hex = '#' + ballGlowColor.toString(16).padStart(6, '0');
