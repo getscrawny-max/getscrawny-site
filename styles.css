@@ -6343,6 +6343,14 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
   font-size: clamp(1rem, 2vw, 1.3rem);
 }
 
+.octarun-hero .octarun-hero-guidance {
+  max-width: 820px;
+  margin-top: 0.55rem;
+  color: rgba(232, 247, 255, 0.62);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
 .octarun-shell {
   position: relative;
   padding: clamp(0.75rem, 1.8vw, 1.2rem);

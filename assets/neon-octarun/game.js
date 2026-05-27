@@ -384,8 +384,8 @@
   let ballSpin = 0;
   let ballSpinVel = 0;
   let ballRollAngle = 0;
-  let secretBallTwist = 0;
-  let secretBallTwistVel = 0;
+  let secretBallAngle = 0;
+  let secretBallTargetAngle = 0;
   let musicOn = true;
   let fxOn = true;
   let audioContext = null;
@@ -1016,8 +1016,8 @@
     ballSpin = 0;
     ballSpinVel = 0;
     ballRollAngle = 0;
-    secretBallTwist = 0;
-    secretBallTwistVel = 0;
+    secretBallAngle = 0;
+    secretBallTargetAngle = 0;
     player.rotation.set(0, 0, 0);
     playerRoll.rotation.set(0, 0, 0);
     applyBallColor();
@@ -1101,8 +1101,8 @@
     ballSpin = 0;
     ballSpinVel = 0;
     ballRollAngle = 0;
-    secretBallTwist = 0;
-    secretBallTwistVel = 0;
+    secretBallAngle = 0;
+    secretBallTargetAngle = 0;
     player.rotation.set(0, 0, 0);
     playerRoll.rotation.set(0, 0, 0);
     trailEnergy = 0;
@@ -1259,7 +1259,7 @@
     laneIndex = (laneIndex + dir + lanes) % lanes;
     laneStep += dir;
     targetAngle = laneStep * laneArc;
-    if (activeBallTexture) secretBallTwistVel += -dir * 7;
+    if (activeBallTexture) secretBallTargetAngle += dir * (Math.PI / 5);
     else ballSpinVel += -dir * 5;
     trailEnergy = 1;
     playRollSound();
@@ -1351,11 +1351,8 @@
     ballSpin += ballSpinVel * dt;
     ballSpinVel *= Math.pow(0.035, dt);
     if (activeBallTexture) {
-      secretBallTwist += secretBallTwistVel * dt;
-      secretBallTwistVel += -secretBallTwist * 34 * dt;
-      secretBallTwistVel *= Math.pow(0.018, dt);
-      secretBallTwist = Math.max(-0.22, Math.min(0.22, secretBallTwist));
-      playerRoll.rotation.set(0, 0, secretBallTwist);
+      secretBallAngle += (secretBallTargetAngle - secretBallAngle) * Math.min(1, dt * 14);
+      playerRoll.rotation.set(0, 0, secretBallAngle);
     } else {
       if (state === 'playing') ballRollAngle += dt * Math.max(8, speed * 2.1);
       playerRoll.rotation.set(0, 0, ballRollAngle + ballSpin);
@@ -1551,8 +1548,8 @@
       playerTextureMaterial.color.setHex(0xffffff);
       playerTextureMaterial.needsUpdate = true;
       playerFallback.material = playerTextureMaterial;
-      secretBallTwist = 0;
-      secretBallTwistVel = 0;
+      secretBallAngle = 0;
+      secretBallTargetAngle = 0;
       playerRoll.rotation.set(0, 0, 0);
     } else {
       playerColorMaterial.map = null;
