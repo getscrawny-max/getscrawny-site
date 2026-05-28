@@ -117,15 +117,15 @@
   const playerCollisionRadius = 0.58;
   const gapFrontCollisionDepth = chunkDepth / 2 + 0.16 + playerCollisionRadius;
   const gapBackCollisionDepth = chunkDepth / 2 - 0.42;
-  const wallHalfDepth = 0.22;
-  const wallCollisionDepth = 0.34;
+  const wallHalfDepth = 0.11;
+  const wallCollisionDepth = 0.18;
   const gapClearance = 0.42;
   const wallClearance = 0.72;
   const levelConfigs = [
-    { level: 1, duration: 30, speed: 5.15, hazards: [2, 2], wallChance: 0.14, gapRunChance: 0.08, safeStart: 7, copy: 'Level 2 opens up after 30 seconds with more lane reads.' },
-    { level: 2, duration: 60, speed: 5.95, hazards: [2, 3], wallChance: 0.22, gapRunChance: 0.16, safeStart: 7, copy: 'Level 3 runs 90 seconds and asks for cleaner jumps.' },
-    { level: 3, duration: 90, speed: 6.75, hazards: [3, 3], wallChance: 0.23, gapRunChance: 0.18, safeStart: 6, copy: 'Level 4 stretches to two minutes with tighter timing.' },
-    { level: 4, duration: 120, speed: 7.55, hazards: [3, 4], wallChance: 0.30, gapRunChance: 0.22, safeStart: 5, copy: 'Level 5 is the two-and-a-half-minute final run.' },
+    { level: 1, duration: 30, speed: 5.15, hazards: [2, 2], wallChance: 0.14, gapRunChance: 0.08, safeStart: 7, copy: 'Level 2 opens up for a 45-second run with more lane reads.' },
+    { level: 2, duration: 45, speed: 5.95, hazards: [2, 3], wallChance: 0.22, gapRunChance: 0.16, safeStart: 7, copy: 'Level 3 runs 60 seconds and asks for cleaner jumps.' },
+    { level: 3, duration: 60, speed: 6.75, hazards: [3, 3], wallChance: 0.23, gapRunChance: 0.18, safeStart: 6, copy: 'Level 4 stretches to 75 seconds with tighter timing.' },
+    { level: 4, duration: 75, speed: 7.55, hazards: [3, 4], wallChance: 0.30, gapRunChance: 0.22, safeStart: 5, copy: 'Level 5 runs endlessly for the high score chase.' },
     { level: 5, duration: Infinity, speed: 8.35, hazards: [4, 4], wallChance: 0.34, gapRunChance: 0.18, safeStart: 5, copy: 'Level 5 runs endlessly. Chase the highest score you can hold.' }
   ];
   const defaultSpaceVideoSrc = 'assets/neon_space_loop.mp4';
@@ -599,7 +599,7 @@
   }
 
   function controlsMarkup() {
-    return '<p>Level 1 runs 30 seconds. Each unlocked level lasts longer and asks for quicker reads.</p><div class="octarun-controls-list"><span>Arrow Keys or A/D = Move</span><span>Up Arrow or W = Jump only</span><span>Spacebar = Start / Jump / Restart</span><span>Enter = Continue</span><span>Esc = Pause / Exit Fullscreen</span><span>M/F = Music / FX</span></div>';
+    return '<p>Levels run 30, 45, 60, and 75 seconds. Level 5 runs endlessly for the high score chase.</p><div class="octarun-controls-list"><span>Arrow Keys or A/D = Move</span><span>Up Arrow or W = Jump only</span><span>Spacebar = Start / Jump / Restart</span><span>Enter = Continue</span><span>Esc = Pause / Exit Fullscreen</span><span>M/F = Music / FX</span></div>';
   }
 
   function startModeButtonsMarkup() {
@@ -652,8 +652,26 @@
     beginLevel(levelIndex + 1);
   }
 
-  function handlePrimaryAction() {
+  async function submitOverlayScoreIfTyped() {
+    const form = hud.overlay?.querySelector('[data-octa-overlay-score-form]');
+    const input = hud.overlay?.querySelector('[data-octa-overlay-initials]');
+    if (!form || !input || !String(input.value || '').trim()) return true;
+    const submitted = await submitLeaderboardScore(input.value);
+    if (!submitted) {
+      input.value = '';
+      input.classList.add('is-invalid');
+      input.focus();
+      return false;
+    }
+    form.innerHTML = '<p class="octarun-overlay-score-posted">Score posted.</p>';
+    renderLeaderboard();
+    return true;
+  }
+
+  async function handlePrimaryAction() {
     if (state === 'dead') {
+      const canRestart = await submitOverlayScoreIfTyped();
+      if (!canRestart) return;
       restartCurrentLevel();
       return;
     }
@@ -794,13 +812,14 @@
     if (!effect) {
       hud.secretCode?.classList.add('is-invalid');
       syncSecretPanelState();
-      return;
+      return false;
     }
     hud.secretCode?.classList.remove('is-invalid');
     if (effect.background) setSpaceVideo(effect.background);
     if (effect.track) setTrackTexture(effect.track);
     if (effect.ball) setBallTexture(effect.ball);
     syncSecretPanelState();
+    return true;
   }
 
   function revertSecretEffects() {
@@ -820,6 +839,13 @@
       syncSecretPanelState();
       window.setTimeout(() => hud.secretCode?.focus(), 0);
     }
+  }
+
+  function closeSecretPanel() {
+    if (!hud.secretPanel) return;
+    hud.secretPanel.hidden = true;
+    hud.countdown?.classList.remove('has-secret-panel');
+    hud.secretCode?.blur();
   }
 
   function isEditableTarget(target) {
@@ -1056,15 +1082,7 @@
     });
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
-      const submitted = await submitLeaderboardScore(input.value);
-      if (!submitted) {
-        input.value = '';
-        input.classList.add('is-invalid');
-        input.focus();
-        return;
-      }
-      form.innerHTML = '<p class="octarun-overlay-score-posted">Score posted.</p>';
-      renderLeaderboard();
+      await submitOverlayScoreIfTyped();
     });
     window.setTimeout(() => input.focus(), 0);
   }
@@ -1268,7 +1286,7 @@
 
   function doJump() {
     if (state !== 'playing' || jump > 0.03) return;
-    jumpVel = 7.4;
+    jumpVel = 7.9;
     playTone(620, 0.075, 'triangle', 0.028);
   }
 
@@ -1301,7 +1319,7 @@
       speed = speedForLevel();
       score += dt * speed * 8;
       levelElapsed += dt;
-      jumpVel -= 18 * dt;
+      jumpVel -= 16.5 * dt;
       jump = Math.max(0, jump + jumpVel * dt);
       if (jump === 0 && jumpVel < 0) jumpVel = 0;
       chunks.forEach((chunk) => {
@@ -1416,11 +1434,12 @@
   }, { capture: true, passive: false });
 
   window.addEventListener('keydown', (event) => {
+    if (isEditableTarget(event.target)) return;
     const key = event.key || '';
     const code = event.code || '';
     const normalized = key.toLowerCase();
     const gameKey = key === 'ArrowLeft' || key === 'ArrowRight' || key === 'ArrowUp' || key === 'ArrowDown' || key === 'Escape' || key === 'Enter' || code === 'Space' || normalized === ' ' || normalized === 'spacebar' || code === 'KeyA' || code === 'KeyD' || code === 'KeyW' || code === 'KeyM' || code === 'KeyF' || normalized === 'a' || normalized === 'd' || normalized === 'w' || normalized === 'm' || normalized === 'f';
-    if (gameKey && !isEditableTarget(event.target)) event.preventDefault();
+    if (gameKey) event.preventDefault();
     if (event.repeat && gameKey) return;
     if (key === 'ArrowLeft' || normalized === 'a' || code === 'KeyA') {
       queueRotate(-1);
@@ -1500,9 +1519,10 @@
     if (hud.secretActivate?.checked && secretEffects.has(secretCodeValue())) applySecretCode();
   });
   hud.secretCode?.addEventListener('keydown', (event) => {
+    event.stopPropagation();
     if (event.key === 'Enter') {
       event.preventDefault();
-      applySecretCode();
+      if (applySecretCode()) closeSecretPanel();
     }
   });
   hud.secretActivate?.addEventListener('change', () => {
