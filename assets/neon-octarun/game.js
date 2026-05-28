@@ -153,6 +153,7 @@
     { id: 'barca', name: 'Barca', colors: [0xa50044, 0x004d98, 0xedbb00, 0xffed02, 0xdb0030] },
     { id: 'color-blind', name: 'Color Blind', colors: [0xd55e00, 0xcc79a7, 0x0072b2, 0xf0e442, 0x009e73] },
     { id: 'plucky-parrot', name: 'Plucky Parrot', colors: [0xfdd413, 0xf6a716, 0x91bf7e, 0x1cafec, 0x216a8d] },
+    { id: 'golden-moon', name: 'Golden Moon', colors: [0x111625, 0x1b2f52, 0xb18930, 0xcaa94d, 0xe2c96e] },
     { id: 'aston', name: 'Aston', colors: [0x1e2925, 0x3d524b, 0x416269, 0x5f8586, 0x9cbbb3] },
     { id: 'omni-vincible', name: 'Omni-Vincible', colors: [0xffe556, 0x00bcf0, 0x303539, 0xc8412d, 0xe1ebed] }
   ];
@@ -1277,7 +1278,7 @@
     laneIndex = (laneIndex + dir + lanes) % lanes;
     laneStep += dir;
     targetAngle = laneStep * laneArc;
-    if (activeBallTexture) secretBallTargetAngle += dir * (Math.PI / 5);
+    if (activeBallTexture) secretBallTargetAngle += -dir * (Math.PI / 5);
     else ballSpinVel += -dir * 5;
     trailEnergy = 1;
     playRollSound();
@@ -1438,7 +1439,7 @@
     const key = event.key || '';
     const code = event.code || '';
     const normalized = key.toLowerCase();
-    const gameKey = key === 'ArrowLeft' || key === 'ArrowRight' || key === 'ArrowUp' || key === 'ArrowDown' || key === 'Escape' || key === 'Enter' || code === 'Space' || normalized === ' ' || normalized === 'spacebar' || code === 'KeyA' || code === 'KeyD' || code === 'KeyW' || code === 'KeyM' || code === 'KeyF' || normalized === 'a' || normalized === 'd' || normalized === 'w' || normalized === 'm' || normalized === 'f';
+    const gameKey = key === 'ArrowLeft' || key === 'ArrowRight' || key === 'ArrowUp' || key === 'ArrowDown' || key === 'Escape' || key === 'Enter' || code === 'Space' || normalized === ' ' || normalized === 'spacebar' || code === 'KeyA' || code === 'KeyD' || code === 'KeyW' || code === 'KeyP' || code === 'KeyM' || code === 'KeyF' || normalized === 'a' || normalized === 'd' || normalized === 'w' || normalized === 'p' || normalized === 'm' || normalized === 'f';
     if (gameKey) event.preventDefault();
     if (event.repeat && gameKey) return;
     if (key === 'ArrowLeft' || normalized === 'a' || code === 'KeyA') {
@@ -1464,6 +1465,10 @@
     }
     if (key === 'Escape') {
       handleEscapeKey();
+      return;
+    }
+    if (normalized === 'p' || code === 'KeyP') {
+      pause();
       return;
     }
     if (normalized === 'm' || code === 'KeyM') {
