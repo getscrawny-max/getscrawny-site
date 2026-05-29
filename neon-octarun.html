@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>OctaRun | Get Scrawny Arcade</title>
     <meta name="description" content="A neon eight-lane reflex tunnel game from Get Scrawny Arcade.">
-    <link rel="preload" href="styles.css?v=octarun-hero-guidance-1" as="style">
-    <link rel="stylesheet" href="styles.css?v=octarun-hero-guidance-1">
+    <link rel="preload" href="styles.css?v=octarun-overlay-title-1" as="style">
+    <link rel="stylesheet" href="styles.css?v=octarun-overlay-title-1">
   </head>
   <body class="octarun-body">
     <header class="site-header" data-header>
@@ -43,10 +43,9 @@
 
     <main class="octarun-page" id="top">
       <section class="octarun-hero" aria-labelledby="octarun-title">
-        <p class="eyebrow">Arcade reflex run</p>
         <h1 id="octarun-title">OctaRun</h1>
-        <p>Rotate lane to lane, jump low walls, and stay alive through an eight-sided neon tunnel.</p>
-        <p class="octarun-hero-guidance">Top row: click Normal to switch Hard mode, Level to cycle unlocked levels, Start to run, Restart to return to ready, and the color buttons to change the track or ball.</p>
+        <p>Use your arrow keys to rotate through an eight-sided neon tunnel avoiding walls and pits into the abyss.</p>
+        <p class="octarun-hero-guidance">Top Row: cycle through levels after you complete them with the Level button, switch between Normal and Hard mode for an added speed challenge, and customize the track and ball themes.</p>
       </section>
 
       <section class="octarun-shell" aria-label="OctaRun game">
@@ -84,7 +83,7 @@
           </div>
           <canvas data-octa-canvas aria-label="OctaRun octagonal tunnel game canvas"></canvas>
           <div class="octarun-overlay is-visible" data-octa-overlay>
-            <p class="eyebrow">Ready</p>
+            <p class="octarun-overlay-title" aria-hidden="true">OctaRun</p>
             <h2>Find the safe lane.</h2>
             <p>Arrow keys rotate. Space jumps. Escape pauses. On mobile, tap left or right and swipe up to jump.</p>
             <button type="button" data-octa-overlay-start>Start Run</button>
@@ -110,7 +109,7 @@
     </footer>
 
     <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
-    <script src="assets/neon-octarun/game.js?v=octarun-secret-ball-flip-1"></script>
+    <script src="assets/neon-octarun/game.js?v=octarun-overlay-title-1"></script>
     <script src="script.js?v=arcade-dark-only-1"></script>
   </body>
 </html>

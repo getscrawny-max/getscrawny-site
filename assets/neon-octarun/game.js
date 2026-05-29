@@ -600,7 +600,7 @@
   }
 
   function controlsMarkup() {
-    return '<p>Levels run 30, 45, 60, and 75 seconds. Level 5 runs endlessly for the high score chase.</p><div class="octarun-controls-list"><span>Arrow Keys or A/D = Move</span><span>Up Arrow or W = Jump only</span><span>Spacebar = Start / Jump / Restart</span><span>Enter = Continue</span><span>Esc = Pause / Exit Fullscreen</span><span>M/F = Music / FX</span></div>';
+    return '<p>Each level increases in duration by 15 seconds. Level 5 runs endlessly for a high score chase.</p><div class="octarun-controls-list"><span>Arrow Keys or A/D = Move</span><span>Up Arrow or W = Jump</span><span>Spacebar = Start / Jump / Restart</span><span>Enter = Continue</span><span>Esc = Pause / Exit Fullscreen</span><span>P = Pause</span><span>M/F = Music / FX</span></div>';
   }
 
   function startModeButtonsMarkup() {
@@ -1063,7 +1063,8 @@
     if (!hud.overlay) return;
     hud.overlay.classList.toggle('is-visible', visible);
     const buttonMarkup = buttonText === null ? '' : '<button type="button" data-octa-overlay-start>' + (buttonText || (state === 'dead' ? 'Restart Run' : 'Start Run')) + '</button>';
-    hud.overlay.innerHTML = '<p class="eyebrow">' + kicker + '</p><h2>' + title + '</h2><div class="octarun-overlay-copy">' + copy + '</div>' + buttonMarkup;
+    const kickerMarkup = kicker === 'Ready' ? '' : '<p class="eyebrow">' + kicker + '</p>';
+    hud.overlay.innerHTML = kickerMarkup + '<p class="octarun-overlay-title" aria-hidden="true">OctaRun</p><h2>' + title + '</h2><div class="octarun-overlay-copy">' + copy + '</div>' + buttonMarkup;
     const overlayButton = hud.overlay.querySelector('[data-octa-overlay-start]');
     if (overlayButton) overlayButton.addEventListener('click', handlePrimaryAction);
     attachOverlayScoreForm();
