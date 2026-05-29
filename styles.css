@@ -8436,6 +8436,7 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
 
 .arcade-landing-hero::after {
   background: linear-gradient(90deg, transparent 0 38%, rgba(255, 255, 255, 0.16) 44%, rgba(255, 255, 255, 0.88) 50%, rgba(255, 255, 255, 0.16) 56%, transparent 62%);
+  bottom: clamp(0.65rem, 1.7vw, 1.35rem);
   filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.72));
 }
 
