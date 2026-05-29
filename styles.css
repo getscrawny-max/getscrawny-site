@@ -22,6 +22,22 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "Astron Boy";
+  src: url("assets/fonts/astron-boy/Astron Boy.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Gunplay";
+  src: url("assets/fonts/gunplay/gunplay rg.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --ink: #080808;
   --muted: #5b6268;
@@ -6366,6 +6382,7 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
 
 .octarun-shell {
   position: relative;
+  margin-bottom: clamp(1rem, 2.4vw, 1.8rem);
   padding: clamp(0.75rem, 1.8vw, 1.2rem);
   border: 1px solid rgba(48, 217, 255, 0.55);
   border-radius: 12px;
@@ -8362,4 +8379,83 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
   border-radius: 0 0 999px 999px !important;
   background: transparent !important;
   transform: translateX(-50%) !important;
+}
+
+/* Keep header menu order stable as the row compresses. */
+.site-header .brand {
+  order: 1;
+}
+
+.site-header .page-menu {
+  order: 2 !important;
+  margin-left: auto;
+}
+
+.site-header .library-menu {
+  order: 3 !important;
+  margin-left: 0;
+}
+
+.site-header .theme-toggle {
+  order: 4 !important;
+}
+
+@media (max-width: 620px) {
+  .site-header .brand {
+    grid-column: 1;
+  }
+
+  .site-header .page-menu {
+    grid-column: 2;
+    margin-left: 0;
+  }
+
+  .site-header .library-menu {
+    grid-column: 3;
+  }
+
+  .site-header .theme-toggle {
+    grid-column: 4;
+  }
+}
+
+/* Keep the Arcade landing hero neutral; game-specific color belongs to the cards. */
+.arcade-page {
+  background:
+    linear-gradient(rgba(143, 181, 208, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(143, 181, 208, 0.045) 1px, transparent 1px),
+    radial-gradient(circle at 22% 20%, rgba(255, 255, 255, 0.1), transparent 26%),
+    radial-gradient(circle at 82% 18%, rgba(255, 255, 255, 0.12), transparent 28%),
+    #050505;
+}
+
+.arcade-page::before {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.2), transparent);
+  box-shadow: 0 0 18px rgba(255, 255, 255, 0.18);
+}
+
+.arcade-landing-hero::after {
+  background: linear-gradient(90deg, transparent 0 38%, rgba(255, 255, 255, 0.16) 44%, rgba(255, 255, 255, 0.88) 50%, rgba(255, 255, 255, 0.16) 56%, transparent 62%);
+  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.72));
+}
+
+.arcade-page .arcade-landing-hero .eyebrow,
+.arcade-page .arcade-landing-hero .library-title,
+.arcade-page .arcade-landing-hero .hero-text {
+  font-family: "Gunplay", system-ui, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.arcade-page .arcade-landing-hero .eyebrow {
+  margin-bottom: clamp(0.55rem, 1.4vw, 0.9rem);
+  font-size: clamp(1.08rem, 2vw, 1.48rem);
+}
+
+.arcade-page .arcade-landing-hero .library-title {
+  margin-bottom: clamp(0.55rem, 1.4vw, 0.9rem);
+}
+
+.arcade-page .arcade-landing-hero .hero-text {
+  margin-bottom: 0;
 }

@@ -278,9 +278,62 @@
     }, { color: candidates[0], score: -1 }).color;
   }
 
+  const arrangedPaletteCache = new Map();
+
+  function colorDistance(colorA, colorB) {
+    const a = new THREE.Color(colorA);
+    const b = new THREE.Color(colorB);
+    const dr = a.r - b.r;
+    const dg = a.g - b.g;
+    const db = a.b - b.b;
+    return Math.sqrt(dr * dr + dg * dg + db * db);
+  }
+
+  function paletteSequenceScore(colors) {
+    const pairs = colors.map((color, index) => {
+      const next = colors[(index + 1) % colors.length];
+      return colorDistance(color, next) + Math.min(contrastRatio(color, next), 6) / 6;
+    });
+    return {
+      weakest: Math.min(...pairs),
+      total: pairs.reduce((sum, pairScore) => sum + pairScore, 0)
+    };
+  }
+
+  function arrangePaletteColors(colors) {
+    if (colors.length <= 2) return colors.slice();
+    const cacheKey = colors.join('|');
+    const cached = arrangedPaletteCache.get(cacheKey);
+    if (cached) return cached.slice();
+
+    const firstColor = colors[0];
+    let best = colors.slice();
+    let bestScore = paletteSequenceScore(best);
+
+    function visit(prefix, remaining) {
+      if (!remaining.length) {
+        const candidate = [firstColor, ...prefix];
+        const score = paletteSequenceScore(candidate);
+        if (score.weakest > bestScore.weakest + 0.001 || (Math.abs(score.weakest - bestScore.weakest) <= 0.001 && score.total > bestScore.total)) {
+          best = candidate;
+          bestScore = score;
+        }
+        return;
+      }
+
+      remaining.forEach((color, index) => {
+        visit([...prefix, color], remaining.filter((_, remainingIndex) => remainingIndex !== index));
+      });
+    }
+
+    visit([], colors.slice(1));
+    arrangedPaletteCache.set(cacheKey, best);
+    return best.slice();
+  }
+
   function applyLevelPalette() {
     const activePalette = activePathPalette();
-    const palette = activePalette.colors;
+    const palette = arrangePaletteColors(activePalette.colors);
     const trackColors = materials.map((_, index) => palette[(levelIndex + index) % palette.length]);
     const trackColorSet = new Set(trackColors);
     const barrierCandidates = allPaletteColors().filter((color) => !trackColorSet.has(color));
