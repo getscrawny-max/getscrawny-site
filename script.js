@@ -44,7 +44,7 @@ const storedTheme = readStoredTheme();
 const defaultTheme = "dark";
 const themes = ["light", "dark"];
 const initialTheme = themes.includes(storedTheme) ? storedTheme : defaultTheme;
-const arcadeThemePages = new Set(["arcade.html", "keyboard-flight.html", "neon-octarun.html", "neon-octorun.html"]);
+const arcadeThemePages = new Set(["arcade.html", "keyboard-flight.html", "neon-octarun.html", "neon-octorun.html", "speedmail.html"]);
 const isArcadeSurface = Boolean(document.querySelector(".arcade-page, .game-page, .octarun-page"));
 let preferredTheme = initialTheme;
 let activeTag = "";
@@ -55,7 +55,7 @@ writeStoredTheme(preferredTheme);
 
 const syncThemeLinks = () => {
   const currentTheme = isArcadeSurface ? preferredTheme : document.documentElement.dataset.theme;
-  document.querySelectorAll('a[href^="index.html"], a[href^="explore.html"], a[href^="lessons.html"], a[href^="arcade.html"], a[href^="keyboard-flight.html"], a[href^="neon-octarun.html"], a[href^="neon-octorun.html"], a[href^="muscle-map.html"], a[href^="muscle-map-education.html"], a[href^="muscle-map-log.html"]').forEach((link) => {
+  document.querySelectorAll('a[href^="index.html"], a[href^="explore.html"], a[href^="lessons.html"], a[href^="arcade.html"], a[href^="keyboard-flight.html"], a[href^="neon-octarun.html"], a[href^="neon-octorun.html"], a[href^="speedmail.html"], a[href^="muscle-map.html"], a[href^="muscle-map-education.html"], a[href^="muscle-map-log.html"]').forEach((link) => {
     const rawHref = link.getAttribute("href");
     if (!rawHref || rawHref.includes("assets/")) return;
     const url = new URL(rawHref, window.location.href);
@@ -311,6 +311,415 @@ if (lessonMap && lessonCards.length) {
   });
 
   syncLibrary();
+}
+
+const speedmailApp = document.querySelector("[data-speedmail-app]");
+
+if (speedmailApp) {
+  const speedmailCoreRules = {
+    homeRow: {
+      leftHand: "ASDF",
+      rightHand: "JKL;",
+      thumbs: "Space bar",
+      anchors: ["F", "J"],
+      expectation: "Place left fingers on A, S, D, F and right fingers on J, K, L, ;. Rest thumbs on the space bar."
+    },
+    keyReaching: {
+      expectation: "Reach from the home row to upper and lower row keys, then return fingers to home row after each key."
+    },
+    accuracyFirst: {
+      minimumAccuracy: 95,
+      expectation: "Progress requires corrected text and at least 95% typing accuracy."
+    },
+    noPeeking: {
+      expectation: "Looking down at hands is discouraged; keep eyes on the screen and trust home-row position."
+    }
+  };
+  const speedmailContentRules = {
+    tone: "curious, useful, calm, and appropriate for families",
+    messageLength: "one brief ask with one clear reply target",
+    allowedDomains: ["speedmail.com", "getscrawny", "neonoctarun", "alienalphabet"],
+    include: ["everyday science", "healthy movement", "creative problem solving", "kind communication"],
+    avoid: ["scare tactics", "adult themes", "political persuasion", "medical claims", "financial advice", "ads"]
+  };
+  const messages = [
+    {
+      from: "OrbitNote@speedmail.com",
+      subject: "Moonlight answer",
+      category: "Space",
+      color: "#8b2f65",
+      time: "9:42 AM",
+      body: "A reader asked why the Moon glows at night. Please send a simple, friendly science answer.",
+      target: "The Moon does not make its own light. It looks bright because sunlight reflects off its surface and travels back to our eyes, which is why its shape and brightness can seem to change through the month."
+    },
+    {
+      from: "TrailDesk@getscrawny",
+      subject: "Stretch break note",
+      category: "Movement",
+      color: "#55708c",
+      time: "9:18 AM",
+      body: "Can you reply with a gentle reminder for families to take a movement break during a long screen session? Keep it short and encouraging.",
+      target: "Try a quick movement break: stand tall, roll your shoulders, take three slow breaths, and walk around the room once before returning to the screen with relaxed hands."
+    },
+    {
+      from: "PuzzleRelay@alienalphabet",
+      subject: "Pattern clue check",
+      category: "Patterns",
+      color: "#6f5aa8",
+      time: "8:07 AM",
+      body: "A puzzle prompt needs a family-friendly clue about spotting patterns in a sequence. Please make it clear without giving away a full answer.",
+      target: "Look for what changes each step. A pattern might grow, shrink, repeat, or switch between two ideas, so compare each item with the one before it."
+    },
+    {
+      from: "ReefNote@speedmail.com",
+      subject: "Coral color fact",
+      category: "Nature",
+      color: "#2f7f78",
+      time: "7:46 AM",
+      body: "A class wants one calm fact about why many corals look colorful. Keep it accurate and easy to picture.",
+      target: "Many corals look colorful because tiny algae live inside them and use sunlight to make food, while the coral gives the algae a protected place to live."
+    },
+    {
+      from: "WordLab@alienalphabet",
+      subject: "Root word reply",
+      category: "Language",
+      color: "#9a6a2f",
+      time: "7:22 AM",
+      body: "Please explain what a root word is in one friendly sentence for a young reader.",
+      target: "A root word is the main part of a word that carries its basic meaning, like act in action, react, and actor."
+    },
+    {
+      from: "SkyDesk@neonoctarun",
+      subject: "Cloud naming note",
+      category: "Weather",
+      color: "#436da8",
+      time: "6:58 AM",
+      body: "A weather card needs a quick note about cumulus clouds. Make it clear and family-friendly.",
+      target: "Cumulus clouds are puffy clouds that often look like cotton, and they can mean fair weather when they stay small and bright."
+    },
+    {
+      from: "PulseDesk@getscrawny",
+      subject: "Heart rate check",
+      category: "Body",
+      color: "#9a3d4d",
+      time: "6:41 AM",
+      body: "Write a simple fact about why a heartbeat gets faster during movement. Avoid medical advice.",
+      target: "Your heartbeat gets faster during movement because muscles need more oxygen-rich blood to keep working, so your heart pumps more quickly."
+    },
+    {
+      from: "MapNote@speedmail.com",
+      subject: "Compass reminder",
+      category: "Geography",
+      color: "#61722f",
+      time: "6:19 AM",
+      body: "A map activity needs a concise reminder about the four main compass directions.",
+      target: "The four main compass directions are north, east, south, and west, and they help people describe location, movement, and routes on a map."
+    }
+  ].filter((message) => speedmailContentRules.allowedDomains.some((domain) => message.from.endsWith("@" + domain)));
+
+  const editor = speedmailApp.querySelector("[data-speedmail-editor]");
+  const messageListNode = speedmailApp.querySelector("[data-speedmail-message-list]");
+  let buttons = Array.from(speedmailApp.querySelectorAll("[data-speedmail-message]"));
+  const fromNode = speedmailApp.querySelector("[data-speedmail-from]");
+  const subjectNode = speedmailApp.querySelector("[data-speedmail-subject]");
+  const timeNode = speedmailApp.querySelector("[data-speedmail-time]");
+  const bodyNode = speedmailApp.querySelector("[data-speedmail-body]");
+  const targetNode = speedmailApp.querySelector("[data-speedmail-target]");
+  const rangeNode = speedmailApp.querySelector("[data-speedmail-range]");
+  const queueCountNode = speedmailApp.querySelector("[data-speedmail-queue-count]");
+  const charsNode = speedmailApp.querySelector("[data-speedmail-chars]");
+  const wpmNode = speedmailApp.querySelector("[data-speedmail-wpm]");
+  const accuracyNode = speedmailApp.querySelector("[data-speedmail-accuracy]");
+  const comboNode = speedmailApp.querySelector("[data-speedmail-combo]");
+  const feedbackNode = speedmailApp.querySelector("[data-speedmail-feedback]");
+  const progressNode = speedmailApp.querySelector("[data-speedmail-progress]");
+  const completeNode = speedmailApp.querySelector("[data-speedmail-complete]");
+  const completeNoteNode = speedmailApp.querySelector("[data-speedmail-complete-note]");
+  const sendButton = speedmailApp.querySelector("[data-speedmail-send]");
+  const fullscreenButton = speedmailApp.querySelector("[data-speedmail-fullscreen]");
+  const readerExpandButton = speedmailApp.querySelector("[data-speedmail-reader-expand]");
+  const speedmailMenuToggle = speedmailApp.querySelector("[data-speedmail-menu-toggle]");
+  const speedmailMenu = speedmailApp.querySelector("[data-speedmail-menu]");
+  const speedmailNameInput = speedmailApp.querySelector("[data-speedmail-name-input]");
+  const speedmailDarkToggle = speedmailApp.querySelector("[data-speedmail-dark-toggle]");
+  const speedmailShell = speedmailApp.querySelector(".speedmail-shell");
+  let activeMessage = 0;
+  let correctKeystrokes = 0;
+  let incorrectKeystrokes = 0;
+  let comboStreak = 0;
+  let typingStartedAt = 0;
+  let wpmTimer = 0;
+  let statsLocked = false;
+  let personalName = "";
+  const wrongPositions = new Set();
+
+  try {
+    personalName = localStorage.getItem("speedmail-personal-name") || "";
+    if (speedmailNameInput) speedmailNameInput.value = personalName;
+    const darkMail = localStorage.getItem("speedmail-mail-dark") === "true";
+    if (speedmailDarkToggle) speedmailDarkToggle.checked = darkMail;
+    speedmailShell?.classList.toggle("is-speedmail-dark", darkMail);
+  } catch {
+    // Speedmail still works when storage is unavailable.
+  }
+
+  const renderSpeedmailBody = () => {
+    if (!bodyNode) return;
+    const message = messages[activeMessage];
+    if (!personalName) {
+      bodyNode.textContent = message.body;
+      return;
+    }
+    const greeting = ["Good morning", "Hi", "Hello"][activeMessage % 3];
+    bodyNode.textContent = greeting + ", " + personalName + ". " + message.body;
+  };
+
+  const getSpeedmailInitials = (sender) => {
+    const name = sender.split("@")[0] || "SM";
+    return name.replace(/[^A-Z]/g, "").slice(0, 2) || name.slice(0, 2).toUpperCase();
+  };
+
+  const renderSpeedmailQueue = () => {
+    if (!messageListNode) return;
+    messageListNode.textContent = "";
+    messages.forEach((message, index) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.setAttribute("role", "option");
+      button.dataset.speedmailMessage = String(index);
+      button.style.setProperty("--speedmail-avatar-color", message.color);
+      button.innerHTML = [
+        "<span>" + getSpeedmailInitials(message.from) + "</span>",
+        "<strong>" + message.from + "</strong>",
+        "<p><b>Subject: " + message.category + "</b><em>" + message.subject + "</em></p>",
+        "<i>" + message.body + "</i>"
+      ].join("");
+      messageListNode.append(button);
+    });
+    buttons = Array.from(speedmailApp.querySelectorAll("[data-speedmail-message]"));
+  };
+
+  const renderSpeedmailFeedback = () => {
+    if (!feedbackNode || !editor) return;
+    const typed = editor.value;
+    feedbackNode.textContent = "";
+    feedbackNode.hidden = typed.length === 0;
+
+    Array.from(typed).forEach((character, index) => {
+      const span = document.createElement("span");
+      span.textContent = character === " " ? "\u00a0" : character;
+      if (wrongPositions.has(index)) {
+        span.className = "is-wrong";
+      }
+      feedbackNode.append(span);
+    });
+  };
+
+  const getSpeedmailAccuracy = () => {
+    const totalScored = correctKeystrokes + incorrectKeystrokes;
+    return totalScored ? Math.round((correctKeystrokes / totalScored) * 100) : 100;
+  };
+
+  const canCompleteSpeedmailDraft = () => {
+    if (!editor) return false;
+    const target = messages[activeMessage].target;
+    return editor.value === target && getSpeedmailAccuracy() >= speedmailCoreRules.accuracyFirst.minimumAccuracy;
+  };
+
+  const syncSpeedmailStats = () => {
+    if (!editor) return;
+    const target = messages[activeMessage].target;
+    const typed = editor.value;
+    const elapsedMinutes = typingStartedAt ? Math.max((Date.now() - typingStartedAt) / 60000, 1 / 60000) : 0;
+    const wpm = elapsedMinutes ? Math.round((correctKeystrokes / 5) / elapsedMinutes) : 0;
+    const accuracy = getSpeedmailAccuracy();
+    const progress = Math.min(100, Math.round((typed.length / Math.max(target.length, 1)) * 100));
+
+    if (charsNode) charsNode.textContent = typed.length + " / " + target.length;
+    if (wpmNode) wpmNode.textContent = String(wpm);
+    if (accuracyNode) accuracyNode.textContent = accuracy + "%";
+    if (comboNode) comboNode.textContent = String(comboStreak);
+    if (progressNode) progressNode.style.width = progress + "%";
+    renderSpeedmailFeedback();
+  };
+
+  const lockSpeedmailStats = () => {
+    if (statsLocked || !editor || !canCompleteSpeedmailDraft()) return;
+    statsLocked = true;
+    window.clearInterval(wpmTimer);
+    wpmTimer = 0;
+    editor.disabled = true;
+    if (completeNode) completeNode.hidden = false;
+    if (completeNoteNode) completeNoteNode.textContent = "Stats locked";
+    if (sendButton) sendButton.disabled = false;
+    syncSpeedmailStats();
+  };
+
+  const scoreSpeedmailInput = (event) => {
+    if (statsLocked) return;
+    if (!editor || !event.data || !event.inputType?.startsWith("insert")) return;
+    const target = messages[activeMessage].target;
+    const start = editor.selectionStart || 0;
+    if (!typingStartedAt) typingStartedAt = Date.now();
+
+    Array.from(event.data).forEach((character, offset) => {
+      const index = start + offset;
+      if (character === target[index]) {
+        correctKeystrokes += 1;
+        comboStreak += 1;
+        return;
+      }
+      incorrectKeystrokes += 1;
+      comboStreak = 0;
+      wrongPositions.add(index);
+    });
+
+    if (!wpmTimer) {
+      wpmTimer = window.setInterval(syncSpeedmailStats, 1000);
+    }
+  };
+
+  const loadSpeedmailMessage = (index) => {
+    activeMessage = index;
+    const message = messages[index];
+    if (fromNode) fromNode.textContent = "From: " + message.from;
+    if (subjectNode) subjectNode.textContent = message.subject;
+    if (timeNode) timeNode.textContent = message.time;
+    renderSpeedmailBody();
+    if (targetNode) targetNode.textContent = message.target;
+    if (editor) {
+      editor.value = "";
+      editor.disabled = false;
+    }
+    correctKeystrokes = 0;
+    incorrectKeystrokes = 0;
+    comboStreak = 0;
+    typingStartedAt = 0;
+    statsLocked = false;
+    window.clearInterval(wpmTimer);
+    wpmTimer = 0;
+    wrongPositions.clear();
+    if (completeNode) completeNode.hidden = true;
+    if (completeNoteNode) completeNoteNode.textContent = "Stats locked";
+    if (sendButton) {
+      sendButton.textContent = "Send";
+      sendButton.disabled = true;
+    }
+
+    buttons.forEach((button) => {
+      const isActive = Number(button.dataset.speedmailMessage) === index;
+      button.classList.toggle("is-active", isActive);
+      button.setAttribute("aria-selected", String(isActive));
+    });
+    syncSpeedmailStats();
+  };
+
+  messageListNode?.addEventListener("click", (event) => {
+    const button = event.target instanceof Element ? event.target.closest("[data-speedmail-message]") : null;
+    if (!(button instanceof HTMLButtonElement)) return;
+    loadSpeedmailMessage(Number(button.dataset.speedmailMessage || 0));
+    editor?.focus();
+  });
+
+  const syncSpeedmailQueueCount = () => {
+    const count = messages.length;
+    if (rangeNode) rangeNode.textContent = "1-" + count + " of " + count;
+    if (queueCountNode) queueCountNode.textContent = String(count);
+  };
+
+  const setSpeedmailMenuOpen = (open) => {
+    if (!speedmailMenu || !speedmailMenuToggle) return;
+    speedmailMenu.hidden = !open;
+    speedmailMenuToggle.setAttribute("aria-expanded", String(open));
+  };
+
+  const setSpeedmailReaderExpanded = (expanded) => {
+    speedmailShell?.classList.toggle("is-reader-expanded", expanded);
+    if (!readerExpandButton) return;
+    readerExpandButton.setAttribute("aria-pressed", String(expanded));
+    readerExpandButton.setAttribute("aria-label", expanded ? "Exit message focus" : "Expand message and reply");
+  };
+
+  speedmailMenuToggle?.addEventListener("click", (event) => {
+    event.stopPropagation();
+    setSpeedmailMenuOpen(speedmailMenu?.hidden ?? true);
+  });
+  speedmailMenu?.addEventListener("click", (event) => event.stopPropagation());
+  document.addEventListener("click", () => setSpeedmailMenuOpen(false));
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      setSpeedmailMenuOpen(false);
+      setSpeedmailReaderExpanded(false);
+    }
+  });
+  speedmailNameInput?.addEventListener("input", () => {
+    personalName = speedmailNameInput.value.trim();
+    try {
+      localStorage.setItem("speedmail-personal-name", personalName);
+    } catch {
+      // Ignore storage failures; the current session still updates.
+    }
+    renderSpeedmailBody();
+  });
+  speedmailDarkToggle?.addEventListener("change", () => {
+    const isDark = speedmailDarkToggle.checked;
+    speedmailShell?.classList.toggle("is-speedmail-dark", isDark);
+    try {
+      localStorage.setItem("speedmail-mail-dark", String(isDark));
+    } catch {
+      // Ignore storage failures; the current session still updates.
+    }
+  });
+
+  editor?.addEventListener("beforeinput", scoreSpeedmailInput);
+  editor?.addEventListener("input", () => {
+    syncSpeedmailStats();
+    if (!statsLocked && canCompleteSpeedmailDraft()) {
+      lockSpeedmailStats();
+      return;
+    }
+    if (!statsLocked && editor.value.length >= messages[activeMessage].target.length) {
+      if (completeNode) completeNode.hidden = false;
+      if (completeNoteNode) completeNoteNode.textContent = "Correct errors and reach 95% accuracy";
+      if (sendButton) sendButton.disabled = true;
+      return;
+    }
+    if (!statsLocked) {
+      if (completeNode) completeNode.hidden = true;
+      if (sendButton) sendButton.disabled = true;
+    }
+  });
+  sendButton?.addEventListener("click", () => {
+    if (!statsLocked && !canCompleteSpeedmailDraft()) {
+      if (completeNoteNode) completeNoteNode.textContent = "Correct errors and reach 95% accuracy";
+      return;
+    }
+    if (!statsLocked) lockSpeedmailStats();
+    if (completeNoteNode) completeNoteNode.textContent = "Sent";
+    if (sendButton) sendButton.textContent = "Sent";
+  });
+  readerExpandButton?.addEventListener("click", () => {
+    const expanded = !speedmailShell?.classList.contains("is-reader-expanded");
+    setSpeedmailReaderExpanded(expanded);
+    if (expanded) editor?.focus();
+  });
+  const syncFullscreenButton = () => {
+    if (!fullscreenButton) return;
+    fullscreenButton.setAttribute("aria-pressed", String(document.fullscreenElement === speedmailShell));
+  };
+  fullscreenButton?.addEventListener("click", () => {
+    if (!speedmailShell || !document.fullscreenEnabled) return;
+    if (document.fullscreenElement === speedmailShell) {
+      document.exitFullscreen?.();
+      return;
+    }
+    speedmailShell.requestFullscreen?.();
+  });
+  document.addEventListener("fullscreenchange", syncFullscreenButton);
+  renderSpeedmailQueue();
+  syncSpeedmailQueueCount();
+  loadSpeedmailMessage(0);
+  syncFullscreenButton();
 }
 
 if (form && formNote) {

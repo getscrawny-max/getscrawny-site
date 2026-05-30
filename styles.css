@@ -38,6 +38,14 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "Pattaya";
+  src: url("assets/fonts/pattaya/Pattaya-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --ink: #080808;
   --muted: #5b6268;
@@ -4889,7 +4897,7 @@ body:has(.game-page) .brand-combined,
 }
 
 .scrawny-world-globe {
-  margin-bottom: -1.5rem;
+  margin-bottom: clamp(0.55rem, 1.8vw, 1.25rem);
 }
 
 .world-dock,
@@ -7422,6 +7430,18 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
   text-transform: uppercase;
 }
 
+.octarun-score-form .octarun-score-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .octarun-score-form input,
 .octarun-score-form button {
   min-height: 36px;
@@ -8459,4 +8479,2109 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
 
 .arcade-page .arcade-landing-hero .hero-text {
   margin-bottom: 0;
+}
+
+/* Speedmail */
+.speedmail-feature-card {
+  border-color: rgba(106, 184, 255, 0.42);
+  background:
+    radial-gradient(circle at 22% 20%, rgba(106, 184, 255, 0.16), transparent 36%),
+    linear-gradient(180deg, rgba(8, 19, 31, 0.96), rgba(4, 9, 14, 0.99));
+}
+
+.speedmail-feature-card .button.primary {
+  background: #d7edff;
+  color: #05111d;
+}
+
+.speedmail-feature-art {
+  background: #08131f;
+}
+
+.speedmail-card-preview {
+  position: relative;
+  display: grid;
+  align-content: center;
+  gap: 0.7rem;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  padding: clamp(1rem, 3vw, 1.7rem);
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, rgba(215, 237, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(rgba(215, 237, 255, 0.08) 1px, transparent 1px),
+    #08131f;
+  background-size: 28px 28px;
+}
+
+.speedmail-card-preview span {
+  display: block;
+  width: min(78%, 360px);
+  height: clamp(22px, 4vw, 38px);
+  border: 1px solid rgba(215, 237, 255, 0.32);
+  border-radius: 8px;
+  background: linear-gradient(90deg, rgba(215, 237, 255, 0.22), rgba(255, 255, 255, 0.05));
+}
+
+.speedmail-card-preview span:nth-child(2) {
+  width: min(62%, 290px);
+  margin-left: 10%;
+}
+
+.speedmail-card-preview span:nth-child(3) {
+  width: min(84%, 390px);
+}
+
+.speedmail-card-preview strong {
+  position: absolute;
+  right: clamp(1rem, 3vw, 1.7rem);
+  bottom: clamp(1rem, 3vw, 1.7rem);
+  color: #d7edff;
+  font-size: clamp(1.25rem, 4vw, 2.5rem);
+  line-height: 1;
+}
+
+.arcade-feature-copy h2.speedmail-card-title {
+  color: #d7edff;
+  text-shadow: 0 0 24px rgba(106, 184, 255, 0.46);
+}
+
+.speedmail-page {
+  min-height: calc(100vh - 80px);
+  padding: clamp(1rem, 2vw, 1.6rem);
+  color: #17202a;
+  background:
+    radial-gradient(circle at 18% 14%, rgba(114, 154, 196, 0.28), transparent 30%),
+    linear-gradient(135deg, #dbe5ee, #f7f9fb 44%, #d2dde8);
+}
+
+.speedmail-shell {
+  width: min(1380px, 100%);
+  margin: 0 auto;
+  overflow: hidden;
+  border: 1px solid rgba(74, 93, 115, 0.28);
+  border-radius: 8px;
+  background: #f8fafc;
+  box-shadow: 0 26px 70px rgba(13, 25, 39, 0.22);
+}
+
+.speedmail-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: clamp(1rem, 2.4vw, 1.6rem);
+  color: #f7fbff;
+  background: linear-gradient(90deg, #1c354f, #284766);
+}
+
+.speedmail-topbar h1 {
+  margin: 0;
+  font-size: clamp(2.2rem, 7vw, 5.6rem);
+  line-height: 0.9;
+}
+
+.speedmail-topbar .eyebrow {
+  margin: 0 0 0.35rem;
+  color: rgba(247, 251, 255, 0.74);
+}
+
+.speedmail-search {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: min(420px, 42vw);
+  min-height: 46px;
+  padding: 0 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.speedmail-search span {
+  color: rgba(247, 251, 255, 0.62);
+  font-size: 0.85rem;
+  font-weight: 760;
+  text-transform: uppercase;
+}
+
+.speedmail-search input {
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  outline: 0;
+  color: #fff;
+  background: transparent;
+}
+
+.speedmail-grid {
+  display: grid;
+  grid-template-columns: 190px minmax(260px, 0.8fr) minmax(380px, 1.35fr);
+  min-height: min(720px, calc(100vh - 190px));
+}
+
+.speedmail-sidebar,
+.speedmail-inbox,
+.speedmail-reader {
+  min-width: 0;
+}
+
+.speedmail-sidebar {
+  padding: 1rem;
+  border-right: 1px solid #d8e0e8;
+  background: #edf3f8;
+}
+
+.speedmail-compose-button,
+.speedmail-inbox-header button {
+  width: 100%;
+  min-height: 42px;
+  border: 0;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 780;
+  background: #275a87;
+  cursor: pointer;
+}
+
+.speedmail-sidebar nav {
+  display: grid;
+  gap: 0.25rem;
+  margin-top: 1rem;
+}
+
+.speedmail-sidebar a {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.7rem;
+  padding: 0.72rem 0.75rem;
+  border-radius: 8px;
+  color: #223244;
+}
+
+.speedmail-sidebar a[aria-current="page"] {
+  color: #0a253c;
+  background: #d8e8f6;
+}
+
+.speedmail-quota {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 2rem;
+  color: #5c6a78;
+  font-size: 0.82rem;
+}
+
+.speedmail-quota div,
+.speedmail-progress {
+  overflow: hidden;
+  height: 8px;
+  border-radius: 999px;
+  background: #d5dee7;
+}
+
+.speedmail-quota i,
+.speedmail-progress i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #2d6c9f;
+}
+
+.speedmail-inbox {
+  border-right: 1px solid #d8e0e8;
+  background: #f4f7fa;
+}
+
+.speedmail-inbox-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding: 0.95rem;
+  border-bottom: 1px solid #d8e0e8;
+}
+
+.speedmail-inbox-header button {
+  width: auto;
+  min-height: 36px;
+  padding: 0 0.75rem;
+  color: #17324a;
+  background: #d9e8f4;
+}
+
+.speedmail-folder,
+.speedmail-inbox-header strong {
+  display: block;
+}
+
+.speedmail-folder {
+  color: #617080;
+  font-size: 0.78rem;
+  font-weight: 780;
+  text-transform: uppercase;
+}
+
+.speedmail-message-list {
+  display: grid;
+}
+
+.speedmail-message-list button {
+  display: grid;
+  grid-template-columns: 42px 1fr auto;
+  gap: 0.18rem 0.75rem;
+  min-height: 112px;
+  padding: 0.82rem 0.95rem;
+  border: 0;
+  border-bottom: 1px solid #d8e0e8;
+  color: #243447;
+  text-align: left;
+  background: #fff;
+  cursor: pointer;
+}
+
+.speedmail-message-list button.is-active {
+  background: #e4f0fa;
+  box-shadow: inset 4px 0 0 #2d6c9f;
+}
+
+.speedmail-message-list span {
+  display: grid;
+  grid-row: span 2;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 800;
+  background: var(--speedmail-avatar-color, #486b8b);
+}
+
+.speedmail-message-list strong,
+.speedmail-message-list em,
+.speedmail-message-list i {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.speedmail-message-list strong,
+.speedmail-message-list em {
+  white-space: nowrap;
+}
+
+.speedmail-message-list p {
+  display: flex;
+  grid-column: 2 / 4;
+  gap: 0.38rem;
+  min-width: 0;
+  margin: 0;
+}
+
+.speedmail-message-list i {
+  display: -webkit-box;
+  grid-column: 2 / 4;
+  color: #617080;
+  font-size: 0.78rem;
+  font-style: normal;
+  line-height: 1.32;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.speedmail-message-list b {
+  min-width: max-content;
+  color: #617080;
+  font-size: 0.82rem;
+  font-style: normal;
+  font-weight: 820;
+}
+
+.speedmail-message-list em,
+.speedmail-message-list small {
+  color: #617080;
+  font-style: normal;
+}
+
+.speedmail-reader {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+  padding: clamp(1rem, 2.3vw, 1.5rem);
+  background: #fbfcfe;
+}
+
+.speedmail-open-message,
+.speedmail-reply-panel {
+  border: 1px solid #d8e0e8;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.speedmail-open-message {
+  padding: clamp(1rem, 2vw, 1.35rem);
+}
+
+.speedmail-reader-summary {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.speedmail-message-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid #e4ebf1;
+}
+
+.speedmail-message-head p,
+.speedmail-message-head h2,
+.speedmail-open-message > p,
+.speedmail-prompt p {
+  margin: 0;
+}
+
+.speedmail-message-head p {
+  color: #617080;
+  font-weight: 760;
+}
+
+.speedmail-message-head h2 {
+  margin-top: 0.2rem;
+  font-size: clamp(1.4rem, 2.6vw, 2.2rem);
+}
+
+.speedmail-message-head span {
+  color: #617080;
+  white-space: nowrap;
+}
+
+.speedmail-open-message > p {
+  margin-top: 1rem;
+  color: #405062;
+  font-size: 1.02rem;
+}
+
+.speedmail-reply-panel {
+  display: grid;
+  gap: 0.9rem;
+  padding: clamp(1rem, 2vw, 1.35rem);
+}
+
+.speedmail-prompt {
+  padding: 0.85rem;
+  border-radius: 8px;
+  background: #edf5fb;
+}
+
+.speedmail-prompt span,
+.speedmail-editor-label,
+.speedmail-meter-grid span {
+  color: #617080;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.speedmail-prompt p {
+  margin-top: 0.35rem;
+  color: #1c2c3c;
+}
+
+.speedmail-editor-label {
+  margin-bottom: -0.55rem;
+}
+
+.speedmail-reply-panel textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 148px;
+  padding: 0.85rem;
+  border: 1px solid #bdcad6;
+  border-radius: 8px;
+  color: #17202a;
+  background: #fff;
+  outline: 0;
+}
+
+.speedmail-reply-panel textarea:focus {
+  border-color: #2d6c9f;
+  box-shadow: 0 0 0 3px rgba(45, 108, 159, 0.14);
+}
+
+.speedmail-meter-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.speedmail-meter-grid div {
+  min-width: 0;
+  padding: 0.72rem;
+  border: 1px solid #d8e0e8;
+  border-radius: 8px;
+  background: #f7fafc;
+}
+
+.speedmail-meter-grid strong {
+  display: block;
+  overflow-wrap: anywhere;
+  color: #182838;
+  font-size: clamp(1.04rem, 2vw, 1.35rem);
+}
+
+@media (max-width: 980px) {
+  .speedmail-grid {
+    grid-template-columns: 156px minmax(0, 1fr);
+  }
+
+  .speedmail-reader {
+    grid-column: 1 / -1;
+    border-top: 1px solid #d8e0e8;
+  }
+}
+
+@media (max-width: 680px) {
+  .speedmail-page {
+    padding: 0;
+  }
+
+  .speedmail-shell {
+    border-radius: 0;
+  }
+
+  .speedmail-topbar {
+    display: grid;
+  }
+
+  .speedmail-search {
+    width: 100%;
+  }
+
+  .speedmail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .speedmail-sidebar {
+    border-right: 0;
+    border-bottom: 1px solid #d8e0e8;
+  }
+
+  .speedmail-sidebar nav,
+  .speedmail-meter-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .speedmail-inbox {
+    border-right: 0;
+  }
+}
+
+/* Speedmail maroon HUD pass */
+.speedmail-feature-card {
+  border-color: rgba(177, 67, 79, 0.58);
+  background:
+    radial-gradient(circle at 20% 22%, rgba(177, 67, 79, 0.24), transparent 38%),
+    linear-gradient(180deg, rgba(41, 11, 18, 0.97), rgba(13, 5, 8, 0.99));
+}
+
+.speedmail-feature-card .button.primary {
+  color: #2b0710;
+  background: #ffd7d2;
+}
+
+.speedmail-feature-art {
+  border-color: rgba(255, 178, 169, 0.34);
+  background: #1d0710;
+}
+
+.speedmail-card-preview {
+  background:
+    linear-gradient(90deg, rgba(255, 216, 209, 0.08) 1px, transparent 1px),
+    linear-gradient(rgba(255, 216, 209, 0.08) 1px, transparent 1px),
+    radial-gradient(circle at 84% 20%, rgba(255, 195, 113, 0.14), transparent 30%),
+    #1d0710;
+}
+
+.speedmail-card-preview span {
+  border-color: rgba(255, 216, 209, 0.32);
+  background: linear-gradient(90deg, rgba(255, 216, 209, 0.22), rgba(255, 255, 255, 0.04));
+}
+
+.speedmail-card-preview strong,
+.arcade-feature-copy h2.speedmail-card-title {
+  color: #ffd7d2;
+  text-shadow: 0 0 24px rgba(177, 67, 79, 0.58);
+}
+
+.speedmail-page {
+  padding: clamp(1rem, 2vw, 1.6rem);
+  color: #f9ece9;
+  background:
+    linear-gradient(rgba(255, 228, 222, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 228, 222, 0.04) 1px, transparent 1px),
+    radial-gradient(circle at 18% 13%, rgba(177, 67, 79, 0.28), transparent 32%),
+    radial-gradient(circle at 82% 20%, rgba(255, 188, 112, 0.12), transparent 30%),
+    linear-gradient(135deg, #15070b, #260912 46%, #0a0507);
+  background-size: 34px 34px, 34px 34px, auto, auto, auto;
+}
+
+.speedmail-hero {
+  display: grid;
+  gap: clamp(1rem, 2vw, 1.5rem);
+  width: min(1380px, 100%);
+  margin: 0 auto clamp(1.15rem, 2.4vw, 1.75rem);
+  padding: clamp(1.1rem, 2.8vw, 2rem) clamp(0.25rem, 1vw, 0.5rem) 0;
+}
+
+.speedmail-hero h1 {
+  margin: 0;
+  color: #fff4f1;
+  font-size: clamp(3rem, 10vw, 8rem);
+  line-height: 0.86;
+  text-shadow:
+    0 0 18px rgba(177, 67, 79, 0.7),
+    0 0 46px rgba(177, 67, 79, 0.34);
+}
+
+.speedmail-hero p:not(.eyebrow) {
+  max-width: 760px;
+  margin: 0;
+  color: rgba(255, 244, 241, 0.72);
+  font-size: clamp(1rem, 1.7vw, 1.18rem);
+  line-height: 1.55;
+}
+
+.speedmail-shell {
+  border-color: rgba(255, 216, 209, 0.18);
+  background: #14070b;
+  box-shadow:
+    0 0 34px rgba(177, 67, 79, 0.22),
+    0 26px 70px rgba(0, 0, 0, 0.42);
+}
+
+.speedmail-hud {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  justify-content: center;
+  gap: 0.65rem;
+  min-height: 72px;
+  padding: clamp(0.7rem, 1.6vw, 1rem);
+  border-bottom: 1px solid rgba(255, 216, 209, 0.18);
+  background:
+    radial-gradient(circle at 12% 20%, rgba(255, 216, 209, 0.14), transparent 32%),
+    linear-gradient(180deg, rgba(87, 20, 31, 0.98), rgba(35, 8, 14, 0.99));
+}
+
+.speedmail-hud-brand,
+.speedmail-hud-tile,
+.speedmail-hud button,
+.speedmail-search {
+  min-height: 48px;
+  border: 1px solid rgba(255, 216, 209, 0.26);
+  border-radius: 8px;
+  color: #fff4f1;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.105), rgba(255, 255, 255, 0.035)),
+    rgba(31, 7, 12, 0.88);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 8px 18px rgba(0, 0, 0, 0.24);
+}
+
+.speedmail-hud-brand {
+  display: grid;
+  align-content: center;
+  min-width: min(280px, 100%);
+  padding: 0.55rem 0.85rem;
+}
+
+.speedmail-hud-brand span,
+.speedmail-hud-tile,
+.speedmail-search span {
+  color: rgba(255, 216, 209, 0.74);
+  font-size: 0.72rem;
+  font-weight: 900;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.speedmail-hud-brand strong {
+  overflow: hidden;
+  color: #fff4f1;
+  font-size: 1.02rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.speedmail-hud-tile {
+  display: grid;
+  align-content: center;
+  gap: 0.12rem;
+  min-width: 116px;
+  padding: 0.5rem 0.75rem;
+}
+
+.speedmail-hud-tile strong {
+  color: #fff4f1;
+  font-size: 1.18rem;
+  line-height: 1.1;
+  text-transform: none;
+}
+
+.speedmail-hud button {
+  min-width: 106px;
+  padding: 0.55rem 0.8rem;
+  color: #fff4f1;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.speedmail-hud button:hover,
+.speedmail-hud button:focus-visible {
+  border-color: rgba(255, 203, 116, 0.78);
+  outline: none;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 0 18px rgba(255, 203, 116, 0.2),
+    0 8px 18px rgba(0, 0, 0, 0.28);
+}
+
+.speedmail-search {
+  width: min(360px, 100%);
+  min-width: min(320px, 100%);
+  padding: 0 0.85rem;
+}
+
+.speedmail-search input {
+  color: #fff4f1;
+}
+
+.speedmail-search input::selection,
+.speedmail-reply-panel textarea::selection {
+  color: #2a0710;
+  background: #ffd7d2;
+}
+
+.speedmail-grid {
+  position: relative;
+  min-height: min(680px, calc(100vh - 270px));
+}
+
+.speedmail-sidebar {
+  border-right-color: rgba(93, 31, 42, 0.24);
+  background: #f2e6e2;
+}
+
+.speedmail-compose-button,
+.speedmail-inbox-header button {
+  background: #6f1e31;
+}
+
+.speedmail-sidebar a {
+  color: #3a2025;
+}
+
+.speedmail-sidebar a[aria-current="page"] {
+  color: #2a0710;
+  background: #ead1ca;
+}
+
+.speedmail-quota {
+  color: #795d60;
+}
+
+.speedmail-quota div,
+.speedmail-progress {
+  background: #dec9c3;
+}
+
+.speedmail-quota i,
+.speedmail-progress i {
+  background: linear-gradient(90deg, #8b2539, #d26d64, #ffc46d);
+}
+
+.speedmail-inbox {
+  border-right-color: rgba(93, 31, 42, 0.24);
+  background: #f7efec;
+}
+
+.speedmail-inbox-header {
+  border-bottom-color: rgba(93, 31, 42, 0.18);
+}
+
+.speedmail-inbox-signal {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid rgba(111, 30, 49, 0.18);
+  border-radius: 999px;
+  color: #6f1e31;
+  background: #f2ded8;
+  font-size: 0.78rem;
+  font-weight: 860;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.speedmail-folder {
+  color: #88676b;
+}
+
+.speedmail-inbox-header strong,
+.speedmail-message-list button,
+.speedmail-open-message,
+.speedmail-reply-panel {
+  color: #2b1820;
+}
+
+.speedmail-message-list button {
+  border-bottom-color: rgba(93, 31, 42, 0.18);
+  background: #fffaf8;
+}
+
+.speedmail-message-list button.is-active {
+  background: #f5ddd8;
+  box-shadow: inset 4px 0 0 #8b2539;
+}
+
+.speedmail-message-list span {
+  background: #743447;
+}
+
+.speedmail-message-list em,
+.speedmail-message-list small,
+.speedmail-message-head p,
+.speedmail-message-head span,
+.speedmail-open-message > p,
+.speedmail-prompt span,
+.speedmail-editor-label {
+  color: #765b60;
+}
+
+.speedmail-reader {
+  background:
+    radial-gradient(circle at 100% 0%, rgba(177, 67, 79, 0.08), transparent 32%),
+    #fff9f7;
+}
+
+.speedmail-open-message,
+.speedmail-reply-panel {
+  border-color: rgba(93, 31, 42, 0.18);
+}
+
+.speedmail-message-head {
+  border-bottom-color: rgba(93, 31, 42, 0.12);
+}
+
+.speedmail-message-head h2,
+.speedmail-prompt p {
+  color: #2a0710;
+}
+
+.speedmail-prompt {
+  background: #f5e4df;
+}
+
+.speedmail-reply-panel textarea {
+  border-color: #c8aaa8;
+  color: #2b1820;
+  background: #fffdfb;
+}
+
+.speedmail-reply-panel textarea:focus {
+  border-color: #8b2539;
+  box-shadow: 0 0 0 3px rgba(139, 37, 57, 0.14);
+}
+
+.speedmail-typed-feedback {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
+  min-height: 34px;
+  padding: 0.48rem 0.55rem;
+  border: 1px solid rgba(93, 31, 42, 0.12);
+  border-radius: 8px;
+  color: #4a3034;
+  background: #fff8f5;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.speedmail-typed-feedback:empty {
+  display: none;
+}
+
+.speedmail-typed-feedback span {
+  display: inline-block;
+  min-width: 0.35em;
+  border-radius: 3px;
+  transition: color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+}
+
+.speedmail-typed-feedback span.is-wrong {
+  color: #ffffff;
+  background: #d93025;
+  box-shadow: 0 0 0 2px rgba(217, 48, 37, 0.18);
+}
+
+@media (max-width: 1120px) {
+  .speedmail-hud {
+    justify-content: flex-start;
+  }
+
+  .speedmail-hud-brand,
+  .speedmail-search {
+    flex: 1 1 260px;
+  }
+
+  .speedmail-hud-tile {
+    flex: 1 1 132px;
+  }
+}
+
+@media (max-width: 680px) {
+  .speedmail-page {
+    padding: 0;
+  }
+
+  .speedmail-hero {
+    padding: 1rem 1rem 0;
+  }
+
+  .speedmail-hud {
+    border-radius: 0;
+  }
+
+  .speedmail-hud-brand,
+  .speedmail-search,
+  .speedmail-hud-tile,
+  .speedmail-hud button {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .speedmail-hud-tile {
+    flex: 1 1 calc(50% - 0.65rem);
+  }
+
+  .speedmail-hud button {
+    flex: 1 1 calc(50% - 0.65rem);
+  }
+
+  .speedmail-grid {
+    min-height: auto;
+  }
+}
+
+/* Speedmail Gmail-style toolbar */
+.speedmail-hero p:not(.eyebrow) {
+  max-width: 680px;
+}
+
+.speedmail-hud {
+  display: grid;
+  grid-template-columns: auto minmax(280px, 1fr) auto auto;
+  align-items: center;
+  gap: clamp(0.65rem, 1.5vw, 1.1rem);
+  min-height: 68px;
+  padding: 0.65rem clamp(0.85rem, 1.8vw, 1.35rem);
+  border-bottom: 1px solid rgba(93, 31, 42, 0.16);
+  background: #fffaf8;
+}
+
+.speedmail-hud-brand,
+.speedmail-search,
+.speedmail-toolbar-meta,
+.speedmail-fullscreen-button {
+  box-shadow: none;
+}
+
+.speedmail-hud-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: max-content;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  color: #5f6368;
+  background: transparent;
+}
+
+.speedmail-hud-brand strong {
+  margin-left: -0.1rem;
+  color: #5f6368;
+  font-size: clamp(1.3rem, 2.2vw, 1.55rem);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.speedmail-menu-icon {
+  position: relative;
+  width: 24px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+
+.speedmail-menu-icon::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: 18px;
+  height: 2px;
+  border-radius: 999px;
+  background: #6f7479;
+  box-shadow: 0 7px 0 #6f7479, 0 14px 0 #6f7479;
+}
+
+.speedmail-mark {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  object-fit: contain;
+  transform: translateY(-3px);
+}
+
+.speedmail-search {
+  width: min(720px, 100%);
+  min-width: 0;
+  min-height: 48px;
+  gap: 0.8rem;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 8px;
+  color: #3c4043;
+  background: #f1f3f4;
+}
+
+.speedmail-search span {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+}
+
+.speedmail-search span::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: 11px;
+  height: 11px;
+  border: 2px solid #80868b;
+  border-radius: 50%;
+}
+
+.speedmail-search span::after {
+  content: "";
+  position: absolute;
+  left: 13px;
+  top: 14px;
+  width: 8px;
+  height: 2px;
+  border-radius: 999px;
+  background: #80868b;
+  transform: rotate(45deg);
+}
+
+.speedmail-search input {
+  color: #3c4043;
+}
+
+.speedmail-search input::placeholder {
+  color: #80868b;
+}
+
+.speedmail-toolbar-meta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  min-width: max-content;
+  color: #5f6368;
+  font-size: 0.88rem;
+  white-space: nowrap;
+}
+
+.speedmail-toolbar-meta span:not(:first-child) {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  color: #5f6368;
+  font-size: 1.55rem;
+  line-height: 1;
+}
+
+.speedmail-hud .speedmail-fullscreen-button {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  min-height: 42px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.speedmail-hud .speedmail-fullscreen-button:hover,
+.speedmail-hud .speedmail-fullscreen-button:focus-visible {
+  outline: none;
+  background: transparent;
+  box-shadow: none;
+}
+
+.speedmail-hud .speedmail-fullscreen-button img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  filter:
+    brightness(0)
+    saturate(100%)
+    invert(38%)
+    sepia(8%)
+    saturate(296%)
+    hue-rotate(169deg)
+    brightness(91%)
+    contrast(90%);
+}
+
+.speedmail-draft-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: -0.2rem;
+}
+
+.speedmail-draft-stats span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 30px;
+  padding: 0.32rem 0.55rem;
+  border: 1px solid rgba(93, 31, 42, 0.14);
+  border-radius: 999px;
+  color: #765b60;
+  background: #fff8f5;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.speedmail-draft-stats strong {
+  color: #2a0710;
+  font-size: 0.88rem;
+  text-transform: none;
+}
+
+.speedmail-complete-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.65rem;
+  min-height: 42px;
+}
+
+.speedmail-complete-bar[hidden] {
+  display: none;
+}
+
+.speedmail-complete-bar span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  color: #137333;
+  font-size: 0.82rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.speedmail-complete-bar span::before {
+  content: "";
+  display: inline-block;
+  width: 15px;
+  height: 8px;
+  border-left: 3px solid currentColor;
+  border-bottom: 3px solid currentColor;
+  transform: rotate(-45deg) translateY(-1px);
+}
+
+.speedmail-complete-bar button {
+  min-width: 96px;
+  min-height: 40px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.55rem 1.2rem;
+  color: #ffffff;
+  background: #7d1930;
+  font-weight: 850;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(125, 25, 48, 0.18);
+}
+
+.speedmail-complete-bar button:hover,
+.speedmail-complete-bar button:focus-visible {
+  outline: none;
+  background: #651326;
+}
+
+.speedmail-complete-bar button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.speedmail-shell:fullscreen {
+  width: 100vw;
+  height: 100vh;
+  border-radius: 0;
+  border: 0;
+  overflow: auto;
+  background: #fffaf8;
+}
+
+.speedmail-shell:fullscreen .speedmail-grid {
+  min-height: calc(100vh - 68px);
+}
+
+@media (max-width: 860px) {
+  .speedmail-hud {
+    grid-template-columns: auto 1fr auto;
+  }
+
+  .speedmail-search {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+  }
+}
+
+@media (max-width: 680px) {
+  .speedmail-hud {
+    grid-template-columns: 1fr auto;
+    gap: 0.55rem;
+  }
+
+  .speedmail-hud-brand {
+    min-width: 0;
+  }
+
+  .speedmail-hud-brand strong {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .speedmail-toolbar-meta {
+    grid-column: 1 / -1;
+    justify-content: space-between;
+    width: 100%;
+    padding-top: 0.1rem;
+  }
+
+  .speedmail-hud .speedmail-fullscreen-button {
+    grid-column: 2;
+    grid-row: 1;
+    width: 42px;
+    min-width: 42px;
+    flex: 0 0 42px;
+  }
+
+  .speedmail-draft-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .speedmail-draft-stats span {
+    justify-content: space-between;
+    min-width: 0;
+  }
+}
+
+/* Speedmail neutral mail surface */
+.speedmail-page {
+  background:
+    linear-gradient(rgba(255, 245, 242, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 245, 242, 0.035) 1px, transparent 1px),
+    radial-gradient(circle at 18% 14%, rgba(129, 37, 54, 0.22), transparent 34%),
+    radial-gradient(circle at 82% 22%, rgba(116, 54, 62, 0.12), transparent 31%),
+    linear-gradient(135deg, #17090d, #220d13 48%, #0b0607);
+  background-size: 34px 34px, 34px 34px, auto, auto, auto;
+}
+
+.speedmail-hero h1 {
+  color: #fff8f6;
+  text-shadow:
+    0 0 14px rgba(129, 37, 54, 0.44),
+    0 0 34px rgba(129, 37, 54, 0.2);
+}
+
+.speedmail-hero p:not(.eyebrow) {
+  color: rgba(255, 248, 246, 0.7);
+}
+
+.speedmail-shell {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #202124;
+  background: #ffffff;
+  box-shadow:
+    0 20px 56px rgba(0, 0, 0, 0.34),
+    0 0 24px rgba(129, 37, 54, 0.1);
+}
+
+.speedmail-hud {
+  position: relative;
+  color: #3c4043;
+  border-bottom-color: #e8eaed;
+  background: #ffffff;
+}
+
+.speedmail-hud .speedmail-menu-button {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  min-height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.speedmail-hud .speedmail-menu-button:hover,
+.speedmail-hud .speedmail-menu-button:focus-visible,
+.speedmail-hud .speedmail-menu-button[aria-expanded="true"] {
+  outline: none;
+  background: transparent;
+  box-shadow: none;
+}
+
+.speedmail-menu-panel {
+  position: absolute;
+  top: calc(100% - 0.25rem);
+  left: clamp(0.85rem, 1.8vw, 1.35rem);
+  z-index: 20;
+  display: grid;
+  gap: 0.85rem;
+  width: min(280px, calc(100vw - 2rem));
+  padding: 0.9rem;
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  color: #202124;
+  background: #ffffff;
+  box-shadow: 0 16px 34px rgba(60, 64, 67, 0.22);
+}
+
+.speedmail-menu-panel[hidden] {
+  display: none;
+}
+
+.speedmail-menu-panel label {
+  display: grid;
+  gap: 0.4rem;
+  color: #5f6368;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.speedmail-menu-panel input[type="text"] {
+  min-height: 40px;
+  width: 100%;
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  padding: 0.55rem 0.7rem;
+  color: #202124;
+  background: #ffffff;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 650;
+  text-transform: none;
+}
+
+.speedmail-menu-panel input[type="text"]:focus {
+  outline: none;
+  border-color: #7d1930;
+  box-shadow: 0 0 0 3px rgba(125, 25, 48, 0.12);
+}
+
+.speedmail-dark-row {
+  grid-template-columns: 1fr auto;
+  align-items: center;
+}
+
+.speedmail-dark-row input {
+  width: 42px;
+  height: 24px;
+  accent-color: #7d1930;
+}
+
+.speedmail-sidebar {
+  border-right-color: #e8eaed;
+  background: #ffffff;
+}
+
+.speedmail-compose-button {
+  color: #3c4043;
+  background: #ffffff;
+  border: 1px solid #f1f3f4;
+  box-shadow: 0 1px 3px rgba(60, 64, 67, 0.18), 0 1px 2px rgba(60, 64, 67, 0.12);
+}
+
+.speedmail-sidebar a {
+  color: #3c4043;
+}
+
+.speedmail-sidebar a[aria-current="page"] {
+  color: #7d1930;
+  background: #fce8e6;
+}
+
+.speedmail-sidebar a[aria-current="page"] strong {
+  color: #7d1930;
+}
+
+.speedmail-quota {
+  color: #6f7479;
+}
+
+.speedmail-quota div,
+.speedmail-progress {
+  background: #e8eaed;
+}
+
+.speedmail-quota i,
+.speedmail-progress i {
+  background: linear-gradient(90deg, #7d1930, #b56b72);
+}
+
+.speedmail-inbox {
+  border-right-color: #e8eaed;
+  background: #ffffff;
+}
+
+.speedmail-inbox-header {
+  border-bottom-color: #e8eaed;
+  background: #ffffff;
+}
+
+.speedmail-folder {
+  color: #5f6368;
+}
+
+.speedmail-inbox-header strong,
+.speedmail-message-list button,
+.speedmail-open-message,
+.speedmail-reply-panel {
+  color: #202124;
+}
+
+.speedmail-inbox-signal {
+  border-color: #e8eaed;
+  color: #5f6368;
+  background: #f8fafd;
+}
+
+.speedmail-message-list button {
+  border-bottom-color: #e8eaed;
+  background: #ffffff;
+}
+
+.speedmail-message-list b {
+  color: #5f6368;
+}
+
+.speedmail-message-list button.is-active {
+  background: #f8fafd;
+  box-shadow: inset 4px 0 0 #7d1930;
+}
+
+.speedmail-message-list span {
+  background: #6f7479;
+}
+
+.speedmail-message-list button.is-active span {
+  background: #7d1930;
+}
+
+.speedmail-message-list button span,
+.speedmail-message-list button.is-active span {
+  background: var(--speedmail-avatar-color, #6f7479);
+}
+
+.speedmail-message-list em,
+.speedmail-message-list small,
+.speedmail-message-head p,
+.speedmail-message-head span,
+.speedmail-open-message > p,
+.speedmail-prompt span,
+.speedmail-editor-label {
+  color: #5f6368;
+}
+
+.speedmail-reader {
+  background: #ffffff;
+}
+
+.speedmail-open-message,
+.speedmail-reply-panel {
+  border-color: #dadce0;
+  background: #ffffff;
+}
+
+.speedmail-message-head {
+  border-bottom-color: #e8eaed;
+}
+
+.speedmail-reader-tools {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.65rem;
+}
+
+.speedmail-reader-expand {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  min-height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.speedmail-reader-expand:hover,
+.speedmail-reader-expand:focus-visible,
+.speedmail-reader-expand[aria-pressed="true"] {
+  outline: none;
+  background: transparent;
+  box-shadow: none;
+}
+
+.speedmail-reader-expand img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  filter:
+    brightness(0)
+    saturate(100%)
+    invert(38%)
+    sepia(8%)
+    saturate(296%)
+    hue-rotate(169deg)
+    brightness(91%)
+    contrast(90%);
+}
+
+.speedmail-message-head h2,
+.speedmail-prompt p {
+  color: #202124;
+}
+
+.speedmail-prompt {
+  background: #f8fafd;
+}
+
+.speedmail-reply-panel textarea {
+  border-color: #dadce0;
+  color: #202124;
+  background: #ffffff;
+}
+
+.speedmail-reply-panel textarea:focus {
+  border-color: #7d1930;
+  box-shadow: 0 0 0 3px rgba(125, 25, 48, 0.12);
+}
+
+.speedmail-typed-feedback {
+  border-color: #e8eaed;
+  color: #3c4043;
+  background: #f8fafd;
+}
+
+.speedmail-draft-stats span {
+  border-color: #e8eaed;
+  color: #5f6368;
+  background: #ffffff;
+}
+
+.speedmail-draft-stats strong {
+  color: #202124;
+}
+
+.speedmail-search input::selection,
+.speedmail-reply-panel textarea::selection {
+  color: #202124;
+  background: #fce8e6;
+}
+
+.speedmail-shell.is-reader-expanded .speedmail-reader {
+  position: absolute;
+  inset: 0;
+  z-index: 14;
+  display: grid;
+  grid-template-columns: minmax(280px, 0.72fr) minmax(420px, 1.28fr);
+  align-content: start;
+  gap: clamp(1rem, 2vw, 1.5rem);
+  padding: clamp(1rem, 2vw, 1.75rem);
+  overflow: auto;
+  background: #ffffff;
+  box-shadow: inset 0 1px 0 #e8eaed, 0 -18px 44px rgba(60, 64, 67, 0.18);
+}
+
+.speedmail-shell.is-reader-expanded .speedmail-open-message,
+.speedmail-shell.is-reader-expanded .speedmail-reply-panel {
+  min-height: 0;
+  box-shadow: 0 10px 26px rgba(60, 64, 67, 0.1);
+}
+
+.speedmail-shell.is-reader-expanded .speedmail-reader-summary {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: start;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.speedmail-shell.is-reader-expanded .speedmail-reader-summary > * {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.speedmail-shell.is-reader-expanded .speedmail-reply-panel {
+  grid-column: 2;
+  grid-row: 1;
+  grid-template-rows: auto auto minmax(220px, 1fr) auto auto;
+  align-self: stretch;
+}
+
+.speedmail-shell.is-reader-expanded .speedmail-message-head {
+  align-items: flex-start;
+}
+
+.speedmail-shell.is-reader-expanded .speedmail-message-head h2 {
+  font-size: clamp(1.65rem, 3vw, 2.35rem);
+  line-height: 1.05;
+}
+
+.speedmail-shell.is-reader-expanded .speedmail-open-message > p,
+.speedmail-shell.is-reader-expanded .speedmail-prompt p {
+  font-size: clamp(0.98rem, 1.35vw, 1.12rem);
+  line-height: 1.48;
+}
+
+.speedmail-shell.is-reader-expanded .speedmail-prompt {
+  padding: clamp(1rem, 2vw, 1.4rem);
+}
+
+.speedmail-shell.is-reader-expanded .speedmail-reply-panel textarea {
+  min-height: clamp(230px, 36vh, 430px);
+  font-size: 1.08rem;
+  line-height: 1.55;
+}
+
+.speedmail-shell.is-reader-expanded .speedmail-typed-feedback {
+  font-size: 1rem;
+}
+
+.speedmail-shell.is-reader-expanded .speedmail-draft-stats {
+  align-self: start;
+  justify-self: stretch;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #e8eaed;
+  border-radius: 2px;
+  background: #ffffff;
+  box-shadow: none;
+}
+
+.speedmail-shell.is-reader-expanded .speedmail-draft-stats span {
+  min-height: 34px;
+  padding: 0.36rem 0.45rem;
+  border-radius: 0;
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+.speedmail-shell.is-reader-expanded .speedmail-draft-stats strong {
+  font-size: 0.92rem;
+}
+
+.speedmail-shell.is-speedmail-dark {
+  color: #e8eaed;
+  background: #111315;
+}
+
+.speedmail-shell.is-speedmail-dark .speedmail-hud,
+.speedmail-shell.is-speedmail-dark .speedmail-sidebar,
+.speedmail-shell.is-speedmail-dark .speedmail-inbox,
+.speedmail-shell.is-speedmail-dark .speedmail-inbox-header,
+.speedmail-shell.is-speedmail-dark .speedmail-reader {
+  color: #e8eaed;
+  border-color: #303134;
+  background: #111315;
+}
+
+.speedmail-shell.is-speedmail-dark .speedmail-menu-button:hover,
+.speedmail-shell.is-speedmail-dark .speedmail-menu-button:focus-visible,
+.speedmail-shell.is-speedmail-dark .speedmail-menu-button[aria-expanded="true"],
+.speedmail-shell.is-speedmail-dark .speedmail-reader-expand:hover,
+.speedmail-shell.is-speedmail-dark .speedmail-reader-expand:focus-visible,
+.speedmail-shell.is-speedmail-dark .speedmail-reader-expand[aria-pressed="true"],
+.speedmail-shell.is-speedmail-dark .speedmail-hud .speedmail-fullscreen-button:hover,
+.speedmail-shell.is-speedmail-dark .speedmail-hud .speedmail-fullscreen-button:focus-visible {
+  background: transparent;
+  box-shadow: none;
+}
+
+.speedmail-shell.is-speedmail-dark .speedmail-menu-icon::before {
+  background: #bdc1c6;
+  box-shadow: 0 7px 0 #bdc1c6, 0 14px 0 #bdc1c6;
+}
+
+.speedmail-shell.is-speedmail-dark .speedmail-hud-brand strong,
+.speedmail-shell.is-speedmail-dark .speedmail-search,
+.speedmail-shell.is-speedmail-dark .speedmail-search input,
+.speedmail-shell.is-speedmail-dark .speedmail-toolbar-meta,
+.speedmail-shell.is-speedmail-dark .speedmail-toolbar-meta span:not(:first-child),
+.speedmail-shell.is-speedmail-dark .speedmail-sidebar a,
+.speedmail-shell.is-speedmail-dark .speedmail-inbox-header strong,
+.speedmail-shell.is-speedmail-dark .speedmail-message-list button,
+.speedmail-shell.is-speedmail-dark .speedmail-open-message,
+.speedmail-shell.is-speedmail-dark .speedmail-reply-panel,
+.speedmail-shell.is-speedmail-dark .speedmail-message-head h2,
+.speedmail-shell.is-speedmail-dark .speedmail-prompt p,
+.speedmail-shell.is-speedmail-dark .speedmail-draft-stats strong {
+  color: #e8eaed;
+}
+
+.speedmail-shell.is-speedmail-dark .speedmail-search,
+.speedmail-shell.is-speedmail-dark .speedmail-prompt,
+.speedmail-shell.is-speedmail-dark .speedmail-typed-feedback,
+.speedmail-shell.is-speedmail-dark .speedmail-inbox-signal {
+  background: #202124;
+}
+
+.speedmail-shell.is-speedmail-dark .speedmail-search input::placeholder,
+.speedmail-shell.is-speedmail-dark .speedmail-folder,
+.speedmail-shell.is-speedmail-dark .speedmail-quota,
+.speedmail-shell.is-speedmail-dark .speedmail-message-list em,
+.speedmail-shell.is-speedmail-dark .speedmail-message-list small,
+.speedmail-shell.is-speedmail-dark .speedmail-message-head p,
+.speedmail-shell.is-speedmail-dark .speedmail-message-head span,
+.speedmail-shell.is-speedmail-dark .speedmail-open-message > p,
+.speedmail-shell.is-speedmail-dark .speedmail-prompt span,
+.speedmail-shell.is-speedmail-dark .speedmail-editor-label,
+.speedmail-shell.is-speedmail-dark .speedmail-draft-stats span {
+  color: #bdc1c6;
+}
+
+.speedmail-shell.is-speedmail-dark .speedmail-compose-button,
+.speedmail-shell.is-speedmail-dark .speedmail-open-message,
+.speedmail-shell.is-speedmail-dark .speedmail-reply-panel,
+.speedmail-shell.is-speedmail-dark .speedmail-menu-panel,
+.speedmail-shell.is-speedmail-dark .speedmail-menu-panel input[type="text"],
+.speedmail-shell.is-speedmail-dark .speedmail-reply-panel textarea,
+.speedmail-shell.is-speedmail-dark .speedmail-draft-stats span {
+  border-color: #303134;
+  color: #e8eaed;
+  background: #1f2023;
+}
+
+.speedmail-shell.is-speedmail-dark .speedmail-message-list button {
+  border-bottom-color: #303134;
+  background: #111315;
+}
+
+.speedmail-shell.is-speedmail-dark .speedmail-message-list b {
+  color: #bdc1c6;
+}
+
+.speedmail-shell.is-speedmail-dark .speedmail-message-list i {
+  color: #bdc1c6;
+}
+
+.speedmail-shell.is-speedmail-dark .speedmail-message-list button.is-active,
+.speedmail-shell.is-speedmail-dark .speedmail-sidebar a[aria-current="page"] {
+  color: #ffd9df;
+  background: #2a161b;
+}
+
+.speedmail-shell.is-speedmail-dark .speedmail-sidebar a[aria-current="page"] strong {
+  color: #ffd9df;
+}
+
+.speedmail-shell.is-speedmail-dark .speedmail-message-head,
+.speedmail-shell.is-speedmail-dark .speedmail-typed-feedback {
+  border-color: #303134;
+}
+
+.speedmail-shell.is-speedmail-dark .speedmail-quota div,
+.speedmail-shell.is-speedmail-dark .speedmail-progress {
+  background: #303134;
+}
+
+.speedmail-shell.is-speedmail-dark.is-reader-expanded .speedmail-reader {
+  background: #111315;
+  box-shadow: inset 0 1px 0 #303134, 0 -18px 44px rgba(0, 0, 0, 0.32);
+}
+
+.speedmail-shell.is-speedmail-dark.is-reader-expanded .speedmail-draft-stats {
+  border-color: #303134;
+  background: #1f2023;
+  box-shadow: none;
+}
+
+.speedmail-shell.is-speedmail-dark .speedmail-reader-expand,
+.speedmail-shell.is-speedmail-dark .speedmail-hud .speedmail-fullscreen-button {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.speedmail-hero h1,
+.speedmail-hud-brand strong,
+.arcade-feature-copy h2.speedmail-card-title,
+.speedmail-card-preview strong {
+  font-family: "Pattaya", "Tall Film", system-ui, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.speedmail-hud-brand strong {
+  font-size: clamp(1.55rem, 2.6vw, 1.9rem);
+}
+
+/* Speedmail mail-client HUD pass */
+.speedmail-shell {
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.speedmail-hud {
+  grid-template-columns: auto minmax(280px, 560px) minmax(max-content, 1fr) auto;
+  gap: 0.75rem;
+  min-height: 44px;
+  padding: 0.28rem 0.75rem;
+  color: #3c4043;
+  border-bottom: 1px solid #e8eaed;
+  background: #ffffff;
+}
+
+.speedmail-hud-brand {
+  min-height: 36px;
+  color: #5f6368;
+}
+
+.speedmail-hud-brand strong {
+  color: #5f6368;
+  font-size: clamp(1.2rem, 2vw, 1.48rem);
+  text-shadow: none;
+  transform: translateY(2px);
+}
+
+.speedmail-mark {
+  width: 30px;
+  height: 30px;
+  transform: translateY(-3px);
+}
+
+.speedmail-menu-icon::before {
+  background: #5f6368;
+  box-shadow: 0 7px 0 #5f6368, 0 14px 0 #5f6368;
+}
+
+.speedmail-search {
+  min-height: 34px;
+  border-radius: 2px;
+  color: #1b3c5d;
+  background: #d8ebfb;
+}
+
+.speedmail-search input {
+  color: #17425f;
+}
+
+.speedmail-search input::placeholder {
+  color: #456b87;
+}
+
+.speedmail-search span::before {
+  border-color: #23658f;
+}
+
+.speedmail-search span::after {
+  background: #23658f;
+}
+
+.speedmail-toolbar-meta,
+.speedmail-toolbar-meta span:not(:first-child) {
+  color: #5f6368;
+}
+
+.speedmail-hud .speedmail-fullscreen-button img {
+  filter:
+    brightness(0)
+    saturate(100%)
+    invert(38%)
+    sepia(8%)
+    saturate(296%)
+    hue-rotate(169deg)
+    brightness(91%)
+    contrast(90%);
+}
+
+.speedmail-commandbar {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  min-height: 38px;
+  padding: 0 0.75rem;
+  border-bottom: 1px solid #e6e6e6;
+  background: #faf9f8;
+  overflow-x: auto;
+}
+
+.speedmail-commandbar button {
+  min-height: 32px;
+  padding: 0 0.55rem;
+  border: 0;
+  border-radius: 0;
+  color: #195a96;
+  background: transparent;
+  font: inherit;
+  font-size: 0.82rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.speedmail-commandbar button:hover,
+.speedmail-commandbar button:focus-visible {
+  outline: none;
+  background: #eef6fd;
+}
+
+.speedmail-grid {
+  grid-template-columns: 180px minmax(280px, 0.82fr) minmax(440px, 1.35fr);
+  min-height: min(720px, calc(100vh - 232px));
+}
+
+.speedmail-sidebar {
+  padding: 0.8rem 0.65rem;
+  background: #f3f2f1;
+}
+
+.speedmail-compose-button {
+  min-height: 34px;
+  border-radius: 2px;
+  box-shadow: none;
+}
+
+.speedmail-sidebar a {
+  min-height: 34px;
+  border-radius: 0;
+}
+
+.speedmail-sidebar a[aria-current="page"] {
+  box-shadow: inset 3px 0 0 #0878c9;
+  color: #0f4d83;
+  background: #deecf9;
+}
+
+.speedmail-inbox-header {
+  min-height: 48px;
+  padding: 0.75rem 1rem;
+  background: #ffffff;
+}
+
+.speedmail-message-list button {
+  min-height: 86px;
+  padding: 0.8rem 0.95rem;
+}
+
+.speedmail-message-list i {
+  color: #5f6368;
+}
+
+.speedmail-message-list button.is-active {
+  background: #deecf9;
+  box-shadow: inset 3px 0 0 #0878c9;
+}
+
+.speedmail-reader {
+  padding: 1rem;
+  background: #ffffff;
+}
+
+.speedmail-open-message,
+.speedmail-reply-panel {
+  border-radius: 2px;
+}
+
+.speedmail-prompt {
+  border-radius: 2px;
+  background: #f3f6fb;
+}
+
+.speedmail-shell.is-speedmail-dark .speedmail-commandbar {
+  border-bottom-color: #303134;
+  background: #1f2023;
+}
+
+.speedmail-shell.is-speedmail-dark .speedmail-commandbar button {
+  color: #a9d6ff;
+}
+
+.speedmail-shell.is-speedmail-dark .speedmail-commandbar button:hover,
+.speedmail-shell.is-speedmail-dark .speedmail-commandbar button:focus-visible {
+  background: #2a2c31;
+}
+
+.speedmail-draft-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  width: 100%;
+  margin: -0.15rem 0;
+  overflow: hidden;
+  border: 1px solid #dadce0;
+  border-radius: 2px;
+  background: #ffffff;
+  box-shadow: none;
+}
+
+.speedmail-draft-stats span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.28rem;
+  min-height: 34px;
+  min-width: 0;
+  padding: 0.36rem 0.45rem;
+  border: 0;
+  border-right: 1px solid #e8eaed;
+  border-radius: 0;
+  color: #5f6368;
+  background: transparent;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.speedmail-draft-stats span:last-child {
+  border-right: 0;
+}
+
+.speedmail-draft-stats strong {
+  color: #202124;
+  font-size: 0.92rem;
+  text-transform: none;
+}
+
+.speedmail-shell.is-speedmail-dark .speedmail-draft-stats {
+  border-color: #303134;
+  background: #1f2023;
+}
+
+.speedmail-shell.is-speedmail-dark .speedmail-draft-stats span {
+  border-right-color: #303134;
+  color: #bdc1c6;
+  background: transparent;
+}
+
+.speedmail-shell.is-speedmail-dark .speedmail-draft-stats strong {
+  color: #e8eaed;
+}
+
+/* Speedmail page rhythm matches the arcade games while the HUD stays mail-like. */
+.speedmail-page {
+  padding: clamp(34px, 6vw, 74px) clamp(20px, 5vw, 72px) clamp(70px, 9vw, 110px);
+}
+
+.speedmail-hero,
+.speedmail-shell {
+  width: min(1180px, 100%);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.speedmail-hero {
+  justify-items: center;
+  gap: clamp(1.15rem, 2.2vw, 1.75rem);
+  margin-bottom: clamp(1.6rem, 3.4vw, 2.5rem);
+  padding-top: clamp(0.7rem, 2.2vw, 1.6rem);
+  text-align: center;
+}
+
+.speedmail-hero h1 {
+  margin: clamp(0.45rem, 1.5vw, 1rem) auto 0;
+  text-align: center;
+}
+
+.speedmail-hero p:not(.eyebrow) {
+  max-width: 760px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+@media (max-width: 980px) {
+  .speedmail-shell.is-reader-expanded .speedmail-reader {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+  }
+
+  .speedmail-shell.is-reader-expanded .speedmail-draft-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .speedmail-shell.is-reader-expanded .speedmail-reader-summary,
+  .speedmail-shell.is-reader-expanded .speedmail-reply-panel {
+    grid-column: 1;
+    grid-row: auto;
+  }
+}
+
+@media (max-width: 680px) {
+  .speedmail-reader-tools {
+    align-items: flex-end;
+    flex-direction: column;
+  }
+
+  .speedmail-shell.is-reader-expanded .speedmail-reader {
+    padding: 0.85rem;
+  }
 }
