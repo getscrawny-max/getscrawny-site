@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Plant Lyfe | Get Scrawny Arcade</title>
+    <meta name="description" content="A cozy idle plant growing and selling game in Get Scrawny Arcade.">
+    <link rel="preload" href="styles.css?v=plant-lyfe-internal-zoom-1" as="style">
+    <link rel="stylesheet" href="styles.css?v=plant-lyfe-internal-zoom-1">
+  </head>
+  <body class="plantlyfe-body">
+    <header class="site-header" data-header>
+      <a class="brand" href="index.html#top" aria-label="Get Scrawny home">
+        <span class="brand-combined brand-wordmark" aria-hidden="true">Get&nbsp;Scrawny Motor&nbsp;Coaching</span>
+      </a>
+
+      <div class="page-menu">
+        <div class="page-menu-control">
+          <a class="home-link" href="index.html#top">Home</a>
+          <button class="page-menu-toggle" type="button" aria-label="Open home page directory" aria-expanded="false" data-nav-toggle>
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+        <nav class="site-nav" aria-label="Home page directory" data-nav>
+          <a href="index.html#approach">Approach</a>
+          <a href="index.html#services">Services</a>
+          <a href="index.html#who">Who We Serve</a>
+          <a href="index.html#coach">Meet Your Coach</a>
+          <a href="index.html#contact">Contact</a>
+        </nav>
+      </div>
+
+      <div class="library-menu">
+        <div class="library-menu-control">
+          <a class="library-link" href="explore.html" aria-current="page">Explore</a>
+          <button class="library-menu-toggle page-menu-toggle" type="button" aria-label="Open explore directory" aria-expanded="false" data-library-nav-toggle>
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+        <nav class="site-nav library-nav" aria-label="Explore directory" data-library-nav>
+          <a href="explore.html">Scrawny's World</a>
+          <a href="muscle-map.html">Strength Lab</a>
+          <a href="lessons.html">Library</a>
+          <a href="arcade.html" aria-current="page">Arcade</a>
+        </nav>
+      </div>
+
+      <button class="theme-toggle" type="button" aria-label="Switch color mode" data-theme-toggle>
+        <span aria-hidden="true"></span>
+      </button>
+    </header>
+
+    <main class="plantlyfe-page arcade-page" id="top">
+      <section class="plantlyfe-hero" aria-labelledby="plantlyfe-title">
+        <h1 id="plantlyfe-title">Plant Lyfe</h1>
+        <p>Grow starter plants, move mature stock to the display shelf, and sell to customers while your shop slowly levels up.</p>
+      </section>
+
+      <section class="plantlyfe-shell" aria-label="Plant Lyfe game" data-plantlyfe-shell>
+        <div class="plantlyfe-hud" aria-label="Plant Lyfe controls">
+          <div class="plantlyfe-hud-brand">
+            <strong>Plant Lyfe</strong>
+          </div>
+          <div class="plantlyfe-hud-actions" aria-label="Plant Lyfe view controls">
+            <button type="button" class="plantlyfe-icon-button" data-plantlyfe-zoom-out aria-label="Zoom game out">−</button>
+            <button type="button" class="plantlyfe-icon-button" data-plantlyfe-zoom-in aria-label="Zoom game in">+</button>
+            <button type="button" class="plantlyfe-icon-button plantlyfe-fullscreen-button" data-plantlyfe-fullscreen aria-label="Toggle fullscreen">
+              <img src="assets/fullscreen.png" alt="" aria-hidden="true">
+            </button>
+          </div>
+        </div>
+        <div class="plantlyfe-stage" data-plantlyfe-stage>
+          <iframe
+            title="Plant Lyfe idle plant shop game"
+            src="plant-lyfe-v4/index.html?v=plant-lyfe-floor-space-1"
+            loading="eager"
+            allow="fullscreen"
+            data-plantlyfe-frame></iframe>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Get Scrawny LLC</p>
+      <p>Plant Lyfe idle shop play for planning and patient progression.</p>
+    </footer>
+
+    <script src="script.js?v=plant-lyfe-internal-zoom-1"></script>
+  </body>
+</html>

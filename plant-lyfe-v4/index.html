@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plant Lyfe 🌿</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ═══ LOGIN ═══════════════════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-title">* PLANT LYFE *</div>
+    <div class="login-sub">ENTER YOUR NAME TO START OR CONTINUE.<br>EACH NAME SAVES SEPARATELY.</div>
+    <input class="px-input" id="name-input" maxlength="16" placeholder="YOUR NAME..." autocomplete="off" spellcheck="false">
+    <button class="px-btn btn-green" id="play-btn">▶ PLAY / CONTINUE</button>
+    <hr class="divider">
+    <div id="saved-section"></div>
+  </div>
+</div>
+
+<!-- ═══ GAME ════════════════════════════════════════════════════ -->
+<div id="game-screen">
+
+  <header>
+    <div class="logo"><span>*</span> PLANT LYFE</div>
+    <div class="hud">
+      <div class="hud-chip hud-user">▶ <span id="hud-user">—</span></div>
+      <div class="hud-chip">$<span class="hud-val" id="hud-money">0</span></div>
+      <div class="hud-chip hud-rep">★<span class="hud-val" id="hud-rep">0</span></div>
+      <div class="rep-bar-outer">
+        <span class="rep-label" id="rep-rank-label">SPROUT</span>
+        <div class="rep-track"><div class="rep-fill" id="rep-fill"></div></div>
+        <span class="rep-pct" id="rep-next-label">0/10</span>
+      </div>
+      <div class="hud-chip">SOLD <span class="hud-val" id="hud-sold">0</span></div>
+      <button class="btn-logout" id="logout-btn">LOGOUT</button>
+    </div>
+  </header>
+
+  <!--
+    LAYOUT: 3 columns
+    LEFT   220px  — seed shop only
+    CENTRE 1fr    — store floor + info sub-panel
+    RIGHT  224px  — grow shelf
+  -->
+  <div class="game-layout">
+
+    <!-- ── LEFT: Seed shop ── -->
+    <div class="panel-left">
+      <div class="sec-label">SEED SHOP</div>
+      <div class="seed-list" id="seed-list"></div>
+    </div>
+
+    <!-- ── CENTRE ── -->
+    <div class="panel-centre">
+
+      <!-- top: display shelf across full width -->
+      <div class="display-shelf-wrap">
+        <div class="display-shelf-label">DISPLAY SHELF — MATURE &amp; READY TO SELL</div>
+        <div class="display-shelf" id="display-shelf"></div>
+      </div>
+
+      <!-- bottom: two sub-columns side by side -->
+      <div class="centre-lower">
+
+        <!-- walkway / store scene -->
+        <div class="walkway" id="walkway">
+          <div class="walkway-label">STORE FLOOR</div>
+        </div>
+
+        <!-- info panel: requests + detail + rank + log -->
+        <div class="info-panel">
+
+          <div class="info-section">
+            <div class="sec-label">CUSTOMER REQUESTS <span class="req-hint-inline">BONUS $$ IF FILLED!</span></div>
+            <div id="request-list"></div>
+          </div>
+
+          <div class="info-section info-detail">
+            <div class="detail-wrap">
+              <div class="detail-head" id="detail-head">-- SELECT A PLANT --</div>
+              <div class="detail-body" id="detail-body">
+                <div class="detail-empty">
+                  <div style="font-size:26px">🪴</div>
+                  <div>CLICK A GROW SLOT OR<br>DISPLAY PLANT TO INSPECT</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-section">
+            <div class="sec-label">YOUR RANK</div>
+            <div class="rank-display" id="rank-display"></div>
+          </div>
+
+          <div class="info-section info-log">
+            <div class="sec-label">ACTIVITY LOG</div>
+            <div class="log-box" id="log-box"></div>
+          </div>
+
+        </div><!-- /info-panel -->
+      </div><!-- /centre-lower -->
+    </div><!-- /panel-centre -->
+
+    <!-- ── RIGHT: Grow shelf ── -->
+    <div class="panel-right">
+      <div class="grow-shelf-header">
+        GROW SHELF
+        <span class="shelf-hint" id="shelf-hint">SELECT A SLOT</span>
+      </div>
+      <div class="grow-shelf" id="grow-shelf"></div>
+    </div>
+
+  </div><!-- /game-layout -->
+</div><!-- /game-screen -->
+
+<div id="toast-container"></div>
+
+<script src="js/data.js"></script>
+<script src="js/state.js"></script>
+<script src="js/customers.js"></script>
+<script src="js/plants-svg.js"></script>
+<script src="js/game.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

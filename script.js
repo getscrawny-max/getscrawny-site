@@ -44,7 +44,7 @@ const storedTheme = readStoredTheme();
 const defaultTheme = "dark";
 const themes = ["light", "dark"];
 const initialTheme = themes.includes(storedTheme) ? storedTheme : defaultTheme;
-const arcadeThemePages = new Set(["arcade.html", "keyboard-flight.html", "neon-octarun.html", "neon-octorun.html", "speedmail.html"]);
+const arcadeThemePages = new Set(["arcade.html", "keyboard-flight.html", "neon-octarun.html", "neon-octorun.html", "speedmail.html", "plant-lyfe.html"]);
 const isArcadeSurface = Boolean(document.querySelector(".arcade-page, .game-page, .octarun-page"));
 let preferredTheme = initialTheme;
 let activeTag = "";
@@ -55,7 +55,7 @@ writeStoredTheme(preferredTheme);
 
 const syncThemeLinks = () => {
   const currentTheme = isArcadeSurface ? preferredTheme : document.documentElement.dataset.theme;
-  document.querySelectorAll('a[href^="index.html"], a[href^="explore.html"], a[href^="lessons.html"], a[href^="arcade.html"], a[href^="keyboard-flight.html"], a[href^="neon-octarun.html"], a[href^="neon-octorun.html"], a[href^="speedmail.html"], a[href^="muscle-map.html"], a[href^="muscle-map-education.html"], a[href^="muscle-map-log.html"]').forEach((link) => {
+  document.querySelectorAll('a[href^="index.html"], a[href^="explore.html"], a[href^="lessons.html"], a[href^="arcade.html"], a[href^="keyboard-flight.html"], a[href^="neon-octarun.html"], a[href^="neon-octorun.html"], a[href^="speedmail.html"], a[href^="plant-lyfe.html"], a[href^="muscle-map.html"], a[href^="muscle-map-education.html"], a[href^="muscle-map-log.html"]').forEach((link) => {
     const rawHref = link.getAttribute("href");
     if (!rawHref || rawHref.includes("assets/")) return;
     const url = new URL(rawHref, window.location.href);
@@ -108,6 +108,62 @@ const setupDisclosureNav = (toggle, menu, openLabel, closeLabel, otherToggle, ot
 
 setupDisclosureNav(navToggle, nav, "Open home page directory", "Close home page directory", libraryNavToggle, libraryNav);
 setupDisclosureNav(libraryNavToggle, libraryNav, "Open explore directory", "Close explore directory", navToggle, nav);
+
+const plantlyfeShell = document.querySelector("[data-plantlyfe-shell]");
+const plantlyfeFullscreen = document.querySelector("[data-plantlyfe-fullscreen]");
+const plantlyfeStage = document.querySelector("[data-plantlyfe-stage]");
+const plantlyfeZoomIn = document.querySelector("[data-plantlyfe-zoom-in]");
+const plantlyfeZoomOut = document.querySelector("[data-plantlyfe-zoom-out]");
+const plantlyfeFrame = document.querySelector("[data-plantlyfe-frame]");
+
+if (plantlyfeShell) {
+  let plantlyfeZoomed = false;
+
+  const getPlantlyfeFrameDocument = () => {
+    try {
+      return plantlyfeFrame?.contentDocument || plantlyfeFrame?.contentWindow?.document || null;
+    } catch {
+      return null;
+    }
+  };
+
+  const syncPlantlyfeZoom = () => {
+    const frameDocument = getPlantlyfeFrameDocument();
+    frameDocument?.documentElement.classList.toggle("plantlyfe-ui-zoomed", plantlyfeZoomed);
+    frameDocument?.body?.classList.toggle("plantlyfe-ui-zoomed", plantlyfeZoomed);
+    plantlyfeStage?.classList.toggle("is-plantlyfe-zoomed", plantlyfeZoomed);
+    if (plantlyfeZoomIn) plantlyfeZoomIn.disabled = plantlyfeZoomed;
+    if (plantlyfeZoomOut) plantlyfeZoomOut.disabled = !plantlyfeZoomed;
+  };
+
+  const syncPlantlyfeFullscreen = () => {
+    plantlyfeFullscreen?.setAttribute("aria-pressed", String(document.fullscreenElement === plantlyfeShell));
+  };
+
+  plantlyfeZoomIn?.addEventListener("click", () => {
+    plantlyfeZoomed = true;
+    syncPlantlyfeZoom();
+  });
+
+  plantlyfeZoomOut?.addEventListener("click", () => {
+    plantlyfeZoomed = false;
+    syncPlantlyfeZoom();
+  });
+
+  plantlyfeFullscreen?.addEventListener("click", () => {
+    if (!document.fullscreenEnabled) return;
+    if (document.fullscreenElement === plantlyfeShell) {
+      document.exitFullscreen?.();
+      return;
+    }
+    plantlyfeShell.requestFullscreen?.();
+  });
+
+  document.addEventListener("fullscreenchange", syncPlantlyfeFullscreen);
+  plantlyfeFrame?.addEventListener("load", syncPlantlyfeZoom);
+  syncPlantlyfeZoom();
+  syncPlantlyfeFullscreen();
+}
 
 let clickAudioContext;
 
