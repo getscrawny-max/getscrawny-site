@@ -72,7 +72,9 @@ function selectMuscle(id, options = {}) {
   summaryEl.textContent = muscle
     ? muscle.summary
     : 'Browse bodyweight, equipment-based, powerlifting, and Olympic-style movements across the full exercise library.';
-  selectedDot.style.background = muscle ? muscle.color : 'var(--accent)';
+  if (selectedDot) {
+    selectedDot.style.background = muscle ? muscle.color : 'var(--accent)';
+  }
 
   document.querySelectorAll('[data-muscle]').forEach((region) => {
     const isActive = muscle && region.dataset.muscle === selectedMuscle;
@@ -128,7 +130,7 @@ function selectMuscle(id, options = {}) {
   if (muscle) {
     renderDiagram(muscle);
     setView(frontMuscles.has(selectedMuscle) ? 'front' : 'back');
-  } else {
+  } else if (diagram) {
     diagram.innerHTML = '<span class="mini-label all-muscle-label">ALL</span>';
   }
 }
@@ -166,6 +168,8 @@ function renderQuickSelect() {
 }
 
 function renderDiagram(muscle) {
+  if (!diagram) return;
+
   const active = {
     chest: ['mini-torso'],
     back: ['mini-torso'],

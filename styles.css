@@ -5050,7 +5050,7 @@ body:has(.game-page) .brand-combined,
 }
 
 .muscle-map-page .muscle-map-hero p:not(.eyebrow) {
-  max-width: 820px;
+  max-width: none;
   color: var(--muted);
   font-size: clamp(1.05rem, 2vw, 1.35rem);
   line-height: 1.5;
@@ -5231,7 +5231,7 @@ body:has(.muscle-map-page) .app {
 }
 
 .muscle-map-page .selected-heading {
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .muscle-map-page .quick-select .chip.active {
@@ -5623,24 +5623,16 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
 
 .muscle-map-page .selected-heading {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(112px, 150px);
-  gap: clamp(1rem, 3vw, 2rem);
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem;
   align-items: stretch;
+  margin-top: 0;
 }
 
 .muscle-map-page .selected-heading > div:first-child {
   display: grid;
   align-content: center;
   gap: 0.55rem;
-  min-height: 136px;
-}
-
-.muscle-map-page .mini-map {
-  width: 100%;
-  min-height: 136px;
-  height: 100%;
-  max-height: 164px;
-  align-self: stretch;
 }
 
 .muscle-map-page .exercise-header,
@@ -5781,11 +5773,6 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
 @media (max-width: 560px) {
   .muscle-map-page .selected-heading {
     grid-template-columns: 1fr;
-  }
-
-  .muscle-map-page .mini-map {
-    max-width: 150px;
-    justify-self: start;
   }
 }
 
