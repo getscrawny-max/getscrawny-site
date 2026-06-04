@@ -62,6 +62,57 @@ const ALL_PLANTS = [
   },
 ];
 
+// ─── Rare Mutation Definitions ───────────────────────────────
+const MUTATION_ROLL_AT = 28;
+const MUTATION_CHANCE = 0.08;
+
+const PLANT_MUTATIONS = {
+  cactus:    { id: 'golden_cactus',   name: 'GOLDEN CACTUS',   className: 'mut-golden',  multiplier: 3.0, tag: 'GOLDEN' },
+  succulent: { id: 'crystal_succulent',name: 'CRYSTAL SUCCULENT',className: 'mut-crystal', multiplier: 2.8, tag: 'CRYSTAL' },
+  fern:      { id: 'giant_fern',      name: 'GIANT FERN',      className: 'mut-giant',   multiplier: 2.7, tag: 'GIANT' },
+  sunflower: { id: 'solar_sunflower', name: 'SOLAR SUNFLWR',   className: 'mut-solar',   multiplier: 3.1, tag: 'SOLAR' },
+  flower:    { id: 'rainbow_flower',  name: 'RAINBOW FLOWER',  className: 'mut-rainbow', multiplier: 3.2, tag: 'RAINBOW' },
+  bamboo:    { id: 'tower_bamboo',    name: 'TOWER BAMBOO',    className: 'mut-giant',   multiplier: 2.9, tag: 'TOWER' },
+  mushroom:  { id: 'glow_mushroom',   name: 'GLOW MUSHROOM',   className: 'mut-glow',    multiplier: 3.0, tag: 'GLOW' },
+  orchid:    { id: 'twin_orchid',     name: 'TWIN ORCHID',     className: 'mut-twin',    multiplier: 3.3, tag: 'TWIN' },
+  lotus:     { id: 'moon_lotus',      name: 'MOON LOTUS',      className: 'mut-moon',    multiplier: 3.1, tag: 'MOON' },
+  rainbow:   { id: 'prismatic_rainbow',name: 'PRISMATIC RAINBOW',className:'mut-rainbow', multiplier: 3.5, tag: 'PRISM' },
+};
+
+function getMutation(plantId, mutationId) {
+  const mutation = PLANT_MUTATIONS[plantId];
+  if (!mutation) return null;
+  return !mutationId || mutation.id === mutationId ? mutation : null;
+}
+
+function plantDisplayName(plant, slot) {
+  const mutation = slot ? getMutation(slot.pid, slot.mutationId) : null;
+  return mutation ? mutation.name : plant.name;
+}
+
+function plantSellValue(plant, slot) {
+  const mutation = slot ? getMutation(slot.pid, slot.mutationId) : null;
+  return mutation ? Math.round(plant.sell * mutation.multiplier) : plant.sell;
+}
+
+function discoveryRewardForPlant(plant) {
+  return {
+    money: 10 + plant.tier * 8,
+    rep: 2 + plant.tier,
+    packs: 1,
+    label: `${plant.tierName} SEED PACK`
+  };
+}
+
+function discoveryRewardForMutation(plant, mutation) {
+  return {
+    money: 20 + plant.tier * 12,
+    rep: 4 + plant.tier,
+    packs: 2,
+    label: `${mutation.tag} SEED PACK`
+  };
+}
+
 // ─── Rank Definitions ─────────────────────────────────────────
 const RANKS = [
   { name: 'SPROUT',   rep: 0,   color: 'var(--green2)',  desc: 'JUST STARTING OUT.\nKEEP GROWING!' },

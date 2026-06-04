@@ -19,19 +19,30 @@ function renderGrowShelf() {
 
       const div = document.createElement('div');
       div.className = 'grow-slot grow-' + (isP ? 'planting' : ss) + (isSel ? ' grow-selected' : '');
+      div.dataset.growIndex = i;
+
+      if (slot) {
+        const lastStatuses = renderGrowShelf._lastStatuses || [];
+        if (lastStatuses[i] && lastStatuses[i] !== ss) {
+          div.classList.add('fx-stage-change');
+        }
+      }
 
       if (slot) {
         const gr     = Math.round(slot.growProgress || 0);
         const water  = Math.round(slot.water  || 0);
         const health = Math.round(slot.health || 0);
+        const mutation = getMutation(slot.pid, slot.mutationId);
+        if (mutation) div.classList.add('grow-mutated', mutation.className);
 
         if      (ss === 'mature')  div.innerHTML += `<span class="gslot-badge badge-ready">READY!</span>`;
         else if (ss === 'dry')     div.innerHTML += `<span class="gslot-badge badge-dry">DRY!</span>`;
         else if (ss === 'thirsty') div.innerHTML += `<span class="gslot-badge badge-thirsty">THIRSTY</span>`;
         else if (ss === 'dead')    div.innerHTML += `<span class="gslot-badge badge-dead">DEAD</span>`;
+        if (mutation) div.innerHTML += `<span class="mutation-badge">${mutation.tag}</span>`;
 
         const svgWrap = document.createElement('div');
-        svgWrap.className = 'gslot-svg';
+        svgWrap.className = 'gslot-svg' + (mutation ? ` mutated-plant ${mutation.className}` : '');
         svgWrap.appendChild(drawPlantSVG(slot.pid, (slot.growProgress||0)/100, slot.dead));
         div.appendChild(svgWrap);
 
@@ -40,9 +51,9 @@ function renderGrowShelf() {
         const hColor     = health<30 ? 'var(--rust)' : health<60 ? 'var(--amber)' : 'var(--leaf2)';
         div.innerHTML += `
           <div class="gslot-bars">
-            <div class="mini-bar"><div class="mini-fill" style="width:${gr}%;background:${growColor}"></div></div>
-            <div class="mini-bar"><div class="mini-fill" style="width:${water}%;background:${waterColor}"></div></div>
-            ${!slot.mature ? `<div class="mini-bar"><div class="mini-fill" style="width:${health}%;background:${hColor}"></div></div>` : ''}
+            <div class="mini-bar mini-growth" title="Growth ${gr}%"><span>G</span><div class="mini-fill" style="width:${gr}%;background:${growColor}"></div></div>
+            <div class="mini-bar mini-water" title="Water ${water}%"><span>W</span><div class="mini-fill" style="width:${water}%;background:${waterColor}"></div></div>
+            ${!slot.mature ? `<div class="mini-bar mini-health" title="Health ${health}%"><span>H</span><div class="mini-fill" style="width:${health}%;background:${hColor}"></div></div>` : ''}
           </div>`;
       } else if (isP) {
         div.innerHTML = `<div class="gslot-svg gslot-hint">🌱<br><span>PLANT HERE</span></div>`;
@@ -56,6 +67,8 @@ function renderGrowShelf() {
 
     el.appendChild(row);
   }
+
+  renderGrowShelf._lastStatuses = window.G.slots.map(slot => slot ? getSlotStatus(slot) : 'empty');
 }
 
 // ─── Display Shelf ────────────────────────────────────────────
@@ -75,21 +88,29 @@ function renderDisplayShelf() {
       + (slot ? ' disp-occupied' : ' disp-empty')
       + (isSel ? ' disp-selected' : '')
       + (hasReq ? ' disp-wanted' : '');
+    div.dataset.displayIndex = i;
 
     if (slot) {
       const p = ALL_PLANTS.find(x => x.id === slot.pid);
+      const mutation = getMutation(slot.pid, slot.mutationId);
+      const displayName = plantDisplayName(p, slot);
       if (hasReq) div.innerHTML += `<span class="disp-badge disp-badge-req">WANTED!</span>`;
+      if (mutation) {
+        div.classList.add('disp-mutated', mutation.className);
+        div.innerHTML += `<span class="mutation-badge">${mutation.tag}</span>`;
+      }
 
       const svgWrap = document.createElement('div');
-      svgWrap.className = 'disp-svg';
+      svgWrap.className = 'disp-svg' + (mutation ? ` mutated-plant ${mutation.className}` : '');
       svgWrap.appendChild(drawPlantSVG(slot.pid, 1.0, false));
       div.appendChild(svgWrap);
 
+      const baseSell = plantSellValue(p, slot);
       const price = hasReq
-        ? (window.G.requests.find(r => r.plantId === slot.pid && r.expiresAt > Date.now())?.bonus || p.sell)
-        : p.sell;
+        ? baseSell + ((window.G.requests.find(r => r.plantId === slot.pid && r.expiresAt > Date.now())?.bonus || p.sell) - p.sell)
+        : baseSell;
 
-      div.innerHTML += `<div class="disp-name">${p.name}</div>`;
+      div.innerHTML += `<div class="disp-name">${displayName}</div>`;
       div.innerHTML += `<div class="disp-price">$${price}${hasReq ? `<span class="disp-bonus">★</span>` : ''}</div>`;
     } else {
       div.innerHTML = `<div class="disp-empty-label">EMPTY</div>`;
@@ -122,25 +143,29 @@ function renderDetail() {
     }
     const p       = ALL_PLANTS.find(x => x.id === slot.pid);
     const matched = (window.G.requests||[]).find(r => r.plantId === slot.pid && r.expiresAt > Date.now());
-    const price   = matched ? matched.bonus : p.sell;
+    const mutation = getMutation(slot.pid, slot.mutationId);
+    const displayName = plantDisplayName(p, slot);
+    const baseSell = plantSellValue(p, slot);
+    const price   = matched ? baseSell + (matched.bonus - p.sell) : baseSell;
     const bonus   = matched ? matched.bonus - p.sell : 0;
+    const mutationBonus = baseSell - p.sell;
 
-    head.textContent = `FOR SALE — ${p.name}`;
+    head.textContent = `FOR SALE — ${displayName}`;
     body.innerHTML = `
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
-        <div class="detail-svg-big"></div>
+        <div class="detail-svg-big${mutation ? ` mutated-plant ${mutation.className}` : ''}"></div>
         <div>
-          <div class="detail-name">${p.name}</div>
-          <div class="detail-stage" style="color:var(--amber2)">MATURE · READY</div>
+          <div class="detail-name">${displayName}</div>
+          <div class="detail-stage" style="color:var(--amber2)">${mutation ? 'RARE MUTATION · READY' : 'MATURE · READY'}</div>
           <div style="font-size:5px;color:var(--muted2);margin-top:4px;line-height:1.9">${p.desc}</div>
         </div>
       </div>
       <div class="detail-chips">
         <div class="dchip"><strong>$${p.sell}</strong>BASE</div>
-        <div class="dchip"><strong style="color:${matched?'var(--amber2)':'var(--muted)'}">+$${bonus}</strong>BONUS</div>
+        <div class="dchip"><strong style="color:${mutation?'var(--amber2)':'var(--muted)'}">+$${mutationBonus}</strong>MUTATE</div>
         <div class="dchip"><strong style="color:var(--amber2)">$${price}</strong>YOU GET</div>
       </div>
-      ${matched ? `<div class="req-match-banner">★ ${matched.name.toUpperCase()} WANTS THIS! ★</div>` : ''}
+      ${matched ? `<div class="req-match-banner">★ ${matched.name.toUpperCase()} WANTS THIS! +$${bonus} REQUEST ★</div>` : ''}
       <div class="action-row">
         <button class="px-btn-sm btn-sell" onclick="doSellDisplay(${i})">★ SELL FOR $${price}</button>
       </div>`;
@@ -160,6 +185,9 @@ function renderDetail() {
 
     const p      = ALL_PLANTS.find(x => x.id === slot.pid);
     const ss     = getSlotStatus(slot);
+    const mutation = getMutation(slot.pid, slot.mutationId);
+    const displayName = plantDisplayName(p, slot);
+    const baseSell = plantSellValue(p, slot);
     const gr     = Math.round(slot.growProgress || 0);
     const water  = Math.round(slot.water  || 0);
     const health = Math.round(slot.health !== undefined ? slot.health : HEALTH_MAX);
@@ -186,13 +214,13 @@ function renderDetail() {
     if (slot.mature)                btns += `<button class="px-btn-sm btn-move"  onclick="doMoveToDisplay(${i})">🛒 MOVE TO DISPLAY</button>`;
     if (slot.dead)                  btns += `<button class="px-btn-sm btn-clear" onclick="doClear(${i})">✕ REMOVE</button>`;
 
-    head.textContent = `GROW ${i+1} — ${p.name}`;
+    head.textContent = `GROW ${i+1} — ${displayName}`;
     body.innerHTML = `
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
-        <div class="detail-svg-big"></div>
+        <div class="detail-svg-big${mutation ? ` mutated-plant ${mutation.className}` : ''}"></div>
         <div>
-          <div class="detail-name">${p.name}</div>
-          <div class="detail-stage" style="color:${stateColors[ss]||'var(--muted2)'}">${ss.toUpperCase()}</div>
+          <div class="detail-name">${displayName}</div>
+          <div class="detail-stage" style="color:${mutation ? 'var(--amber2)' : (stateColors[ss]||'var(--muted2)')}">${mutation ? `RARE ${mutation.tag}` : ss.toUpperCase()}</div>
           <div style="font-size:5px;color:var(--muted2);margin-top:3px;line-height:2">${stateMsgs[ss]||''}</div>
         </div>
       </div>
@@ -212,9 +240,9 @@ function renderDetail() {
         <span class="px-bar-pct">${health}%</span>
       </div>
       <div class="detail-chips">
-        <div class="dchip"><strong style="color:var(--amber)">$${p.sell}</strong>VALUE</div>
+        <div class="dchip"><strong style="color:var(--amber)">$${baseSell}</strong>VALUE</div>
         <div class="dchip"><strong style="color:var(--dusk2)">+${p.rep}★</strong>REP</div>
-        <div class="dchip"><strong style="color:var(--leaf2)">$${p.sell-p.cost}</strong>PROFIT</div>
+        <div class="dchip"><strong style="color:var(--leaf2)">$${baseSell-p.cost}</strong>PROFIT</div>
       </div>
       <div class="action-row">${btns}</div>`;
 
@@ -228,6 +256,23 @@ function renderShop() {
   const el  = document.getElementById('seed-list');
   el.innerHTML = '';
   const rep = window.G.rep || 0;
+  normalizeRewardState();
+
+  if (window.G.seedPacks.length) {
+    const pack = window.G.seedPacks[0];
+    const div = document.createElement('div');
+    div.className = 'seed-row seed-pack-row';
+    div.innerHTML = `
+      <span class="seed-sprite">🎁</span>
+      <div class="seed-info">
+        <div class="seed-name">${pack.label}</div>
+        <div class="seed-sub">FREE SEED REWARD</div>
+        <span class="tier-tag">OPEN ${window.G.seedPacks.length} PACK${window.G.seedPacks.length === 1 ? '' : 'S'}</span>
+      </div>
+      <div class="seed-price">OPEN</div>`;
+    div.addEventListener('click', openSeedPack);
+    el.appendChild(div);
+  }
 
   ALL_PLANTS.forEach(p => {
     const isUnlocked = rep >= p.unlock;
@@ -239,6 +284,7 @@ function renderShop() {
       + (isUnlocked ? ' unlocked' : ' locked')
       + (isSel  ? ' sel-seed' : '')
       + (isUnlocked && !can ? ' broke' : '');
+    div.dataset.plantId = p.id;
 
     if (isUnlocked) {
       div.innerHTML = `
@@ -269,6 +315,24 @@ function renderShop() {
   });
 }
 
+function openSeedPack() {
+  normalizeRewardState();
+  if (!window.G.seedPacks.length) return;
+  if (window.G.heldSeed) {
+    toast('PLANT OR RETURN HELD SEED FIRST.', 'tw');
+    return;
+  }
+  const unlocked = ALL_PLANTS.filter(p => (window.G.rep || 0) >= p.unlock);
+  const pool = unlocked.length ? unlocked : ALL_PLANTS.filter(p => p.unlock === 0);
+  const plant = pool[Math.floor(Math.random() * pool.length)];
+  window.G.seedPacks.shift();
+  window.G.heldSeed = plant.id;
+  saveGame();
+  renderAll();
+  toast(`SEED PACK OPENED: ${plant.name}!`, 'tp');
+  log(`SEED PACK GAVE ${plant.name}`, 'rep');
+}
+
 // ─── Customer Requests ────────────────────────────────────────
 function renderRequests() {
   const el = document.getElementById('request-list');
@@ -282,7 +346,7 @@ function renderRequests() {
   }
   el.innerHTML = '';
 
-  requests.forEach(r => {
+  requests.forEach((r, idx) => {
     const p         = ALL_PLANTS.find(x => x.id === r.plantId);
     if (!p) return;
     const remaining = Math.max(0, Math.round((r.expiresAt - now) / 1000));
@@ -294,18 +358,18 @@ function renderRequests() {
     const hasOnDisplay = (window.G.display||[]).some(d => d && d.pid === r.plantId);
 
     const card = document.createElement('div');
-    card.className = `req-card ${urgency} ${hasOnDisplay ? 'req-fillable' : ''}`;
+    card.className = `req-card ${idx === 0 ? 'req-active' : ''} ${urgency} ${hasOnDisplay ? 'req-fillable' : ''}`;
     card.innerHTML = `
       <div class="req-header">
-        <span class="req-name" style="color:${tc[r.tier]}">${r.name}</span>
+        <span class="req-name" style="color:${tc[r.tier]}">${idx === 0 ? '<b>ACTIVE</b> ' : ''}${r.name}</span>
         <span class="req-timer ${remaining<60?'req-timer-urgent':''}">${mins}:${secs}</span>
       </div>
       <div class="req-msg">"${r.msg}"</div>
       <div class="req-plant">
         <span class="req-sprite">${p.s2}</span>
         <div class="req-plant-info">
-          <div class="req-plant-name">${p.name}</div>
-          <div class="req-pay">$${r.basePrice} <span class="req-bonus">+$${bonus} BONUS</span></div>
+          <div class="req-plant-name"><span>NEED</span> ${p.name}</div>
+          <div class="req-pay">BASE $${r.basePrice} <span class="req-bonus">+$${bonus} BONUS</span></div>
           <div class="req-total">PAYS $${r.bonus}</div>
         </div>
         ${hasOnDisplay ? `<div class="req-ready-badge">SELL!</div>` : ''}
@@ -334,11 +398,109 @@ function renderRank() {
   document.getElementById('rep-next-label').textContent = next ? `${rep}/${next.rep}` : 'MAX';
 }
 
+// ─── Plant Encyclopedia ───────────────────────────────────────
+function renderEncyclopedia() {
+  const grid = document.getElementById('encyclopedia-grid');
+  if (!grid || !window.G) return;
+  const discovered = normalizeDiscoveries();
+  const found = discovered.length;
+  const total = ALL_PLANTS.length;
+  const pct = total ? Math.round((found / total) * 100) : 0;
+
+  const hudCount = document.getElementById('hud-discovery-count');
+  if (hudCount) hudCount.textContent = `${found}/${total}`;
+  document.getElementById('encyclopedia-percent').textContent = `${pct}%`;
+  document.getElementById('encyclopedia-total').textContent = `${found} / ${total}`;
+
+  grid.innerHTML = '';
+  ALL_PLANTS.forEach(p => {
+    const known = discovered.includes(p.id);
+    const card = document.createElement('div');
+    card.className = 'encyclopedia-card' + (known ? ' discovered' : ' undiscovered');
+
+    const art = document.createElement('div');
+    art.className = 'encyclopedia-art';
+    if (known) {
+      art.appendChild(drawPlantSVG(p.id, 1.0, false));
+    } else {
+      const silhouette = document.createElement('div');
+      silhouette.className = 'encyclopedia-silhouette';
+      silhouette.textContent = p.s2;
+      art.appendChild(silhouette);
+    }
+
+    card.appendChild(art);
+    card.innerHTML += known
+      ? `<div class="encyclopedia-name">${p.name}</div>
+         <div class="encyclopedia-meta">${p.tierName} · $${p.sell} · +${p.rep}★</div>`
+      : `<div class="encyclopedia-name">?????</div>
+         <div class="encyclopedia-meta">GROW TO MATURITY</div>`;
+    grid.appendChild(card);
+  });
+}
+
+function openEncyclopedia() {
+  renderEncyclopedia();
+  const modal = document.getElementById('encyclopedia-modal');
+  if (!modal) return;
+  modal.classList.add('is-open');
+  modal.setAttribute('aria-hidden', 'false');
+}
+
+function closeEncyclopedia() {
+  const modal = document.getElementById('encyclopedia-modal');
+  if (!modal) return;
+  modal.classList.remove('is-open');
+  modal.setAttribute('aria-hidden', 'true');
+}
+
+function showNewDiscovery(plant) {
+  if (!plant) return;
+  const reward = grantDiscoveryReward('species', plant.id, discoveryRewardForPlant(plant));
+  showDiscoveryFlash(plant, reward);
+  toast(`NEW DISCOVERY: ${plant.name}!`, 'tp');
+  log(`NEW DISCOVERY: ${plant.name}${reward ? ` | +$${reward.money} | +${reward.rep} REP | +${reward.packs} PACK` : ''}`, 'rep');
+  saveGame();
+  renderShop();
+  updateHUD();
+  renderEncyclopedia();
+}
+
+function showMutationFound(mutation, plant, isNewMutation = false) {
+  if (!mutation || !plant) return;
+  const reward = isNewMutation ? grantDiscoveryReward('mutation', mutation.id, discoveryRewardForMutation(plant, mutation)) : null;
+  showMutationFlash(mutation, plant, reward);
+  toast(`RARE MUTATION: ${mutation.name}!`, 'tp');
+  log(`RARE MUTATION: ${mutation.name}${reward ? ` | +$${reward.money} | +${reward.rep} REP | +${reward.packs} PACKS` : ''}`, 'rep');
+  saveGame();
+  renderShop();
+  updateHUD();
+  renderGrowShelf();
+  renderDetail();
+}
+
+function flushDiscoveryNotifications() {
+  const ids = window.pendingDiscoveries || [];
+  window.pendingDiscoveries = [];
+  ids.forEach(id => showNewDiscovery(ALL_PLANTS.find(p => p.id === id)));
+}
+
+function flushMutationNotifications() {
+  const pending = window.pendingMutations || [];
+  window.pendingMutations = [];
+  pending.forEach(item => {
+    const plant = ALL_PLANTS.find(p => p.id === item.pid);
+    const mutation = getMutation(item.pid, item.mutationId);
+    showMutationFound(mutation, plant, item.isNew);
+  });
+}
+
 // ─── HUD ──────────────────────────────────────────────────────
 function updateHUD() {
   document.getElementById('hud-money').textContent = window.G.money;
   document.getElementById('hud-sold').textContent  = window.G.sold;
   renderRank();
+  renderEncyclopedia();
 }
 
 function animateMoney() {
@@ -369,9 +531,51 @@ function updateHint() {
   h.textContent = 'SELECT A SLOT';
 }
 
+// ─── Tiny action FX hooks ─────────────────────────────────────
+function addFx(el, cls, ms=700) {
+  if (!el) return;
+  el.classList.remove(cls);
+  void el.offsetWidth;
+  el.classList.add(cls);
+  setTimeout(() => el.classList.remove(cls), ms);
+}
+
+function playSeedBuyFx(plantId) {
+  addFx(document.querySelector(`.seed-row[data-plant-id="${plantId}"]`), 'fx-buy-seed', 650);
+  addFx(document.querySelector('.panel-left'), 'fx-shop-pulse', 650);
+}
+
+function playPlantFx(i) {
+  addFx(document.querySelector(`.grow-slot[data-grow-index="${i}"]`), 'fx-plant-pop', 760);
+  addFx(document.querySelector('.grow-shelf'), 'fx-shelf-pulse', 760);
+}
+
+function playWaterFx(i) {
+  addFx(document.querySelector(`.grow-slot[data-grow-index="${i}"]`), 'fx-watered', 720);
+}
+
+function playDisplayMoveFx(i) {
+  addFx(document.querySelector(`.disp-slot[data-display-index="${i}"]`), 'fx-display-stocked', 760);
+  addFx(document.querySelector('.display-shelf-wrap'), 'fx-shelf-pulse', 760);
+}
+
+function playSellFx() {
+  addFx(document.querySelector('.display-shelf-wrap'), 'fx-sold-shelf', 720);
+  addFx(document.querySelector('.hud'), 'fx-sale-hud', 720);
+}
+
+function playRequestCompleteFx() {
+  addFx(document.querySelector('.info-panel > .info-section:first-child'), 'fx-request-complete', 850);
+  addFx(document.querySelector('#rank-display'), 'fx-rank-pop', 850);
+}
+
 // ─── Water ripple FX ─────────────────────────────────────────
 function doWaterFx(i, event) {
+  const before = window.G?.slots?.[i]?.watered || 0;
   doWater(i);
+  const after = window.G?.slots?.[i]?.watered || 0;
+  if (after === before) return;
+  playWaterFx(i);
   // ripple at click point inside the slot
   const slot = event.currentTarget || event.target.closest('.grow-slot');
   if (slot) {
@@ -423,6 +627,37 @@ function showRequestFulfilled(req, plant, earned, bonus) {
       <div class="unlock-title" style="color:var(--amber2)">★ REQUEST FILLED! ★</div>
       <div class="unlock-plant">${plant.s2}</div>
       <div class="unlock-desc">${req.name} IS DELIGHTED!\nEARNED $${earned}\n(+$${bonus} BONUS CASH)</div>
+    </div>`;
+  document.body.appendChild(div);
+  setTimeout(() => div.remove(), 2800);
+}
+
+function rewardLine(reward) {
+  if (!reward) return 'REWARD ALREADY CLAIMED.';
+  return `+$${reward.money} CASH\n+${reward.rep} REP\n+${reward.packs} ${reward.label}${reward.packs === 1 ? '' : 'S'}`;
+}
+
+function showDiscoveryFlash(plant, reward) {
+  const div = document.createElement('div');
+  div.className = 'unlock-flash discovery-flash';
+  div.innerHTML = `
+    <div class="unlock-box discovery-box">
+      <div class="unlock-title">★ NEW DISCOVERY ★</div>
+      <div class="unlock-plant">${plant.s2}</div>
+      <div class="unlock-desc">${plant.name} RECORDED IN THE ENCYCLOPEDIA.\n${rewardLine(reward)}</div>
+    </div>`;
+  document.body.appendChild(div);
+  setTimeout(() => div.remove(), 2800);
+}
+
+function showMutationFlash(mutation, plant, reward) {
+  const div = document.createElement('div');
+  div.className = 'unlock-flash mutation-flash';
+  div.innerHTML = `
+    <div class="unlock-box mutation-box">
+      <div class="unlock-title">★ RARE MUTATION ★</div>
+      <div class="unlock-plant">${plant.s2}</div>
+      <div class="unlock-desc">${mutation.name} APPEARED!\nSELL VALUE x${mutation.multiplier.toFixed(1)}\n${rewardLine(reward)}</div>
     </div>`;
   document.body.appendChild(div);
   setTimeout(() => div.remove(), 2800);

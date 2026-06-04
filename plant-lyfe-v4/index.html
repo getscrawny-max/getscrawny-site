@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Plant Lyfe 🌿</title>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=plant-lyfe-rewards-1">
 </head>
 <body>
 
@@ -28,14 +28,15 @@
     <div class="logo"><span>*</span> PLANT LYFE</div>
     <div class="hud">
       <div class="hud-chip hud-user">▶ <span id="hud-user">—</span></div>
-      <div class="hud-chip">$<span class="hud-val" id="hud-money">0</span></div>
-      <div class="hud-chip hud-rep">★<span class="hud-val" id="hud-rep">0</span></div>
+      <div class="hud-chip hud-money"><span class="hud-label">MONEY</span>$<span class="hud-val" id="hud-money">0</span></div>
+      <div class="hud-chip hud-rep"><span class="hud-label">REP</span>★<span class="hud-val" id="hud-rep">0</span></div>
       <div class="rep-bar-outer">
         <span class="rep-label" id="rep-rank-label">SPROUT</span>
         <div class="rep-track"><div class="rep-fill" id="rep-fill"></div></div>
         <span class="rep-pct" id="rep-next-label">0/10</span>
       </div>
       <div class="hud-chip">SOLD <span class="hud-val" id="hud-sold">0</span></div>
+      <button class="btn-encyclopedia" id="encyclopedia-btn">PLANTS <span id="hud-discovery-count">0/0</span></button>
       <button class="btn-logout" id="logout-btn">LOGOUT</button>
     </div>
   </header>
@@ -117,14 +118,31 @@
   </div><!-- /game-layout -->
 </div><!-- /game-screen -->
 
+<div class="encyclopedia-modal" id="encyclopedia-modal" aria-hidden="true">
+  <div class="encyclopedia-panel" role="dialog" aria-labelledby="encyclopedia-title">
+    <div class="encyclopedia-head">
+      <div>
+        <div class="encyclopedia-kicker">PLANT ENCYCLOPEDIA</div>
+        <div class="encyclopedia-title" id="encyclopedia-title">DISCOVERED SPECIES</div>
+      </div>
+      <button class="encyclopedia-close" id="encyclopedia-close" aria-label="Close encyclopedia">CLOSE</button>
+    </div>
+    <div class="encyclopedia-stats">
+      <div><strong id="encyclopedia-percent">0%</strong><span>DISCOVERY</span></div>
+      <div><strong id="encyclopedia-total">0 / 0</strong><span>SPECIES FOUND</span></div>
+    </div>
+    <div class="encyclopedia-grid" id="encyclopedia-grid"></div>
+  </div>
+</div>
+
 <div id="toast-container"></div>
 
-<script src="js/data.js"></script>
-<script src="js/state.js"></script>
-<script src="js/customers.js"></script>
-<script src="js/plants-svg.js"></script>
-<script src="js/game.js"></script>
-<script src="js/ui.js"></script>
-<script src="js/main.js"></script>
+<script src="js/data.js?v=plant-lyfe-rewards-1"></script>
+<script src="js/state.js?v=plant-lyfe-rewards-1"></script>
+<script src="js/customers.js?v=plant-lyfe-rewards-1"></script>
+<script src="js/plants-svg.js?v=plant-lyfe-rewards-1"></script>
+<script src="js/game.js?v=plant-lyfe-rewards-1"></script>
+<script src="js/ui.js?v=plant-lyfe-rewards-1"></script>
+<script src="js/main.js?v=plant-lyfe-rewards-1"></script>
 </body>
 </html>

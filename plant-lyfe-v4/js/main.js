@@ -11,8 +11,14 @@ function startGame(name) {
   window.G.lastTick  = window.G.lastTick || Date.now();
   window.G.rep       = window.G.rep || 0;
   if (!window.G.display) window.G.display = Array(DISPLAY_SLOTS).fill(null);
+  normalizeRewardState();
+  normalizeDiscoveries();
 
   catchUp();
+  const syncedDiscoveries = syncDiscoveriesFromState();
+  if (syncedDiscoveries.length) {
+    window.pendingDiscoveries = (window.pendingDiscoveries || []).concat(syncedDiscoveries);
+  }
   maybeSpawnInitialRequest();
   saveGame();
 
@@ -21,6 +27,8 @@ function startGame(name) {
   document.getElementById('hud-user').textContent        = window.currentUser.toUpperCase();
 
   renderAll();
+  flushMutationNotifications();
+  flushDiscoveryNotifications();
 
   if (window.ticker) clearInterval(window.ticker);
   window.ticker = setInterval(gameTick, TICK_MS);
@@ -52,6 +60,14 @@ document.getElementById('name-input').addEventListener('keydown', e => {
   if (e.key === 'Enter') document.getElementById('play-btn').click();
 });
 document.getElementById('logout-btn').addEventListener('click', logout);
+document.getElementById('encyclopedia-btn').addEventListener('click', openEncyclopedia);
+document.getElementById('encyclopedia-close').addEventListener('click', closeEncyclopedia);
+document.getElementById('encyclopedia-modal').addEventListener('click', e => {
+  if (e.target.id === 'encyclopedia-modal') closeEncyclopedia();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeEncyclopedia();
+});
 window.addEventListener('beforeunload', saveGame);
 
 // ─── Boot ─────────────────────────────────────────────────────
