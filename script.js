@@ -830,6 +830,9 @@ if (gameCanvas) {
   const deepSpaceImage = new Image();
   deepSpaceImage.src = "assets/deep-space-stars-hd.jpg";
   deepSpaceImage.addEventListener("load", () => draw());
+  const alienAlphabetCharacterImage = new Image();
+  alienAlphabetCharacterImage.src = "assets/AlienAlphabetCharacter.PNG?v=alien-character-1";
+  alienAlphabetCharacterImage.addEventListener("load", () => draw());
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const columns = [0.16, 0.3, 0.44, 0.58, 0.72, 0.86];
   const types = [
@@ -1185,6 +1188,21 @@ if (gameCanvas) {
     ctx.beginPath();
     ctx.ellipse(x, y + 42, 118, 26, 0, 0, Math.PI * 2);
     ctx.fill();
+    if (alienAlphabetCharacterImage.complete && alienAlphabetCharacterImage.naturalWidth > 0) {
+      const spriteSize = 168;
+      const spriteTop = height - 134;
+      ctx.shadowColor = "rgba(189, 247, 180, 0.34)";
+      ctx.shadowBlur = 18;
+      ctx.drawImage(
+        alienAlphabetCharacterImage,
+        x - spriteSize / 2,
+        spriteTop,
+        spriteSize,
+        spriteSize
+      );
+      ctx.restore();
+      return;
+    }
     ctx.shadowBlur = 0;
     ctx.fillStyle = "#b9c9d5";
     ctx.beginPath();

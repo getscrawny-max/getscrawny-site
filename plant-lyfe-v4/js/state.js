@@ -20,6 +20,8 @@ function mkState(name) {
     discoveredMutations: [],
     rewardedDiscoveries: [],
     seedPacks: [],
+    paused: false,
+    pauseStart: null,
     lastTick:  Date.now(),
   };
 }
@@ -95,6 +97,43 @@ function syncDiscoveriesFromState() {
   return newlyFound;
 }
 
+function normalizePauseState() {
+  if (!window.G) return;
+  window.G.paused = !!window.G.paused;
+  window.G.pauseStart = window.G.paused ? (window.G.pauseStart || Date.now()) : null;
+}
+
+function shiftPausedTimestamps(pausedMs) {
+  if (!window.G || !pausedMs || pausedMs < 0) return;
+  window.G.lastTick = (window.G.lastTick || Date.now()) + pausedMs;
+  if (Array.isArray(window.G.requests)) {
+    window.G.requests.forEach(req => {
+      if (req && req.expiresAt) req.expiresAt += pausedMs;
+    });
+  }
+}
+
+function setPausedState(paused) {
+  if (!window.G) return;
+  normalizePauseState();
+  if (paused) {
+    if (!window.G.paused) {
+      window.G.paused = true;
+      window.G.pauseStart = Date.now();
+    }
+    saveGame();
+    return;
+  }
+
+  if (window.G.paused) {
+    const pausedMs = Date.now() - (window.G.pauseStart || Date.now());
+    shiftPausedTimestamps(pausedMs);
+    window.G.paused = false;
+    window.G.pauseStart = null;
+  }
+  saveGame();
+}
+
 // ─── Load / Save ──────────────────────────────────────────────
 function loadUser(name) {
   try {
@@ -106,6 +145,8 @@ function loadUser(name) {
         if (!Array.isArray(d.discoveredMutations)) d.discoveredMutations = [];
         if (!Array.isArray(d.rewardedDiscoveries)) d.rewardedDiscoveries = [];
         if (!Array.isArray(d.seedPacks)) d.seedPacks = [];
+        d.paused = !!d.paused;
+        d.pauseStart = d.paused ? (d.pauseStart || Date.now()) : null;
         return d;
       }
     }
@@ -115,7 +156,7 @@ function loadUser(name) {
 
 function saveGame() {
   if (!window.currentUser || !window.G) return;
-  window.G.lastTick = Date.now();
+  if (!window.G.paused) window.G.lastTick = Date.now();
   localStorage.setItem(userKey(window.currentUser), JSON.stringify(window.G));
 }
 

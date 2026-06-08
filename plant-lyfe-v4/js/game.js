@@ -10,9 +10,14 @@ function getSlotStatus(slot) {
   return 'growing';
 }
 
-function tryMutateSlot(slot, p) {
-  if (!slot || slot.dead || slot.mature || slot.mutationChecked || slot.mutationId) return null;
-  if ((slot.growProgress || 0) < MUTATION_ROLL_AT) return null;
+function tellZogton(text, mood = 'idle', options = {}) {
+  if (typeof showZogtonMessage === 'function') {
+    showZogtonMessage(text, mood, options);
+  }
+}
+
+function rollMutationForSlot(slot, p) {
+  if (!slot || slot.mutationChecked || slot.mutationId) return null;
   slot.mutationChecked = true;
   const mutation = getMutation(p.id);
   if (!mutation || Math.random() >= MUTATION_CHANCE) return null;
@@ -25,7 +30,6 @@ function applyTimeToSlot(slot, p, dtSec) {
   if (slot.mature || slot.dead) return;
   const eff = dtSec * (slot.water > 10 ? 1.0 : 0.3);
   slot.growProgress = Math.min(100, (slot.growProgress || 0) + (eff / p.growSec) * 100);
-  tryMutateSlot(slot, p);
   if (slot.growProgress >= 100) { slot.growProgress = 100; slot.mature = true; return; }
   slot.water = Math.max(0, (slot.water || WATER_MAX) - p.drainRate * dtSec);
   if (slot.water <= 0) {
@@ -62,6 +66,11 @@ function catchUp() {
 let _tickCount = 0;
 
 function gameTick() {
+  if (window.G?.paused) {
+    saveGame();
+    updatePauseUI();
+    return;
+  }
   _tickCount++;
   const now = Date.now();
   const dt  = (now - (window.G.lastTick || now)) / 1000;
@@ -83,12 +92,14 @@ function gameTick() {
     if (slot.mature && !slot._notifyMature) {
       slot._notifyMature = true;
       notify.push({ msg: `${p.name} READY! MOVE TO DISPLAY.`, t: '', i });
+      notify.push({ zogton: `${p.name} reached maturity. Move it to display.`, mood: 'happy', important: true });
       if (markPlantDiscovered(p.id)) notify.push({ discovery: p });
       displayChanged = true;
     }
     if (slot.dead && !slot._notifyDead) {
       slot._notifyDead = true;
       notify.push({ msg: `${p.name} DIED! REMOVE IT.`, t: 'te', i });
+      notify.push({ zogton: `${p.name} died. Clear the slot and try again.`, mood: 'worried', important: true });
     }
     if (!wasThirsty && slot.water < 20 && !slot.dead && !slot.mature) {
       notify.push({ msg: `${p.name} IS THIRSTY!`, t: 'tw', i });
@@ -99,6 +110,13 @@ function gameTick() {
   saveGame();
 
   notify.forEach(n => {
+    if (n.zogton) {
+      tellZogton(n.zogton, n.mood || 'idle', {
+        important: n.important === true,
+        duration: n.important ? 10000 : 7600,
+      });
+      return;
+    }
     if (n.mutation) {
       showMutationFound(n.mutation, n.plant, n.isNewMutation);
       return;
@@ -122,6 +140,7 @@ function gameTick() {
 
 // ─── Player Actions ───────────────────────────────────────────
 function clickGrowSlot(i) {
+  if (isPaused()) return;
   const slot = window.G.slots[i];
   if (window.G.heldSeed && !slot) { doPlant(i); return; }
   if (window.G.heldSeed && slot)  { toast('SLOT IS OCCUPIED!', 'tw'); return; }
@@ -132,42 +151,52 @@ function clickGrowSlot(i) {
 }
 
 function clickDisplaySlot(i) {
+  if (isPaused()) return;
   window.G.sel = window.G.sel === `disp:${i}` ? null : `disp:${i}`;
   renderDisplayShelf();
   renderDetail();
 }
 
 function doPlant(i) {
+  if (isPaused()) return;
   const p = ALL_PLANTS.find(x => x.id === window.G.heldSeed);
   window.G.slots[i] = {
     pid: window.G.heldSeed, planted: Date.now(),
     growProgress: 0, water: WATER_MAX, health: HEALTH_MAX,
     watered: 0, mature: false, dead: false,
   };
+  const mutation = rollMutationForSlot(window.G.slots[i], p);
+  if (mutation) window.G.slots[i]._notifyMutation = true;
   window.G.heldSeed = null;
   window.G.sel = `grow:${i}`;
   saveGame(); renderAll();
   playPlantFx(i);
   toast(`${p.name} PLANTED!`);
   log(`PLANTED ${p.name} IN GROW SLOT ${i + 1}`, 'good');
+  tellZogton(`${p.name} planted. Keep water above dry.`, 'farmer');
+  if (mutation) showMutationFound(mutation, p, markMutationDiscovered(mutation.id));
   setTip('WATER YOUR PLANT\nBEFORE IT DRIES OUT!');
 }
 
 function doWater(i) {
+  if (isPaused()) return;
   const slot = window.G.slots[i];
   if (!slot) return;
   if (slot.dead)   { toast('PLANT IS DEAD!', 'te'); return; }
   if (slot.mature) { toast('MOVE TO DISPLAY SHELF!', 'tw'); return; }
+  const wasDry = slot.water <= 0;
   slot.water  = Math.min(WATER_MAX,  (slot.water  || 0) + WATER_REFILL);
   slot.health = Math.min(HEALTH_MAX, (slot.health || 0) + 10);
   slot.watered = (slot.watered || 0) + 1;
   saveGame(); renderGrowShelf(); renderDetail();
   toast('WATERED! +GROWTH');
   log('WATERED PLANT', 'good');
+  if (wasDry) tellZogton('Water restored. Excellent rescue.', 'happy');
 }
 
 // Move mature plant from grow shelf → display shelf
 function doMoveToDisplay(i) {
+  if (isPaused()) return;
   const slot = window.G.slots[i];
   if (!slot || !slot.mature) { toast('NOT READY YET!', 'tw'); return; }
   if (!window.G.display) window.G.display = Array(DISPLAY_SLOTS).fill(null);
@@ -185,6 +214,7 @@ function doMoveToDisplay(i) {
 }
 
 function doSellDisplay(i) {
+  if (isPaused()) return;
   if (!window.G.display) return;
   const slot = window.G.display[i];
   if (!slot) return;
@@ -219,9 +249,14 @@ function doSellDisplay(i) {
     toast(`${matched.name} LOVED IT! +$${earned} (+$${bonus} BONUS!)`, 'tp');
     log(`REQUEST FILLED: ${matched.name} | +$${earned} | +${p.rep} REP`, 'rep');
     showRequestFulfilled(matched, { ...p, name: displayName }, earned, bonus);
+    tellZogton('Customer request complete. Efficient commerce.', 'celebration', {
+      important: true,
+      duration: 10000,
+    });
   } else {
     toast(`SOLD ${displayName}! +$${earned} +${p.rep}★`);
     log(`SOLD ${displayName} | +$${earned} | +${p.rep} REP`, 'good');
+    tellZogton(`${displayName} sold for $${earned}.`, 'happy');
   }
 
   if (newRank.name !== prevRank.name) {
@@ -233,6 +268,7 @@ function doSellDisplay(i) {
 }
 
 function doClear(i) {
+  if (isPaused()) return;
   window.G.slots[i] = null;
   if (window.G.sel === `grow:${i}`) window.G.sel = null;
   saveGame(); renderAll();
@@ -241,6 +277,7 @@ function doClear(i) {
 }
 
 function buySeed(plantId) {
+  if (isPaused()) return;
   const p   = ALL_PLANTS.find(x => x.id === plantId);
   const rep = window.G.rep || 0;
   if (rep < p.unlock) { toast('NOT UNLOCKED YET!', 'te'); return; }
@@ -260,6 +297,7 @@ function buySeed(plantId) {
   }
   saveGame(); renderAll();
   if (boughtSeed) playSeedBuyFx(plantId);
+  if (boughtSeed) tellZogton(`${p.name} seed acquired. Find an empty grow slot.`, 'thinking');
 }
 
 // ─── Customer walk-in animation ───────────────────────────────

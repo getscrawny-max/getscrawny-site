@@ -1,3 +1,38 @@
+// ─── Pause UI ─────────────────────────────────────────────────
+function isPaused() {
+  return !!window.G?.paused;
+}
+
+function updatePauseUI() {
+  const paused = isPaused();
+  const overlay = document.getElementById('pause-overlay');
+  const btn = document.getElementById('pause-btn');
+  if (overlay) {
+    overlay.classList.toggle('is-open', paused);
+    overlay.setAttribute('aria-hidden', paused ? 'false' : 'true');
+  }
+  if (btn) btn.textContent = paused ? 'RESUME' : 'PAUSE';
+  document.body.classList.toggle('plantlyfe-paused', paused);
+}
+
+function pauseGame() {
+  setPausedState(true);
+  updatePauseUI();
+  toast('PAUSED.', 'tw');
+}
+
+function resumeGame() {
+  setPausedState(false);
+  updatePauseUI();
+  renderAll();
+  toast('RESUMED.', 'tp');
+}
+
+function togglePause() {
+  if (isPaused()) resumeGame();
+  else pauseGame();
+}
+
 // ─── Grow Shelf ───────────────────────────────────────────────
 const GROW_PER_ROW = 2;
 
@@ -316,6 +351,7 @@ function renderShop() {
 }
 
 function openSeedPack() {
+  if (isPaused()) return;
   normalizeRewardState();
   if (!window.G.seedPacks.length) return;
   if (window.G.heldSeed) {
@@ -472,6 +508,10 @@ function showMutationFound(mutation, plant, isNewMutation = false) {
   showMutationFlash(mutation, plant, reward);
   toast(`RARE MUTATION: ${mutation.name}!`, 'tp');
   log(`RARE MUTATION: ${mutation.name}${reward ? ` | +$${reward.money} | +${reward.rep} REP | +${reward.packs} PACKS` : ''}`, 'rep');
+  if (typeof showZogtonMessage === 'function') showZogtonMessage(`${mutation.name}! Rare genetic sparkle detected.`, 'shocked', {
+    important: true,
+    duration: 11000,
+  });
   saveGame();
   renderShop();
   updateHUD();
@@ -576,8 +616,8 @@ function doWaterFx(i, event) {
   const after = window.G?.slots?.[i]?.watered || 0;
   if (after === before) return;
   playWaterFx(i);
-  // ripple at click point inside the slot
-  const slot = event.currentTarget || event.target.closest('.grow-slot');
+  // ripple on the plant slot, even when watering from the detail panel button
+  const slot = document.querySelector(`.grow-slot[data-grow-index="${i}"]`);
   if (slot) {
     const ripple = document.createElement('div');
     ripple.className = 'water-ripple';

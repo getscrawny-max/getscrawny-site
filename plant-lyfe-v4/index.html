@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Plant Lyfe 🌿</title>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=plant-lyfe-rewards-1">
+  <link rel="stylesheet" href="css/style.css?v=plant-lyfe-zogton-companion-3">
 </head>
 <body>
 
@@ -37,6 +37,7 @@
       </div>
       <div class="hud-chip">SOLD <span class="hud-val" id="hud-sold">0</span></div>
       <button class="btn-encyclopedia" id="encyclopedia-btn">PLANTS <span id="hud-discovery-count">0/0</span></button>
+      <button class="btn-pause" id="pause-btn">PAUSE</button>
       <button class="btn-logout" id="logout-btn">LOGOUT</button>
     </div>
   </header>
@@ -116,7 +117,22 @@
     </div>
 
   </div><!-- /game-layout -->
+  <div class="zogton-guide" aria-label="Zogton plant guide" aria-live="polite" hidden>
+    <div class="zogton-bubble">Greetings, human. I am Zogton. Let us study Earth plants.</div>
+    <div class="zogton-sprite-wrap">
+      <img id="zogton-sprite" class="zogton-sprite" alt="Zogton" decoding="async">
+      <span id="zogton-fallback" class="zogton-fallback" hidden>Zogton</span>
+    </div>
+  </div>
 </div><!-- /game-screen -->
+
+<div class="pause-overlay" id="pause-overlay" aria-hidden="true">
+  <div class="pause-box">
+    <div class="pause-title">PAUSED</div>
+    <div class="pause-sub">Growth, water, and customer timers are stopped.</div>
+    <button class="pause-resume" id="pause-resume-btn">RESUME</button>
+  </div>
+</div>
 
 <div class="encyclopedia-modal" id="encyclopedia-modal" aria-hidden="true">
   <div class="encyclopedia-panel" role="dialog" aria-labelledby="encyclopedia-title">
@@ -137,12 +153,13 @@
 
 <div id="toast-container"></div>
 
-<script src="js/data.js?v=plant-lyfe-rewards-1"></script>
-<script src="js/state.js?v=plant-lyfe-rewards-1"></script>
-<script src="js/customers.js?v=plant-lyfe-rewards-1"></script>
-<script src="js/plants-svg.js?v=plant-lyfe-rewards-1"></script>
-<script src="js/game.js?v=plant-lyfe-rewards-1"></script>
-<script src="js/ui.js?v=plant-lyfe-rewards-1"></script>
-<script src="js/main.js?v=plant-lyfe-rewards-1"></script>
+<script src="js/data.js?v=plant-lyfe-pause-1"></script>
+<script src="js/state.js?v=plant-lyfe-pause-1"></script>
+<script src="js/customers.js?v=plant-lyfe-pause-1"></script>
+<script src="js/plants-svg.js?v=plant-lyfe-pause-1"></script>
+<script src="js/game.js?v=plant-lyfe-pause-1"></script>
+<script src="js/ui.js?v=plant-lyfe-motion-1"></script>
+<script src="js/zogton.js?v=plant-lyfe-zogton-sprites-1"></script>
+<script src="js/main.js?v=plant-lyfe-pause-1"></script>
 </body>
 </html>

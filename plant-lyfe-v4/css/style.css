@@ -141,6 +141,7 @@ html, body {
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
+  position: relative;
 }
 
 header {
@@ -421,6 +422,110 @@ header {
   letter-spacing: 2px;
 }
 
+.zogton-guide {
+  position: fixed;
+  right: 18px;
+  bottom: 16px;
+  z-index: 58;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 10px;
+  width: min(374px, calc(100vw - 28px));
+  opacity: 0;
+  transform: translateY(18px) scale(.98);
+  pointer-events: none;
+  transition:
+    opacity .28s steps(4, end),
+    transform .28s steps(4, end);
+}
+
+.zogton-guide.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.zogton-guide.is-hiding {
+  opacity: 0;
+  transform: translateY(20px) scale(.98);
+}
+
+.zogton-bubble {
+  max-width: min(258px, calc(100% - 86px));
+  min-height: 68px;
+  padding: 15px 13px 12px;
+  color: #20300f;
+  font-size: 6.5px;
+  line-height: 1.7;
+  background:
+    linear-gradient(180deg, rgba(246, 237, 216, .98), rgba(229, 255, 186, .94));
+  border: 3px solid rgba(99, 138, 92, .96);
+  box-shadow:
+    3px 4px 0 rgba(42, 28, 15, .76),
+    inset 0 2px 0 rgba(255, 255, 255, .36),
+    inset 0 -3px 0 rgba(99, 138, 92, .16);
+  position: relative;
+}
+
+.zogton-bubble::before {
+  content: 'ZOGTON';
+  position: absolute;
+  left: 9px;
+  top: -10px;
+  padding: 4px 7px;
+  color: #e5ffba;
+  font-size: 4.8px;
+  line-height: 1;
+  letter-spacing: 1px;
+  background: #183519;
+  border: 2px solid rgba(99, 138, 92, .96);
+  box-shadow: 2px 2px 0 rgba(42, 28, 15, .72);
+}
+
+.zogton-bubble::after {
+  content: '';
+  position: absolute;
+  right: -12px;
+  bottom: 16px;
+  width: 14px;
+  height: 14px;
+  background: #e5ffba;
+  border-right: 3px solid rgba(99, 138, 92, .92);
+  border-bottom: 3px solid rgba(99, 138, 92, .92);
+  transform: rotate(-45deg);
+}
+
+.zogton-sprite-wrap {
+  width: 78px;
+  height: 90px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  flex: 0 0 auto;
+  filter:
+    drop-shadow(0 6px 0 rgba(0, 0, 0, .34))
+    drop-shadow(0 0 12px rgba(196, 230, 154, .12));
+}
+
+.zogton-sprite {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.zogton-fallback {
+  padding: 8px 9px;
+  color: var(--leaf2);
+  font-size: 7px;
+  line-height: 1;
+  background: rgba(16, 32, 20, .94);
+  border: 3px solid var(--leaf);
+  box-shadow: 3px 4px 0 rgba(42, 28, 15, .72);
+}
+
 .customer {
   position: absolute;
   bottom: 10px; right: -100px;
@@ -506,6 +611,7 @@ header {
 .info-panel > .info-section:nth-child(3) {
   grid-column: 2;
   grid-row: 2;
+  min-height: 188px;
 }
 
 .info-log {
@@ -3013,5 +3119,767 @@ header {
 
   .encyclopedia-title {
     font-size: 12px;
+  }
+
+  .zogton-guide {
+    right: 14px;
+    bottom: 44px;
+    width: min(346px, calc(100% - 28px));
+    gap: 9px;
+  }
+
+  .zogton-bubble {
+    max-width: min(220px, calc(100% - 78px));
+    min-height: 64px;
+    padding: 13px 11px 10px;
+    font-size: 6px;
+    line-height: 1.65;
+  }
+
+  .zogton-sprite-wrap {
+    width: 72px;
+    height: 84px;
+  }
+}
+
+/* ─── Pause State ───────────────────────────────────────────── */
+.btn-pause {
+  min-height: 30px;
+  padding: 6px 10px;
+  font-family: var(--fn);
+  font-size: 6.4px;
+  color: #ffe28a;
+  background: rgba(42, 32, 8, .92);
+  border: 2px solid var(--amber2);
+  box-shadow: 0 3px 0 var(--bark);
+  cursor: pointer;
+}
+
+.btn-pause:hover {
+  filter: brightness(1.14);
+}
+
+.pause-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 65;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.04) 0 1px, transparent 1px 12px),
+    rgba(0, 0, 0, .62);
+}
+
+.pause-overlay.is-open {
+  display: flex;
+}
+
+.pause-box {
+  width: min(520px, 90vw);
+  padding: 24px 22px;
+  text-align: center;
+  color: var(--cream);
+  background:
+    radial-gradient(circle at 50% 12%, rgba(255, 226, 138, .2), transparent 38%),
+    linear-gradient(180deg, rgba(37, 45, 18, .98), rgba(8, 20, 9, .98));
+  border: 3px solid var(--amber2);
+  box-shadow:
+    0 12px 0 rgba(42, 28, 15, .8),
+    0 28px 58px rgba(0,0,0,.54),
+    inset 0 2px 0 rgba(246,237,216,.1);
+}
+
+.pause-title {
+  margin-bottom: 12px;
+  color: #ffe28a;
+  font-size: 22px;
+  line-height: 1;
+  text-shadow: 3px 3px 0 rgba(0,0,0,.6);
+}
+
+.pause-sub {
+  margin-bottom: 18px;
+  color: rgba(246,237,216,.72);
+  font-size: 7px;
+  line-height: 2;
+}
+
+.pause-resume {
+  min-height: 42px;
+  padding: 10px 18px;
+  font-family: var(--fn);
+  font-size: 8px;
+  color: #20300f;
+  background: #d8ff9c;
+  border: 3px solid var(--leaf2);
+  box-shadow: 0 4px 0 var(--bark);
+  cursor: pointer;
+}
+
+body.plantlyfe-paused #game-screen {
+  filter: saturate(.78) brightness(.72);
+}
+
+body.plantlyfe-paused .grow-slot,
+body.plantlyfe-paused .disp-slot,
+body.plantlyfe-paused .seed-row,
+body.plantlyfe-paused .px-btn-sm,
+body.plantlyfe-paused .btn-encyclopedia {
+  cursor: not-allowed;
+}
+
+body.plantlyfe-paused .grow-slot,
+body.plantlyfe-paused .disp-slot,
+body.plantlyfe-paused .seed-row,
+body.plantlyfe-paused .px-btn-sm {
+  filter: grayscale(.2) brightness(.78);
+}
+
+/* ─── Unified greenhouse console fit pass ───────────────────── */
+:root {
+  --console-border: 2px;
+  --console-gap: 10px;
+  --console-pad: 12px;
+  --console-head: 34px;
+  --console-line: rgba(124, 153, 92, .82);
+  --console-line-soft: rgba(124, 153, 92, .42);
+  --console-rail: rgba(42, 28, 15, .72);
+  --console-surface: linear-gradient(180deg, rgba(25, 49, 28, .98), rgba(9, 21, 11, .98));
+  --console-header: linear-gradient(180deg, rgba(47, 84, 49, .98), rgba(20, 42, 22, .98));
+}
+
+header {
+  min-height: 58px;
+  padding: 9px 12px;
+  gap: 10px;
+  border-bottom: var(--console-border) solid #704c27;
+  box-shadow:
+    inset 0 1px 0 rgba(246, 237, 216, .08),
+    0 4px 0 var(--console-rail);
+}
+
+.logo {
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+}
+
+.hud {
+  flex: 1 1 560px;
+  justify-content: flex-end;
+  gap: 0;
+  min-height: 38px;
+  padding: 4px;
+  overflow: hidden;
+  border: var(--console-border) solid var(--console-line);
+  background:
+    linear-gradient(90deg, rgba(196,230,154,.04) 0 1px, transparent 1px 34px),
+    linear-gradient(180deg, rgba(15, 33, 17, .94), rgba(6, 16, 8, .94));
+  box-shadow:
+    inset 0 1px 0 rgba(246,237,216,.08),
+    inset 0 -3px 0 rgba(0,0,0,.18);
+}
+
+.hud-chip,
+.rep-bar-outer,
+.btn-encyclopedia,
+.btn-pause,
+.btn-logout {
+  min-height: 30px;
+  margin: 0;
+  border-width: 0;
+  border-right: 1px solid var(--console-line-soft);
+  box-shadow: none;
+  background: transparent;
+  border-radius: 0;
+}
+
+.hud-chip:first-child {
+  border-left: 0;
+}
+
+.btn-logout {
+  border-right: 0;
+}
+
+.hud-chip,
+.rep-bar-outer {
+  padding: 6px 9px;
+}
+
+.hud-money,
+.hud-rep {
+  min-width: 100px;
+}
+
+.rep-bar-outer {
+  min-width: 176px;
+}
+
+.btn-encyclopedia,
+.btn-pause,
+.btn-logout {
+  padding: 6px 9px;
+}
+
+.hud-chip:hover,
+.btn-encyclopedia:hover,
+.btn-pause:hover,
+.btn-logout:hover {
+  background: rgba(196,230,154,.06);
+  filter: none;
+}
+
+.game-layout {
+  grid-template-columns: 242px minmax(0, 1fr) 252px;
+  gap: 0;
+  border-top: 1px solid rgba(246,237,216,.04);
+  background:
+    linear-gradient(90deg, rgba(196,230,154,.025) 0 1px, transparent 1px 44px),
+    #0a160c;
+}
+
+.panel-left,
+.panel-centre,
+.panel-right {
+  min-height: 0;
+  background: var(--console-surface);
+}
+
+.panel-left,
+.panel-right {
+  padding: var(--console-pad);
+}
+
+.panel-left {
+  border-right: var(--console-border) solid var(--console-line);
+}
+
+.panel-right {
+  border-left: var(--console-border) solid var(--console-line);
+}
+
+.panel-centre {
+  border-inline: 0;
+}
+
+.sec-label,
+.display-shelf-label,
+.grow-shelf-header,
+.detail-head {
+  min-height: var(--console-head);
+  display: flex;
+  align-items: center;
+  margin: 0 0 var(--console-gap);
+  padding: 8px 10px;
+  color: #d8f2b0;
+  border: var(--console-border) solid var(--console-line);
+  background: var(--console-header);
+  box-shadow:
+    inset 0 1px 0 rgba(246,237,216,.08),
+    inset 0 -3px 0 rgba(0,0,0,.16);
+}
+
+.display-shelf-label,
+.grow-shelf-header,
+.detail-head {
+  justify-content: space-between;
+}
+
+.display-shelf-wrap {
+  padding: 10px var(--console-pad);
+  border-bottom: var(--console-border) solid var(--console-line);
+  background:
+    radial-gradient(circle at 24% 10%, rgba(196,230,154,.08), transparent 28%),
+    linear-gradient(180deg, rgba(20,42,22,.98), rgba(11,24,13,.98));
+  box-shadow:
+    inset 0 -3px 0 rgba(0,0,0,.18),
+    0 4px 0 rgba(42,28,15,.42);
+}
+
+.display-shelf {
+  gap: 10px;
+  padding: 7px 8px;
+  border: var(--console-border) solid var(--console-line-soft);
+  background:
+    linear-gradient(90deg, rgba(246,237,216,.03) 0 1px, transparent 1px 36px),
+    rgba(7, 17, 8, .62);
+}
+
+.disp-slot {
+  width: 88px;
+  height: 104px;
+}
+
+.centre-lower {
+  background:
+    radial-gradient(circle at 50% 20%, rgba(196,230,154,.08), transparent 36%),
+    linear-gradient(180deg, rgba(15,32,17,.94), rgba(7,16,8,.96));
+}
+
+.info-panel {
+  height: calc(100% - 2 * var(--console-pad));
+  margin: var(--console-pad);
+  grid-template-columns: minmax(220px, .9fr) minmax(268px, 1.1fr);
+  grid-template-rows: minmax(210px, auto) auto minmax(160px, 1fr);
+  gap: var(--console-gap);
+}
+
+.info-panel > .info-section,
+.info-detail .detail-wrap {
+  padding: var(--console-pad);
+  border: var(--console-border) solid var(--console-line);
+  background: var(--console-surface);
+  box-shadow:
+    inset 0 1px 0 rgba(246,237,216,.07),
+    inset 0 -3px 0 rgba(0,0,0,.18),
+    3px 4px 0 rgba(42,28,15,.46);
+}
+
+.info-panel > .info-section:first-child {
+  grid-row: 1 / 4;
+}
+
+.info-detail {
+  min-height: 236px;
+}
+
+.info-detail,
+.info-log {
+  padding: 0;
+}
+
+.info-log {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-log .log-box,
+.rank-display,
+#request-list,
+.detail-body {
+  min-height: 0;
+}
+
+.detail-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-head {
+  flex: 0 0 auto;
+  margin: 0 0 var(--console-gap);
+}
+
+.detail-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.req-card,
+.seed-row,
+.rank-display,
+.log-box,
+.detail-svg-big,
+.dchip,
+.req-plant {
+  border-width: var(--console-border);
+  border-color: var(--console-line-soft);
+}
+
+.seed-list,
+#request-list {
+  gap: 8px;
+}
+
+.seed-row {
+  min-height: 72px;
+  padding: 9px 10px;
+}
+
+.req-card {
+  padding: 10px;
+  margin-bottom: 8px;
+}
+
+.req-card.req-active {
+  border-color: var(--leaf2);
+  box-shadow:
+    inset 0 1px 0 rgba(246,237,216,.09),
+    inset 0 -3px 0 rgba(0,0,0,.16),
+    0 0 0 2px rgba(196,230,154,.12),
+    3px 4px 0 rgba(42,28,15,.5);
+}
+
+.req-card.req-active::before {
+  width: 5px;
+  background: var(--leaf2);
+}
+
+.rank-display,
+.log-box {
+  flex: 1;
+}
+
+.panel-right {
+  padding: 0;
+}
+
+.grow-shelf-header {
+  margin: var(--console-pad) var(--console-pad) var(--console-gap);
+  border-bottom-width: var(--console-border);
+}
+
+.grow-shelf {
+  margin: 0 var(--console-pad) var(--console-pad);
+  border: var(--console-border) solid var(--console-line);
+  background-image:
+    linear-gradient(90deg, rgba(246,237,216,.025) 0 1px, transparent 1px 38px),
+    repeating-linear-gradient(180deg, transparent 0px, transparent 110px, rgba(112,76,39,.88) 110px, rgba(112,76,39,.88) 116px),
+    linear-gradient(180deg, #1b351f, #0c1b0e);
+}
+
+.grow-shelf-row {
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  padding: 8px 6px 10px;
+  border-bottom: var(--console-border) solid #704c27;
+}
+
+.grow-slot {
+  width: 94px;
+  height: 114px;
+  margin: 0;
+}
+
+.grow-selected,
+.disp-selected,
+.seed-row.sel-seed,
+.req-card.req-fillable {
+  outline: 2px solid rgba(240,200,64,.72);
+  outline-offset: 2px;
+}
+
+.zogton-guide {
+  right: 18px;
+}
+
+@media (max-width: 1180px) {
+  .game-layout {
+    grid-template-columns: 232px minmax(0, 1fr) 238px;
+  }
+
+  .info-panel {
+    grid-template-columns: minmax(204px, .88fr) minmax(250px, 1.12fr);
+    gap: 9px;
+  }
+
+  .disp-slot {
+    width: 86px;
+  }
+
+  .grow-slot {
+    width: 88px;
+  }
+
+  .zogton-guide {
+    right: 14px;
+    width: min(294px, calc(100vw - 24px));
+  }
+}
+
+@media (max-width: 980px) {
+  .hud {
+    justify-content: flex-start;
+  }
+
+  .game-layout {
+    grid-template-columns: 220px minmax(0, 1fr) 220px;
+  }
+
+  .info-panel {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(270px, auto) auto minmax(140px, 1fr);
+    overflow-y: auto;
+  }
+
+  .info-panel > .info-section:first-child,
+  .info-detail,
+  .info-panel > .info-section:nth-child(3),
+  .info-log {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .zogton-guide {
+    right: 10px;
+    bottom: 10px;
+    width: min(348px, calc(100vw - 20px));
+    gap: 9px;
+  }
+
+  .zogton-bubble {
+    max-width: min(240px, calc(100% - 76px));
+    min-height: 64px;
+    font-size: 5.8px;
+    line-height: 1.65;
+  }
+
+  .zogton-sprite-wrap {
+    width: 70px;
+    height: 82px;
+  }
+}
+
+/* ─── Subtle greenhouse motion pass ─────────────────────────── */
+#game-screen::before {
+  position: absolute;
+  inset: 62px 0 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: .34;
+  background:
+    linear-gradient(180deg, transparent 0 28%, rgba(196,230,154,.045) 45%, transparent 68%),
+    repeating-linear-gradient(180deg, rgba(246,237,216,.045) 0 1px, transparent 1px 13px);
+  mix-blend-mode: screen;
+  animation: greenhouseScan 18s steps(18, end) infinite;
+}
+
+#game-screen::after {
+  position: absolute;
+  inset: 62px 0 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: .26;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(196,230,154,.13), transparent 30%),
+    radial-gradient(circle at 78% 62%, rgba(240,200,64,.08), transparent 34%);
+  animation: greenhouseGlow 16s ease-in-out infinite;
+}
+
+header,
+.game-layout,
+.pause-overlay,
+.encyclopedia-modal,
+#toast-container {
+  position: relative;
+  z-index: 2;
+}
+
+.panel-left,
+.panel-centre,
+.panel-right {
+  position: relative;
+  z-index: 2;
+}
+
+.seed-row.unlocked,
+.req-card,
+.disp-slot,
+.grow-slot,
+.px-btn-sm,
+.btn-encyclopedia,
+.btn-pause,
+.btn-logout {
+  will-change: transform, filter;
+}
+
+.seed-row.unlocked:hover,
+.req-card:hover,
+.disp-slot:hover,
+.grow-slot:hover {
+  transform: translateY(-2px);
+}
+
+.seed-row.unlocked:active,
+.req-card:active,
+.disp-slot:active,
+.grow-slot:active {
+  transform: translate(1px, 1px);
+}
+
+.grow-seed .gslot-svg,
+.grow-growing .gslot-svg,
+.grow-thirsty .gslot-svg,
+.grow-dry .gslot-svg {
+  transform-origin: 50% 100%;
+  animation: plantIdleSway 5.6s steps(8, end) infinite;
+}
+
+.grow-thirsty .gslot-svg,
+.grow-dry .gslot-svg {
+  animation-duration: 4.2s;
+}
+
+.fx-stage-change {
+  position: relative;
+}
+
+.fx-stage-change::after,
+.grow-mature::after {
+  position: absolute;
+  inset: 8px 10px auto auto;
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+  content: "";
+  background:
+    radial-gradient(circle, rgba(255,226,138,.95) 0 2px, transparent 3px),
+    radial-gradient(circle at 75% 25%, rgba(216,255,156,.9) 0 2px, transparent 3px),
+    radial-gradient(circle at 25% 78%, rgba(255,226,138,.75) 0 1px, transparent 2px);
+  image-rendering: pixelated;
+  opacity: 0;
+}
+
+.fx-stage-change::after {
+  animation: matureSparkleBurst .76s steps(5, end) forwards;
+}
+
+.grow-mature::after {
+  animation: matureSparkleIdle 3.8s steps(6, end) infinite;
+}
+
+.money-pop {
+  animation: moneyPopPixel .52s steps(5, end);
+}
+
+.fx-sale-hud .hud-money,
+.fx-sale-hud .hud-rep {
+  animation: hudValuePulse .52s steps(4, end);
+}
+
+.fx-watered {
+  animation: waterGlowPixel .62s steps(5, end);
+}
+
+.fx-watered::after {
+  position: absolute;
+  inset: 12px;
+  border: 2px solid rgba(128,184,232,.72);
+  opacity: 0;
+  pointer-events: none;
+  content: "";
+  animation: waterPanelRipple .62s steps(5, end);
+}
+
+.water-ripple {
+  border-radius: 0;
+  box-shadow: 0 0 12px rgba(128,184,232,.3);
+}
+
+.req-card.req-warn {
+  animation: requestWarnPulse 2.2s steps(6, end) infinite;
+}
+
+.req-card.req-urgent {
+  animation: requestUrgentPulse .9s steps(4, end) infinite;
+}
+
+@keyframes greenhouseScan {
+  0% { background-position: 0 -120px, 0 0; }
+  100% { background-position: 0 520px, 0 26px; }
+}
+
+@keyframes greenhouseGlow {
+  0%, 100% {
+    opacity: .2;
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    opacity: .34;
+    transform: translate3d(10px, -6px, 0);
+  }
+}
+
+@keyframes plantIdleSway {
+  0%, 100% { transform: translateY(0) skewX(0deg); }
+  30% { transform: translateY(-1px) skewX(-1deg); }
+  62% { transform: translateY(0) skewX(1deg); }
+}
+
+@keyframes matureSparkleBurst {
+  0% { opacity: 0; transform: translate(0, 6px) scale(.7); }
+  30% { opacity: 1; transform: translate(-2px, -2px) scale(1); }
+  70% { opacity: .75; transform: translate(2px, -7px) scale(1.1); }
+  100% { opacity: 0; transform: translate(5px, -10px) scale(.8); }
+}
+
+@keyframes matureSparkleIdle {
+  0%, 78%, 100% { opacity: 0; transform: translateY(0) scale(.8); }
+  84% { opacity: .8; transform: translateY(-3px) scale(1); }
+  92% { opacity: .42; transform: translateY(-6px) scale(1.05); }
+}
+
+@keyframes moneyPopPixel {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  40% { transform: scale(1.16); color: #ffe28a; filter: brightness(1.25); }
+  68% { transform: scale(1.06); }
+}
+
+@keyframes hudValuePulse {
+  0%, 100% { filter: brightness(1); }
+  44% { filter: brightness(1.24); }
+}
+
+@keyframes waterGlowPixel {
+  0%, 100% { filter: brightness(1); }
+  36% {
+    border-color: var(--sky2);
+    filter: brightness(1.18) saturate(1.08);
+    box-shadow:
+      inset 0 2px 0 rgba(246,237,216,.12),
+      inset 0 -5px 0 rgba(0,0,0,.2),
+      3px 5px 0 rgba(42,28,15,.7),
+      0 0 18px rgba(128,184,232,.34);
+  }
+}
+
+@keyframes waterPanelRipple {
+  0% { opacity: 0; transform: scale(.7); }
+  35% { opacity: .8; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.18); }
+}
+
+@keyframes requestWarnPulse {
+  0%, 100% { border-color: var(--amber); filter: brightness(1); }
+  50% {
+    border-color: var(--amber2);
+    filter: brightness(1.08);
+    box-shadow:
+      inset 0 1px 0 rgba(246,237,216,.1),
+      inset 0 -3px 0 rgba(0,0,0,.16),
+      3px 5px 0 rgba(42,28,15,.58),
+      0 0 16px rgba(240,200,64,.16);
+  }
+}
+
+@keyframes requestUrgentPulse {
+  0%, 100% { border-color: var(--rust); filter: brightness(1); }
+  50% {
+    border-color: var(--rust2);
+    filter: brightness(1.12);
+    box-shadow:
+      inset 0 1px 0 rgba(246,237,216,.08),
+      inset 0 -3px 0 rgba(0,0,0,.16),
+      3px 5px 0 rgba(42,28,15,.58),
+      0 0 16px rgba(224,96,64,.18);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #game-screen::before,
+  #game-screen::after,
+  .grow-seed .gslot-svg,
+  .grow-growing .gslot-svg,
+  .grow-thirsty .gslot-svg,
+  .grow-dry .gslot-svg,
+  .grow-mature::after,
+  .req-card.req-warn,
+  .req-card.req-urgent {
+    animation: none !important;
   }
 }

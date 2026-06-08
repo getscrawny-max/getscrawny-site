@@ -11,10 +11,11 @@ function startGame(name) {
   window.G.lastTick  = window.G.lastTick || Date.now();
   window.G.rep       = window.G.rep || 0;
   if (!window.G.display) window.G.display = Array(DISPLAY_SLOTS).fill(null);
+  normalizePauseState();
   normalizeRewardState();
   normalizeDiscoveries();
 
-  catchUp();
+  if (!window.G.paused) catchUp();
   const syncedDiscoveries = syncDiscoveriesFromState();
   if (syncedDiscoveries.length) {
     window.pendingDiscoveries = (window.pendingDiscoveries || []).concat(syncedDiscoveries);
@@ -27,8 +28,10 @@ function startGame(name) {
   document.getElementById('hud-user').textContent        = window.currentUser.toUpperCase();
 
   renderAll();
+  updatePauseUI();
   flushMutationNotifications();
   flushDiscoveryNotifications();
+  if (typeof startZogtonGuide === 'function') startZogtonGuide();
 
   if (window.ticker) clearInterval(window.ticker);
   window.ticker = setInterval(gameTick, TICK_MS);
@@ -60,6 +63,8 @@ document.getElementById('name-input').addEventListener('keydown', e => {
   if (e.key === 'Enter') document.getElementById('play-btn').click();
 });
 document.getElementById('logout-btn').addEventListener('click', logout);
+document.getElementById('pause-btn').addEventListener('click', togglePause);
+document.getElementById('pause-resume-btn').addEventListener('click', resumeGame);
 document.getElementById('encyclopedia-btn').addEventListener('click', openEncyclopedia);
 document.getElementById('encyclopedia-close').addEventListener('click', closeEncyclopedia);
 document.getElementById('encyclopedia-modal').addEventListener('click', e => {

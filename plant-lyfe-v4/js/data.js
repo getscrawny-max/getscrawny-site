@@ -63,8 +63,7 @@ const ALL_PLANTS = [
 ];
 
 // ─── Rare Mutation Definitions ───────────────────────────────
-const MUTATION_ROLL_AT = 28;
-const MUTATION_CHANCE = 0.08;
+const MUTATION_CHANCE = 1 / 512;
 
 const PLANT_MUTATIONS = {
   cactus:    { id: 'golden_cactus',   name: 'GOLDEN CACTUS',   className: 'mut-golden',  multiplier: 3.0, tag: 'GOLDEN' },
