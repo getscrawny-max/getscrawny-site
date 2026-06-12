@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Plant Lyfe 🌿</title>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=plant-lyfe-zogton-companion-3">
+  <link rel="stylesheet" href="css/style.css?v=plant-lyfe-panel-art-clarity-1">
 </head>
 <body>
 
@@ -25,7 +25,7 @@
 <div id="game-screen">
 
   <header>
-    <div class="logo"><span>*</span> PLANT LYFE</div>
+    <div class="game-frame-title" aria-label="Plant Lyfe">Plant Lyfe</div>
     <div class="hud">
       <div class="hud-chip hud-user">▶ <span id="hud-user">—</span></div>
       <div class="hud-chip hud-money"><span class="hud-label">MONEY</span>$<span class="hud-val" id="hud-money">0</span></div>
@@ -76,13 +76,22 @@
         <!-- info panel: requests + detail + rank + log -->
         <div class="info-panel">
 
-          <div class="info-section">
-            <div class="sec-label">CUSTOMER REQUESTS <span class="req-hint-inline">BONUS $$ IF FILLED!</span></div>
-            <div id="request-list"></div>
+          <div class="info-section collapsible-panel" data-panel-key="requests">
+            <button type="button" class="panel-toggle sec-label" data-panel-toggle="requests" aria-expanded="true" aria-controls="request-list">
+              <span class="panel-title">CUSTOMER REQUESTS</span>
+              <span class="panel-summary" data-panel-summary="requests">READY</span>
+              <span class="panel-caret" aria-hidden="true">−</span>
+            </button>
+            <div id="request-list" class="panel-content" data-panel-content="requests"></div>
           </div>
 
-          <div class="info-section info-detail">
-            <div class="detail-wrap">
+          <div class="info-section info-detail collapsible-panel" data-panel-key="details">
+            <button type="button" class="panel-toggle sec-label detail-panel-toggle" data-panel-toggle="details" aria-expanded="true" aria-controls="detail-panel-content">
+              <span class="panel-title">GROWTH DATA</span>
+              <span class="panel-summary" data-panel-summary="details">NO SELECTION</span>
+              <span class="panel-caret" aria-hidden="true">−</span>
+            </button>
+            <div class="detail-wrap panel-content" id="detail-panel-content" data-panel-content="details">
               <div class="detail-head" id="detail-head">-- SELECT A PLANT --</div>
               <div class="detail-body" id="detail-body">
                 <div class="detail-empty">
@@ -93,14 +102,22 @@
             </div>
           </div>
 
-          <div class="info-section">
-            <div class="sec-label">YOUR RANK</div>
-            <div class="rank-display" id="rank-display"></div>
+          <div class="info-section collapsible-panel" data-panel-key="rank">
+            <button type="button" class="panel-toggle sec-label" data-panel-toggle="rank" aria-expanded="true" aria-controls="rank-display">
+              <span class="panel-title">BANK</span>
+              <span class="panel-summary" data-panel-summary="rank">SPROUT</span>
+              <span class="panel-caret" aria-hidden="true">−</span>
+            </button>
+            <div class="rank-display panel-content" id="rank-display" data-panel-content="rank"></div>
           </div>
 
-          <div class="info-section info-log">
-            <div class="sec-label">ACTIVITY LOG</div>
-            <div class="log-box" id="log-box"></div>
+          <div class="info-section info-log collapsible-panel" data-panel-key="log">
+            <button type="button" class="panel-toggle sec-label" data-panel-toggle="log" aria-expanded="true" aria-controls="log-box">
+              <span class="panel-title">ACTIVITY LOG</span>
+              <span class="panel-summary" data-panel-summary="log">NO ENTRIES</span>
+              <span class="panel-caret" aria-hidden="true">−</span>
+            </button>
+            <div class="log-box panel-content" id="log-box" data-panel-content="log"></div>
           </div>
 
         </div><!-- /info-panel -->
@@ -157,9 +174,9 @@
 <script src="js/state.js?v=plant-lyfe-pause-1"></script>
 <script src="js/customers.js?v=plant-lyfe-pause-1"></script>
 <script src="js/plants-svg.js?v=plant-lyfe-pause-1"></script>
-<script src="js/game.js?v=plant-lyfe-pause-1"></script>
-<script src="js/ui.js?v=plant-lyfe-motion-1"></script>
+  <script src="js/game.js?v=plant-lyfe-request-countdown-1"></script>
+  <script src="js/ui.js?v=plant-lyfe-request-countdown-1"></script>
 <script src="js/zogton.js?v=plant-lyfe-zogton-sprites-1"></script>
-<script src="js/main.js?v=plant-lyfe-pause-1"></script>
+  <script src="js/main.js?v=plant-lyfe-request-countdown-1"></script>
 </body>
 </html>

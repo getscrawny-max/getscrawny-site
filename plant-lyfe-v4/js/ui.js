@@ -1,4 +1,33 @@
 // ─── Pause UI ─────────────────────────────────────────────────
+function applyOuterHudMode() {
+  const params = new URLSearchParams(window.location.search);
+  if (!params.has('embedded')) return;
+  document.documentElement.classList.add('plantlyfe-outer-hud');
+  document.body?.classList.add('plantlyfe-outer-hud');
+}
+
+function postOuterHudSnapshot() {
+  if (window.parent === window) return;
+  const read = (selector, fallback = '—') => document.querySelector(selector)?.textContent?.trim() || fallback;
+  window.parent.postMessage({
+    type: 'plantlyfe:hud',
+    payload: {
+      active: !!window.currentUser && !!window.G,
+      user: read('#hud-user'),
+      money: read('#hud-money', '0'),
+      rep: read('#hud-rep', '0'),
+      rank: read('#rep-rank-label', 'SPROUT'),
+      repNext: read('#rep-next-label', '0/10'),
+      repFill: document.querySelector('#rep-fill')?.style.width || '0%',
+      sold: read('#hud-sold', '0'),
+      plants: read('#hud-discovery-count', '0/0'),
+      pause: read('#pause-btn', 'PAUSE')
+    }
+  }, '*');
+}
+
+applyOuterHudMode();
+
 function isPaused() {
   return !!window.G?.paused;
 }
@@ -13,6 +42,7 @@ function updatePauseUI() {
   }
   if (btn) btn.textContent = paused ? 'RESUME' : 'PAUSE';
   document.body.classList.toggle('plantlyfe-paused', paused);
+  postOuterHudSnapshot();
 }
 
 function pauseGame() {
@@ -35,6 +65,354 @@ function togglePause() {
 
 // ─── Grow Shelf ───────────────────────────────────────────────
 const GROW_PER_ROW = 2;
+const INFO_PANEL_KEYS = ['requests', 'details', 'rank', 'log'];
+const INFO_PANEL_SESSION_KEY = 'plantlyfe-panel-state-v1';
+const INFO_PANEL_MAX_EXPANDED = 2;
+const PANEL_FLASH_MS = 2200;
+const ZOGTON_PANEL_COOLDOWN_MS = {
+  requestNew: 26000,
+  requestUrgent: 34000,
+  requestReady: 28000,
+  detailWater: 32000,
+  detailMature: 32000,
+  detailDead: 42000,
+  rank: 36000,
+  log: 30000
+};
+const DEFAULT_INFO_PANEL_STATE = {
+  requests: true,
+  details: true,
+  rank: false,
+  log: false
+};
+
+let infoPanelExpandedOrder = [];
+let infoPanelState = loadInfoPanelState();
+let lastRequestIds = new Set();
+let hasTrackedRequests = false;
+let lastRenderedRep = null;
+let hasTrackedRep = false;
+let lastRequestAttention = { urgent: false, ready: false };
+let lastDetailAttentionKey = '';
+let zogtonPanelCommentTimes = {};
+
+function loadInfoPanelState() {
+  try {
+    const saved = JSON.parse(sessionStorage.getItem(INFO_PANEL_SESSION_KEY) || '{}');
+    const next = normalizeInfoPanelState({ ...DEFAULT_INFO_PANEL_STATE, ...saved }, saved._order);
+    infoPanelExpandedOrder = normalizeInfoPanelOrder(saved._order, next);
+    return next;
+  } catch (err) {
+    const next = normalizeInfoPanelState({ ...DEFAULT_INFO_PANEL_STATE });
+    infoPanelExpandedOrder = normalizeInfoPanelOrder([], next);
+    return next;
+  }
+}
+
+function saveInfoPanelState() {
+  try {
+    sessionStorage.setItem(INFO_PANEL_SESSION_KEY, JSON.stringify({
+      ...infoPanelState,
+      _order: infoPanelExpandedOrder
+    }));
+  } catch (err) {}
+}
+
+function shortPanelText(text, limit = 28) {
+  const clean = String(text || '').replace(/\s+/g, ' ').trim();
+  return clean.length > limit ? clean.slice(0, limit - 1) + '…' : clean;
+}
+
+function getExpandedPanelKeys(state = infoPanelState) {
+  return INFO_PANEL_KEYS.filter(key => state[key] !== false);
+}
+
+function normalizeInfoPanelOrder(order = [], state = infoPanelState) {
+  const expanded = getExpandedPanelKeys(state);
+  const seen = new Set();
+  const ordered = [];
+  [...(Array.isArray(order) ? order : []), ...expanded].forEach(key => {
+    if (!INFO_PANEL_KEYS.includes(key) || !expanded.includes(key) || seen.has(key)) return;
+    seen.add(key);
+    ordered.push(key);
+  });
+  return ordered.slice(0, INFO_PANEL_MAX_EXPANDED);
+}
+
+function normalizeInfoPanelState(state = {}, preferredOrder = []) {
+  const next = { ...DEFAULT_INFO_PANEL_STATE, ...state };
+  let expanded = getExpandedPanelKeys(next);
+
+  while (expanded.length < INFO_PANEL_MAX_EXPANDED) {
+    const fillKey = INFO_PANEL_KEYS.find(key => !expanded.includes(key));
+    if (!fillKey) break;
+    next[fillKey] = true;
+    expanded.push(fillKey);
+  }
+
+  if (expanded.length > INFO_PANEL_MAX_EXPANDED) {
+    const ordered = normalizeInfoPanelOrder(preferredOrder, next);
+    const keep = new Set(ordered.length ? ordered : expanded.slice(0, INFO_PANEL_MAX_EXPANDED));
+    INFO_PANEL_KEYS.forEach(key => {
+      next[key] = keep.has(key);
+    });
+  }
+
+  return next;
+}
+
+function shortTimer(seconds) {
+  const safe = Math.max(0, Math.round(seconds || 0));
+  const mins = Math.floor(safe / 60);
+  const secs = (safe % 60).toString().padStart(2, '0');
+  return `${mins}:${secs}`;
+}
+
+function getRequestPanelSummary() {
+  const requests = window.G?.requests || [];
+  if (!requests.length) return 'NO CUSTOMERS';
+  const now = Date.now();
+  const ready = requests.filter(r => (window.G.display || []).some(d => d && d.pid === r.plantId)).length;
+  const first = requests[0];
+  const plant = ALL_PLANTS.find(p => p.id === first.plantId);
+  const time = shortTimer((first.expiresAt - now) / 1000);
+  if (ready) return `${ready} READY · ${requests.length} ACTIVE`;
+  return `${requests.length} ACTIVE · ${plant ? plant.name : 'REQUEST'} · ${time}`;
+}
+
+function getDetailPanelSummary() {
+  const sel = window.G?.sel;
+  if (!sel) return 'NO SELECTION';
+
+  if (sel.startsWith('disp:')) {
+    const i = parseInt(sel.split(':')[1]);
+    const slot = (window.G.display || [])[i];
+    if (!slot) return `DISPLAY ${i + 1} EMPTY`;
+    const p = ALL_PLANTS.find(x => x.id === slot.pid);
+    const name = p ? plantDisplayName(p, slot) : 'PLANT';
+    return shortPanelText(`${name} · READY TO SELL`, 34);
+  }
+
+  if (sel.startsWith('grow:')) {
+    const i = parseInt(sel.split(':')[1]);
+    const slot = window.G.slots?.[i];
+    if (!slot) return `GROW ${i + 1} EMPTY`;
+    const p = ALL_PLANTS.find(x => x.id === slot.pid);
+    const name = p ? plantDisplayName(p, slot) : 'PLANT';
+    const status = getSlotStatus(slot).toUpperCase();
+    return shortPanelText(`${name} · ${status}`, 34);
+  }
+
+  return 'NO SELECTION';
+}
+
+function getRankPanelSummary() {
+  const money = window.G?.money ?? 0;
+  const rep = window.G?.rep || 0;
+  const rank = getRank(rep);
+  const next = getNextRank(rep);
+  return next ? `$${money} · ${rank.name} · ${rep}/${next.rep} REP` : `$${money} · ${rank.name} · MAX`;
+}
+
+function getLogPanelSummary() {
+  const first = document.querySelector('#log-box .log-entry');
+  return first ? shortPanelText(first.textContent, 34) : 'NO ENTRIES';
+}
+
+function updatePanelSummaries() {
+  const summaries = {
+    requests: getRequestPanelSummary,
+    details: getDetailPanelSummary,
+    rank: getRankPanelSummary,
+    log: getLogPanelSummary
+  };
+
+  INFO_PANEL_KEYS.forEach(key => {
+    const el = document.querySelector(`[data-panel-summary="${key}"]`);
+    if (el && summaries[key]) el.textContent = summaries[key]();
+  });
+}
+
+function queuePanelSummaryUpdate() {
+  window.requestAnimationFrame?.(updatePanelSummaries) || setTimeout(updatePanelSummaries, 0);
+}
+
+function getInfoPanel(key) {
+  return document.querySelector(`[data-panel-key="${key}"]`);
+}
+
+function setPanelAttention(key, states = {}) {
+  const panel = getInfoPanel(key);
+  if (!panel) return;
+  ['new', 'urgent', 'ready', 'water', 'mature', 'dead'].forEach(name => {
+    panel.classList.toggle(`panel-attn-${name}`, states[name] === true);
+  });
+}
+
+function flashPanel(key, className) {
+  const panel = getInfoPanel(key);
+  if (!panel) return;
+  window.clearTimeout(panel._panelFlashTimer);
+  panel.classList.remove(className);
+  void panel.offsetWidth;
+  panel.classList.add(className);
+  panel._panelFlashTimer = window.setTimeout(() => {
+    panel.classList.remove(className);
+  }, PANEL_FLASH_MS);
+}
+
+function maybeZogtonPanelComment(kind, text, mood = 'idle', chance = 0.45) {
+  const now = Date.now();
+  const last = zogtonPanelCommentTimes[kind] || 0;
+  const cooldown = ZOGTON_PANEL_COOLDOWN_MS[kind] || 30000;
+  if (now - last < cooldown) return;
+  if (Math.random() > chance) return;
+  zogtonPanelCommentTimes[kind] = now;
+  if (typeof showZogtonMessage === 'function') {
+    showZogtonMessage(text, mood, { duration: 6200 });
+  } else if (typeof tellZogton === 'function') {
+    tellZogton(text, mood, { duration: 6200 });
+  }
+}
+
+function updateRequestPanelAttention(requests = window.G?.requests || []) {
+  const now = Date.now();
+  const ids = new Set(requests.map(r => String(r.id)));
+  const hasNew = hasTrackedRequests && requests.some(r => !lastRequestIds.has(String(r.id)));
+  const urgent = requests.some(r => (r.expiresAt - now) / 1000 <= 60);
+  const ready = requests.some(r => (window.G.display || []).some(d => d && d.pid === r.plantId));
+
+  setPanelAttention('requests', { urgent, ready });
+  if (hasNew) {
+    flashPanel('requests', 'panel-flash-new');
+    maybeZogtonPanelComment('requestNew', 'A human has requested foliage. Profitable behavior.', 'thinking', 0.55);
+  }
+  if (urgent && !lastRequestAttention.urgent) {
+    maybeZogtonPanelComment('requestUrgent', 'Customer patience is shrinking. A fascinating Earth timer.', 'warning', 0.5);
+  }
+  if (ready && !lastRequestAttention.ready) {
+    maybeZogtonPanelComment('requestReady', 'A requested plant is ready. Commerce window detected.', 'science', 0.55);
+  }
+
+  lastRequestIds = ids;
+  lastRequestAttention = { urgent, ready };
+  hasTrackedRequests = true;
+}
+
+function updateDetailPanelAttention() {
+  const sel = window.G?.sel;
+  const clear = () => {
+    setPanelAttention('details', {});
+    lastDetailAttentionKey = '';
+  };
+  if (!sel) { clear(); return; }
+
+  const noteDetailAttention = nextKey => {
+    if (nextKey && nextKey !== lastDetailAttentionKey) {
+      if (nextKey === 'water') {
+        maybeZogtonPanelComment('detailWater', 'Hydration warning. The specimen is becoming dramatic.', 'worried', 0.55);
+      } else if (nextKey === 'mature') {
+        maybeZogtonPanelComment('detailMature', 'Growth complete. Prepare the sales ritual.', 'celebration', 0.55);
+      } else if (nextKey === 'dead') {
+        maybeZogtonPanelComment('detailDead', 'Specimen loss recorded. Clear the slot and begin again.', 'worried', 0.55);
+      }
+    }
+    lastDetailAttentionKey = nextKey || '';
+  };
+
+  if (sel.startsWith('disp:')) {
+    const i = parseInt(sel.split(':')[1]);
+    const slot = (window.G.display || [])[i];
+    setPanelAttention('details', { mature: !!slot });
+    noteDetailAttention(slot ? 'mature' : '');
+    return;
+  }
+
+  if (sel.startsWith('grow:')) {
+    const i = parseInt(sel.split(':')[1]);
+    const slot = window.G.slots?.[i];
+    if (!slot) { clear(); return; }
+    const ss = getSlotStatus(slot);
+    const attentionKey = ss === 'dead' ? 'dead'
+      : ss === 'mature' ? 'mature'
+      : (ss === 'thirsty' || ss === 'dry') ? 'water'
+      : '';
+    setPanelAttention('details', {
+      water: ss === 'thirsty' || ss === 'dry',
+      mature: ss === 'mature',
+      dead: ss === 'dead'
+    });
+    noteDetailAttention(attentionKey);
+    return;
+  }
+
+  clear();
+}
+
+function applyInfoPanelState() {
+  infoPanelState = normalizeInfoPanelState(infoPanelState, infoPanelExpandedOrder);
+  infoPanelExpandedOrder = normalizeInfoPanelOrder(infoPanelExpandedOrder, infoPanelState);
+  const expandedKeys = getExpandedPanelKeys(infoPanelState);
+  const panelDeck = document.querySelector('.info-panel');
+  if (panelDeck) {
+    panelDeck.classList.remove('expanded-count-0', 'expanded-count-1', 'expanded-count-2');
+    panelDeck.classList.add(`expanded-count-${Math.min(expandedKeys.length, 2)}`);
+    panelDeck.dataset.expandedPanels = expandedKeys.join(' ');
+  }
+
+  INFO_PANEL_KEYS.forEach(key => {
+    const expanded = infoPanelState[key] !== false;
+    const panel = document.querySelector(`[data-panel-key="${key}"]`);
+    const btn = document.querySelector(`[data-panel-toggle="${key}"]`);
+    const content = document.querySelector(`[data-panel-content="${key}"]`);
+    if (panel) {
+      panel.classList.toggle('is-collapsed', !expanded);
+      panel.classList.toggle('is-expanded', expanded);
+      const expandedIndex = infoPanelExpandedOrder.indexOf(key);
+      panel.dataset.panelSlot = expanded ? String(expandedIndex + 1) : 'tab';
+      panel.style.order = expanded ? String(expandedIndex + 1) : String(20 + INFO_PANEL_KEYS.indexOf(key));
+    }
+    if (btn) {
+      btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      btn.setAttribute('aria-disabled', expanded ? 'true' : 'false');
+    }
+    if (content) content.hidden = !expanded;
+    const caret = btn?.querySelector('.panel-caret');
+    if (caret) caret.textContent = expanded ? '' : '+';
+  });
+  updatePanelSummaries();
+}
+
+function initInfoPanels() {
+  INFO_PANEL_KEYS.forEach(key => {
+    const btn = document.querySelector(`[data-panel-toggle="${key}"]`);
+    if (!btn || btn.dataset.panelBound) return;
+    btn.dataset.panelBound = 'true';
+    btn.addEventListener('click', () => {
+      const expandedKeys = normalizeInfoPanelOrder(infoPanelExpandedOrder, infoPanelState);
+      const isExpanded = infoPanelState[key] !== false;
+
+      if (isExpanded) {
+        return;
+      }
+
+      if (expandedKeys.length >= INFO_PANEL_MAX_EXPANDED) {
+        const collapseKey = expandedKeys[0];
+        infoPanelState[collapseKey] = false;
+      }
+      infoPanelState[key] = true;
+      infoPanelExpandedOrder = [...expandedKeys.filter(panelKey => infoPanelState[panelKey] !== false), key]
+        .filter((panelKey, index, all) => all.indexOf(panelKey) === index)
+        .slice(-INFO_PANEL_MAX_EXPANDED);
+
+      infoPanelState = normalizeInfoPanelState(infoPanelState, infoPanelExpandedOrder);
+      infoPanelExpandedOrder = normalizeInfoPanelOrder(infoPanelExpandedOrder, infoPanelState);
+      saveInfoPanelState();
+      applyInfoPanelState();
+    });
+  });
+  applyInfoPanelState();
+}
 
 function renderGrowShelf() {
   const el = document.getElementById('grow-shelf');
@@ -158,6 +536,8 @@ function renderDisplayShelf() {
 
 // ─── Detail Panel ─────────────────────────────────────────────
 function renderDetail() {
+  queuePanelSummaryUpdate();
+  updateDetailPanelAttention();
   const head = document.getElementById('detail-head');
   const body = document.getElementById('detail-body');
   const sel  = window.G.sel;
@@ -371,10 +751,12 @@ function openSeedPack() {
 
 // ─── Customer Requests ────────────────────────────────────────
 function renderRequests() {
+  queuePanelSummaryUpdate();
   const el = document.getElementById('request-list');
   if (!el) return;
   const requests = window.G.requests || [];
   const now = Date.now();
+  updateRequestPanelAttention(requests);
 
   if (!requests.length) {
     el.innerHTML = `<div class="req-empty">NO CUSTOMERS RIGHT NOW.\nCHECK BACK SOON...</div>`;
@@ -395,10 +777,12 @@ function renderRequests() {
 
     const card = document.createElement('div');
     card.className = `req-card ${idx === 0 ? 'req-active' : ''} ${urgency} ${hasOnDisplay ? 'req-fillable' : ''}`;
+    card.dataset.requestId = String(r.id);
+    card.dataset.expiresAt = String(r.expiresAt);
     card.innerHTML = `
       <div class="req-header">
         <span class="req-name" style="color:${tc[r.tier]}">${idx === 0 ? '<b>ACTIVE</b> ' : ''}${r.name}</span>
-        <span class="req-timer ${remaining<60?'req-timer-urgent':''}">${mins}:${secs}</span>
+        <span class="req-timer ${remaining<60?'req-timer-urgent':''}" data-request-timer="${r.id}">${mins}:${secs}</span>
       </div>
       <div class="req-msg">"${r.msg}"</div>
       <div class="req-plant">
@@ -414,12 +798,48 @@ function renderRequests() {
   });
 }
 
+function refreshRequestCountdowns() {
+  if (!window.G || window.G.paused) return;
+  const requests = window.G.requests || [];
+  if (!requests.length) {
+    queuePanelSummaryUpdate();
+    return;
+  }
+
+  const now = Date.now();
+  requests.forEach(r => {
+    const remaining = Math.max(0, Math.ceil((r.expiresAt - now) / 1000));
+    const mins = Math.floor(remaining / 60);
+    const secs = (remaining % 60).toString().padStart(2, '0');
+    const timer = document.querySelector(`[data-request-timer="${r.id}"]`);
+    const card = document.querySelector(`[data-request-id="${r.id}"]`);
+    if (timer) {
+      timer.textContent = `${mins}:${secs}`;
+      timer.classList.toggle('req-timer-urgent', remaining < 60);
+    }
+    if (card) {
+      card.classList.toggle('req-urgent', remaining < 60);
+      card.classList.toggle('req-warn', remaining >= 60 && remaining < 120);
+    }
+  });
+
+  updateRequestPanelAttention(requests);
+  queuePanelSummaryUpdate();
+}
+
 // ─── Rank Panel ───────────────────────────────────────────────
 function renderRank() {
+  queuePanelSummaryUpdate();
   const rep  = window.G.rep || 0;
   const rank = getRank(rep);
   const next = getNextRank(rep);
   const pct  = next ? Math.round(((rep-rank.rep)/(next.rep-rank.rep))*100) : 100;
+  if (hasTrackedRep && rep !== lastRenderedRep) {
+    flashPanel('rank', 'panel-flash-rank');
+    maybeZogtonPanelComment('rank', 'Your greenhouse status has improved.', 'happy', 0.65);
+  }
+  lastRenderedRep = rep;
+  hasTrackedRep = true;
 
   document.getElementById('rank-display').innerHTML = `
     <div class="rank-name" style="color:${rank.color}">${rank.name}</div>
@@ -539,8 +959,10 @@ function flushMutationNotifications() {
 function updateHUD() {
   document.getElementById('hud-money').textContent = window.G.money;
   document.getElementById('hud-sold').textContent  = window.G.sold;
+  updateRequestPanelAttention();
   renderRank();
   renderEncyclopedia();
+  postOuterHudSnapshot();
 }
 
 function animateMoney() {
@@ -714,6 +1136,9 @@ function log(msg, type='') {
   div.textContent = `[${ts}] ${msg}`;
   el.insertBefore(div, el.firstChild);
   while (el.children.length > 60) el.removeChild(el.lastChild);
+  updatePanelSummaries();
+  flashPanel('log', 'panel-flash-log');
+  maybeZogtonPanelComment('log', 'I have recorded this event for science.', 'science', 0.28);
 }
 
 function setTip(t) { /* removed in v3+ layout */ }
@@ -737,6 +1162,7 @@ function renderAll() {
   renderRequests();
   updateHUD();
   updateHint();
+  initInfoPanels();
 }
 
 // ─── Login ────────────────────────────────────────────────────
@@ -767,3 +1193,5 @@ function renderLoginSaved() {
     chips.appendChild(div);
   });
 }
+
+initInfoPanels();

@@ -2,6 +2,7 @@
 window.currentUser = null;
 window.G           = null;
 window.ticker      = null;
+window.requestCountdownTicker = null;
 
 // ─── Start / Stop Game ────────────────────────────────────────
 function startGame(name) {
@@ -35,6 +36,8 @@ function startGame(name) {
 
   if (window.ticker) clearInterval(window.ticker);
   window.ticker = setInterval(gameTick, TICK_MS);
+  if (window.requestCountdownTicker) clearInterval(window.requestCountdownTicker);
+  window.requestCountdownTicker = setInterval(refreshRequestCountdowns, 1000);
 
   log(`WELCOME BACK, ${window.currentUser.toUpperCase()}!`, 'good');
 }
@@ -42,7 +45,9 @@ function startGame(name) {
 function logout() {
   saveGame();
   if (window.ticker) clearInterval(window.ticker);
+  if (window.requestCountdownTicker) clearInterval(window.requestCountdownTicker);
   window.ticker      = null;
+  window.requestCountdownTicker = null;
   window.currentUser = null;
   window.G           = null;
 
@@ -51,6 +56,7 @@ function logout() {
   document.getElementById('name-input').value = '';
 
   renderLoginSaved();
+  postOuterHudSnapshot();
 }
 
 // ─── Events ───────────────────────────────────────────────────

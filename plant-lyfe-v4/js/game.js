@@ -135,6 +135,7 @@ function gameTick() {
     renderDisplayShelf();
     renderRequests();
   }
+  if (!requestsChanged) refreshRequestCountdowns();
   updateHUD();
 }
 

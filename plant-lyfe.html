@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Plant Lyfe | Get Scrawny Arcade</title>
     <meta name="description" content="A cozy idle plant growing and selling game in Get Scrawny Arcade.">
-    <link rel="preload" href="styles.css?v=plant-lyfe-internal-zoom-1" as="style">
-    <link rel="stylesheet" href="styles.css?v=plant-lyfe-internal-zoom-1">
+    <link rel="preload" href="styles.css?v=plant-lyfe-session-hud-1" as="style">
+    <link rel="stylesheet" href="styles.css?v=plant-lyfe-session-hud-1">
   </head>
   <body class="plantlyfe-body">
     <header class="site-header" data-header>
@@ -61,6 +61,20 @@
           <div class="plantlyfe-hud-brand">
             <strong>Plant Lyfe</strong>
           </div>
+          <div class="plantlyfe-hud-stats" aria-label="Plant Lyfe status">
+            <div class="plantlyfe-hud-chip plantlyfe-hud-user">▶ <span data-plantlyfe-mirror="user">—</span></div>
+            <div class="plantlyfe-hud-chip"><span>Money</span> $<strong data-plantlyfe-mirror="money">0</strong></div>
+            <div class="plantlyfe-hud-chip"><span>Rep</span> ★<strong data-plantlyfe-mirror="rep">0</strong></div>
+            <div class="plantlyfe-rep-rail" aria-label="Rank progress">
+              <span data-plantlyfe-mirror="rank">Sprout</span>
+              <div><i data-plantlyfe-mirror="rep-fill"></i></div>
+              <span data-plantlyfe-mirror="rep-next">0/10</span>
+            </div>
+            <div class="plantlyfe-hud-chip"><span>Sold</span> <strong data-plantlyfe-mirror="sold">0</strong></div>
+            <button type="button" class="plantlyfe-hud-action" data-plantlyfe-proxy="encyclopedia-btn">Plants <span data-plantlyfe-mirror="plants">0/0</span></button>
+            <button type="button" class="plantlyfe-hud-action" data-plantlyfe-proxy="pause-btn" data-plantlyfe-mirror="pause">Pause</button>
+            <button type="button" class="plantlyfe-hud-action" data-plantlyfe-proxy="logout-btn">Logout</button>
+          </div>
           <div class="plantlyfe-hud-actions" aria-label="Plant Lyfe view controls">
             <button type="button" class="plantlyfe-icon-button" data-plantlyfe-zoom-out aria-label="Zoom game out">−</button>
             <button type="button" class="plantlyfe-icon-button" data-plantlyfe-zoom-in aria-label="Zoom game in">+</button>
@@ -72,7 +86,7 @@
         <div class="plantlyfe-stage" data-plantlyfe-stage>
           <iframe
             title="Plant Lyfe idle plant shop game"
-            src="plant-lyfe-v4/index.html?v=plant-lyfe-zogton-popup-1"
+            src="plant-lyfe-v4/index.html?v=plant-lyfe-panel-art-clarity-1&embedded=1"
             loading="eager"
             allow="fullscreen"
             data-plantlyfe-frame></iframe>
@@ -85,6 +99,6 @@
       <p>Plant Lyfe idle shop play for planning and patient progression.</p>
     </footer>
 
-    <script src="script.js?v=plant-lyfe-internal-zoom-1"></script>
+    <script src="script.js?v=plant-lyfe-session-hud-1"></script>
   </body>
 </html>

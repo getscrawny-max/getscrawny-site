@@ -115,9 +115,12 @@ const plantlyfeStage = document.querySelector("[data-plantlyfe-stage]");
 const plantlyfeZoomIn = document.querySelector("[data-plantlyfe-zoom-in]");
 const plantlyfeZoomOut = document.querySelector("[data-plantlyfe-zoom-out]");
 const plantlyfeFrame = document.querySelector("[data-plantlyfe-frame]");
+const plantlyfeMirrors = document.querySelectorAll("[data-plantlyfe-mirror]");
+const plantlyfeProxyButtons = document.querySelectorAll("[data-plantlyfe-proxy]");
 
 if (plantlyfeShell) {
   let plantlyfeZoomed = false;
+  let plantlyfeMirrorTimer = 0;
 
   const getPlantlyfeFrameDocument = () => {
     try {
@@ -131,9 +134,59 @@ if (plantlyfeShell) {
     const frameDocument = getPlantlyfeFrameDocument();
     frameDocument?.documentElement.classList.toggle("plantlyfe-ui-zoomed", plantlyfeZoomed);
     frameDocument?.body?.classList.toggle("plantlyfe-ui-zoomed", plantlyfeZoomed);
+    frameDocument?.documentElement.classList.add("plantlyfe-outer-hud");
+    frameDocument?.body?.classList.add("plantlyfe-outer-hud");
     plantlyfeStage?.classList.toggle("is-plantlyfe-zoomed", plantlyfeZoomed);
     if (plantlyfeZoomIn) plantlyfeZoomIn.disabled = plantlyfeZoomed;
     if (plantlyfeZoomOut) plantlyfeZoomOut.disabled = !plantlyfeZoomed;
+  };
+
+  const setPlantMirror = (key, value) => {
+    plantlyfeMirrors.forEach((el) => {
+      if (el.dataset.plantlyfeMirror !== key) return;
+      if (key === "rep-fill") {
+        el.style.width = value || "0%";
+        return;
+      }
+      el.textContent = value ?? "—";
+    });
+  };
+
+  const applyPlantlyfeHudPayload = (payload = {}) => {
+    plantlyfeShell.classList.toggle("has-plantlyfe-session", payload.active === true);
+    setPlantMirror("user", payload.user || "—");
+    setPlantMirror("money", payload.money || "0");
+    setPlantMirror("rep", payload.rep || "0");
+    setPlantMirror("rank", payload.rank || "SPROUT");
+    setPlantMirror("rep-next", payload.repNext || "0/10");
+    setPlantMirror("sold", payload.sold || "0");
+    setPlantMirror("plants", payload.plants || "0/0");
+    setPlantMirror("pause", payload.pause || "PAUSE");
+    setPlantMirror("rep-fill", payload.repFill || "0%");
+  };
+
+  const syncPlantlyfeHud = () => {
+    const frameDocument = getPlantlyfeFrameDocument();
+    if (!frameDocument) return;
+    const gameActive = frameDocument.defaultView?.currentUser && frameDocument.defaultView?.G;
+    plantlyfeShell.classList.toggle("has-plantlyfe-session", !!gameActive);
+
+    const readText = (selector, fallback = "—") => frameDocument.querySelector(selector)?.textContent?.trim() || fallback;
+    setPlantMirror("user", readText("#hud-user"));
+    setPlantMirror("money", readText("#hud-money", "0"));
+    setPlantMirror("rep", readText("#hud-rep", "0"));
+    setPlantMirror("rank", readText("#rep-rank-label", "Sprout"));
+    setPlantMirror("rep-next", readText("#rep-next-label", "0/10"));
+    setPlantMirror("sold", readText("#hud-sold", "0"));
+    setPlantMirror("plants", readText("#hud-discovery-count", "0/0"));
+    setPlantMirror("pause", readText("#pause-btn", "Pause"));
+    setPlantMirror("rep-fill", frameDocument.querySelector("#rep-fill")?.style.width || "0%");
+  };
+
+  const startPlantlyfeHudSync = () => {
+    window.clearInterval(plantlyfeMirrorTimer);
+    syncPlantlyfeHud();
+    plantlyfeMirrorTimer = window.setInterval(syncPlantlyfeHud, 500);
   };
 
   const syncPlantlyfeFullscreen = () => {
@@ -159,10 +212,29 @@ if (plantlyfeShell) {
     plantlyfeShell.requestFullscreen?.();
   });
 
+  plantlyfeProxyButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const frameDocument = getPlantlyfeFrameDocument();
+      const target = frameDocument?.getElementById(button.dataset.plantlyfeProxy);
+      target?.click?.();
+      window.setTimeout(syncPlantlyfeHud, 80);
+    });
+  });
+
+  window.addEventListener("message", (event) => {
+    if (event.source !== plantlyfeFrame?.contentWindow) return;
+    if (event.data?.type !== "plantlyfe:hud") return;
+    applyPlantlyfeHudPayload(event.data.payload);
+  });
+
   document.addEventListener("fullscreenchange", syncPlantlyfeFullscreen);
-  plantlyfeFrame?.addEventListener("load", syncPlantlyfeZoom);
+  plantlyfeFrame?.addEventListener("load", () => {
+    syncPlantlyfeZoom();
+    startPlantlyfeHudSync();
+  });
   syncPlantlyfeZoom();
   syncPlantlyfeFullscreen();
+  startPlantlyfeHudSync();
 }
 
 let clickAudioContext;
