@@ -1,10 +1,5 @@
-const navToggle = document.querySelector("[data-nav-toggle]");
-const nav = document.querySelector("[data-nav]");
-const libraryNavToggle = document.querySelector("[data-library-nav-toggle]");
-const libraryNav = document.querySelector("[data-library-nav]");
 const form = document.querySelector("[data-contact-form]");
 const formNote = document.querySelector("[data-form-note]");
-const themeToggle = document.querySelector("[data-theme-toggle]");
 const lessonMap = document.querySelector("[data-lesson-map]");
 const lessonCards = Array.from(document.querySelectorAll("[data-lesson-card]"));
 const lessonSort = document.querySelector("[data-lesson-sort]");
@@ -14,100 +9,8 @@ const lessonClear = document.querySelector("[data-lesson-clear]");
 const hashtagFilter = document.querySelector("[data-hashtag-filter]");
 const tagClear = document.querySelector("[data-tag-clear]");
 const lessonCount = document.querySelector("[data-lesson-count]");
-const readStoredTheme = () => {
-  const fromUrl = new URLSearchParams(window.location.search).get("theme");
-  if (fromUrl) return fromUrl;
-
-  try {
-    const fromStorage = localStorage.getItem("get-scrawny-theme") || sessionStorage.getItem("get-scrawny-theme");
-    if (fromStorage) return fromStorage;
-  } catch {
-    // Keep going; local file previews can be picky about storage.
-  }
-
-  const cookieTheme = document.cookie
-    .split("; ")
-    .find((item) => item.startsWith("get-scrawny-theme="))
-    ?.split("=")[1];
-  return cookieTheme ? decodeURIComponent(cookieTheme) : null;
-};
-const writeStoredTheme = (theme) => {
-  try {
-    localStorage.setItem("get-scrawny-theme", theme);
-    sessionStorage.setItem("get-scrawny-theme", theme);
-  } catch {
-    // Theme still updates for the current page even when storage is unavailable.
-  }
-  document.cookie = "get-scrawny-theme=" + encodeURIComponent(theme) + "; path=/; max-age=31536000; SameSite=Lax";
-};
-const storedTheme = readStoredTheme();
-const defaultTheme = "dark";
-const themes = ["light", "dark"];
-const initialTheme = themes.includes(storedTheme) ? storedTheme : defaultTheme;
-const arcadeThemePages = new Set(["arcade.html", "keyboard-flight.html", "neon-octarun.html", "neon-octorun.html", "speedmail.html", "plant-lyfe.html"]);
-const isArcadeSurface = Boolean(document.querySelector(".arcade-page, .game-page, .octarun-page"));
-let preferredTheme = initialTheme;
 let activeTag = "";
 let submittedTerms = [];
-
-document.documentElement.dataset.theme = isArcadeSurface ? "dark" : preferredTheme;
-writeStoredTheme(preferredTheme);
-
-const syncThemeLinks = () => {
-  const currentTheme = isArcadeSurface ? preferredTheme : document.documentElement.dataset.theme;
-  document.querySelectorAll('a[href^="index.html"], a[href^="explore.html"], a[href^="lessons.html"], a[href^="arcade.html"], a[href^="keyboard-flight.html"], a[href^="neon-octarun.html"], a[href^="neon-octorun.html"], a[href^="speedmail.html"], a[href^="plant-lyfe.html"], a[href^="muscle-map.html"], a[href^="muscle-map-education.html"], a[href^="muscle-map-log.html"]').forEach((link) => {
-    const rawHref = link.getAttribute("href");
-    if (!rawHref || rawHref.includes("assets/")) return;
-    const url = new URL(rawHref, window.location.href);
-    const page = url.pathname.split("/").pop();
-    url.searchParams.set("theme", arcadeThemePages.has(page) ? "dark" : currentTheme);
-    link.setAttribute("href", url.pathname.split("/").pop() + url.search + url.hash);
-  });
-};
-
-const syncThemeToggle = () => {
-  if (!themeToggle) return;
-  if (isArcadeSurface) {
-    const nextTheme = themes[(themes.indexOf(preferredTheme) + 1) % themes.length];
-    themeToggle.setAttribute("aria-label", "Switch to " + nextTheme + " mode outside Arcade");
-    themeToggle.setAttribute("aria-pressed", preferredTheme !== "light" ? "true" : "false");
-    themeToggle.disabled = false;
-    return;
-  }
-  const currentTheme = document.documentElement.dataset.theme;
-  const nextTheme = themes[(themes.indexOf(currentTheme) + 1) % themes.length];
-  themeToggle.setAttribute("aria-label", "Switch to " + nextTheme + " mode");
-  themeToggle.setAttribute("aria-pressed", currentTheme !== "light" ? "true" : "false");
-};
-
-syncThemeToggle();
-syncThemeLinks();
-
-const setupDisclosureNav = (toggle, menu, openLabel, closeLabel, otherToggle, otherMenu) => {
-  if (!toggle || !menu) return;
-  const close = () => {
-    toggle.setAttribute("aria-expanded", "false");
-    toggle.setAttribute("aria-label", openLabel);
-    menu.classList.remove("is-open");
-  };
-  toggle.addEventListener("click", () => {
-    const isOpen = toggle.getAttribute("aria-expanded") === "true";
-    if (otherToggle && otherMenu) {
-      otherToggle.setAttribute("aria-expanded", "false");
-      otherToggle.setAttribute("aria-label", otherToggle === navToggle ? "Open home page directory" : "Open explore directory");
-      otherMenu.classList.remove("is-open");
-    }
-    toggle.setAttribute("aria-expanded", String(!isOpen));
-    toggle.setAttribute("aria-label", isOpen ? openLabel : closeLabel);
-    menu.classList.toggle("is-open", !isOpen);
-  });
-  menu.addEventListener("click", (event) => {
-    if (event.target instanceof HTMLAnchorElement) close();
-  });
-};
-
-setupDisclosureNav(navToggle, nav, "Open home page directory", "Close home page directory", libraryNavToggle, libraryNav);
-setupDisclosureNav(libraryNavToggle, libraryNav, "Open explore directory", "Close explore directory", navToggle, nav);
 
 const plantlyfeShell = document.querySelector("[data-plantlyfe-shell]");
 const plantlyfeFullscreen = document.querySelector("[data-plantlyfe-fullscreen]");
@@ -283,26 +186,6 @@ document.addEventListener("pointerdown", (event) => {
     playMechanicalClick();
   }
 });
-
-if (themeToggle) {
-  themeToggle.addEventListener("click", () => {
-    if (isArcadeSurface) {
-      const nextTheme = themes[(themes.indexOf(preferredTheme) + 1) % themes.length];
-      preferredTheme = nextTheme;
-      writeStoredTheme(nextTheme);
-      syncThemeToggle();
-      syncThemeLinks();
-      return;
-    }
-    const currentTheme = document.documentElement.dataset.theme;
-    const nextTheme = themes[(themes.indexOf(currentTheme) + 1) % themes.length];
-    preferredTheme = nextTheme;
-    document.documentElement.dataset.theme = nextTheme;
-    writeStoredTheme(nextTheme);
-    syncThemeToggle();
-    syncThemeLinks();
-  });
-}
 
 const normalizeTag = (value) => value.trim().toLowerCase().replace(/^#+/, "");
 
