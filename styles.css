@@ -11414,6 +11414,19 @@ body:has(.home-page),
   letter-spacing: 0 !important;
   text-transform: none !important;
   white-space: nowrap !important;
-  max-width: calc(100vw - 2rem) !important;
-  font-size: clamp(2.6rem, 9vw, 8rem) !important;
+  width: max-content !important;
+  max-width: calc(100vw - clamp(2rem, 8vw, 8rem)) !important;
+  margin: 0 auto clamp(2.2rem, 4vw, 4rem) !important;
+  font-size: clamp(2.8rem, 6.2vw, 6rem) !important;
+  line-height: 1.15 !important;
+  text-align: center !important;
+}
+
+.lessons-page .library-hero-inner {
+  justify-items: center;
+  text-align: center;
+}
+
+.lessons-page .library-hero-inner .hero-text {
+  margin-top: 0 !important;
 }
