@@ -11451,6 +11451,53 @@ body:has(.home-page),
   max-width: 860px;
 }
 
+.lessons-page .library-image-hero {
+  padding: 0 !important;
+  overflow: hidden;
+  background: #adcbe3 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.lessons-page .library-image-hero .library-hero-inner {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+.library-hero-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1672 / 941;
+  object-fit: cover;
+  object-position: center;
+}
+
+.lessons-page .lesson-web {
+  padding-top: clamp(2.25rem, 5vw, 4.5rem) !important;
+}
+
+.lessons-page .lesson-web > .section-heading {
+  display: grid;
+  gap: clamp(0.9rem, 2vw, 1.25rem);
+  margin-bottom: clamp(1.6rem, 3vw, 2.5rem);
+  text-align: center;
+}
+
+.lessons-page .lesson-web > .section-heading h2 {
+  margin-bottom: 0;
+}
+
+.lessons-page .lesson-web > .section-heading p:not(.eyebrow) {
+  max-width: 960px;
+  margin: 0 auto;
+  font-size: var(--body-medium) !important;
+  font-weight: 400 !important;
+  line-height: 1.62;
+}
+
 /* Mobile text legibility sweep. */
 @media (max-width: 760px) {
   html {
@@ -11517,6 +11564,11 @@ body:has(.home-page),
   .arcade-page .arcade-landing-hero {
     padding-left: clamp(1rem, 5vw, 1.5rem) !important;
     padding-right: clamp(1rem, 5vw, 1.5rem) !important;
+  }
+
+  .lessons-page .library-image-hero {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
   }
 
   .home-page .hero .eyebrow {
