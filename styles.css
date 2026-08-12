@@ -70,6 +70,46 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "Manbow Screen";
+  src: url("assets/fonts/manbow/manbow-screen.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Manbow Unlocked";
+  src: url("assets/fonts/manbow/manbow-unlocked-screen.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "Manbow Lines";
+  src: url("assets/fonts/manbow/manbow-lines.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "FrederickaGreat";
+  src: url("./assets/fonts/fredericka/fredericka-the-great.regular.ttf?v=2") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "DidacticRule";
+  src: url("./assets/fonts/didactic/didactic.rule.otf?v=1") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
 :root {
   --color-darkest: #03396c;
   --color-dark: #005b96;
@@ -11113,6 +11153,8 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
   background: linear-gradient(180deg, var(--color-light), var(--color-medium)) !important;
   border-bottom-color: rgba(var(--color-darkest-rgb), 0.18) !important;
   box-shadow: 0 14px 34px rgba(var(--color-darkest-rgb), 0.14) !important;
+  padding-top: 7px !important;
+  padding-bottom: 7px !important;
 }
 
 .site-header .brand {
@@ -11126,7 +11168,7 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
   width: clamp(170px, 22vw, 292px);
   height: auto;
   max-width: clamp(170px, 22vw, 292px);
-  max-height: 72px;
+  max-height: 62px;
   object-fit: contain;
 }
 
@@ -11136,7 +11178,7 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
 
 .primary-nav {
   align-items: baseline !important;
-  gap: clamp(1.1rem, 2.5vw, 2.4rem) !important;
+  gap: clamp(0.7rem, 1.45vw, 1.35rem) !important;
 }
 
 .primary-nav .home-link,
@@ -11243,7 +11285,7 @@ body:has(.arcade-page) {
   .site-header .brand-logo {
     width: clamp(132px, 36vw, 184px);
     max-width: clamp(132px, 36vw, 184px);
-    max-height: 58px;
+    max-height: 50px;
   }
 }
 
@@ -11365,9 +11407,13 @@ body:has(.home-page),
     linear-gradient(180deg, rgba(231, 239, 246, 0.72), rgba(173, 203, 227, 0.72)) !important;
 }
 
-#lessons-title.library-title {
-  font-family: "Manbow", var(--font-display) !important;
+.lessons-page #lessons-title.manbow-title {
+  font-family: "DidacticRule", serif !important;
   font-weight: 400 !important;
   font-style: normal !important;
   letter-spacing: 0 !important;
+  text-transform: none !important;
+  white-space: nowrap !important;
+  max-width: calc(100vw - 2rem) !important;
+  font-size: clamp(2.6rem, 9vw, 8rem) !important;
 }
