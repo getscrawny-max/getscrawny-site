@@ -11452,14 +11452,18 @@ body:has(.home-page),
 }
 
 .lessons-page .library-image-hero {
+  min-height: clamp(320px, 56.3vw, 820px);
   padding: 0 !important;
   overflow: hidden;
-  background: #adcbe3 !important;
+  background:
+    url("assets/ScrawnysLibraryBackground&Title.PNG") center center / cover no-repeat,
+    #adcbe3 !important;
   border: 0 !important;
   box-shadow: none !important;
 }
 
 .lessons-page .library-image-hero .library-hero-inner {
+  min-height: inherit;
   width: 100%;
   max-width: none;
   margin: 0;
@@ -11467,12 +11471,7 @@ body:has(.home-page),
 }
 
 .library-hero-image {
-  display: block;
-  width: 100%;
-  height: auto;
-  aspect-ratio: 1672 / 941;
-  object-fit: cover;
-  object-position: center;
+  display: none;
 }
 
 .lessons-page .lesson-web {
