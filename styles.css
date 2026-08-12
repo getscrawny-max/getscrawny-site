@@ -11414,19 +11414,280 @@ body:has(.home-page),
   letter-spacing: 0 !important;
   text-transform: none !important;
   white-space: nowrap !important;
-  width: max-content !important;
-  max-width: calc(100vw - clamp(2rem, 8vw, 8rem)) !important;
-  margin: 0 auto clamp(2.2rem, 4vw, 4rem) !important;
-  font-size: clamp(2.8rem, 6.2vw, 6rem) !important;
-  line-height: 1.15 !important;
+  display: block !important;
+  justify-self: stretch !important;
+  width: 100% !important;
+  max-width: none !important;
+  box-sizing: border-box !important;
+  margin: 0 auto clamp(3.8rem, 6vw, 6.5rem) !important;
+  padding: 0 clamp(2rem, 8vw, 9rem) !important;
+  font-size: clamp(1.55rem, 4.35vw, 4.45rem) !important;
+  line-height: 1.62 !important;
   text-align: center !important;
+  text-wrap: nowrap !important;
+  overflow-wrap: normal !important;
+  word-break: keep-all !important;
+  overflow: visible !important;
+}
+
+.lessons-page .lessons-hero > div {
+  max-width: none;
+  width: 100%;
 }
 
 .lessons-page .library-hero-inner {
+  display: grid;
   justify-items: center;
   text-align: center;
+  width: 100%;
+  max-width: none;
+  margin-inline: auto;
 }
 
 .lessons-page .library-hero-inner .hero-text {
   margin-top: 0 !important;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 860px;
+}
+
+/* Mobile text legibility sweep. */
+@media (max-width: 760px) {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+
+  body,
+  p,
+  li,
+  label,
+  input,
+  select,
+  textarea,
+  button,
+  .button {
+    font-size: max(1rem, 16px);
+    line-height: 1.55;
+  }
+
+  h1,
+  h2,
+  h3,
+  .library-title,
+  .arcade-feature-copy h2,
+  .lesson-card h3 {
+    max-width: 100%;
+    line-height: 1.08;
+    overflow-wrap: anywhere;
+    text-wrap: balance;
+  }
+
+  .site-header {
+    gap: 0.65rem !important;
+    padding: 8px 12px !important;
+  }
+
+  .site-header .brand-logo {
+    width: clamp(106px, 30vw, 142px) !important;
+    max-width: clamp(106px, 30vw, 142px) !important;
+    max-height: 44px !important;
+  }
+
+  .site-header .primary-nav {
+    gap: clamp(0.45rem, 2vw, 0.75rem) !important;
+    min-width: 0;
+  }
+
+  .primary-nav .home-link,
+  .primary-nav .home-link:visited {
+    min-height: 0 !important;
+    padding: 0 !important;
+    font-size: clamp(1.05rem, 5.3vw, 1.45rem) !important;
+    line-height: 1 !important;
+    white-space: nowrap;
+  }
+
+  .home-page .hero,
+  .lessons-page .lessons-hero,
+  .arcade-page .arcade-landing-hero {
+    padding-left: clamp(1rem, 5vw, 1.5rem) !important;
+    padding-right: clamp(1rem, 5vw, 1.5rem) !important;
+  }
+
+  .home-page .hero .eyebrow {
+    width: auto;
+    max-width: 100%;
+    font-size: clamp(1.05rem, 5.6vw, 1.65rem);
+    line-height: 1.08;
+    white-space: normal;
+  }
+
+  .home-page .hero h1 {
+    width: 100%;
+    max-width: 100%;
+    font-size: clamp(2.35rem, 14vw, 4.2rem);
+    line-height: 0.9;
+  }
+
+  .home-page .hero h1 span {
+    width: 100%;
+    max-width: 100%;
+    white-space: nowrap;
+  }
+
+  .home-page .hero-text,
+  .lessons-page .hero-text,
+  .lessons-page .library-intro,
+  .arcade-page .hero-text {
+    max-width: 38rem;
+    font-size: clamp(1.02rem, 4.4vw, 1.16rem) !important;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+  }
+
+  .home-page :where(.section, .feature-band, .coach-section, .contact-section),
+  .lessons-page .lesson-web,
+  .arcade-page .arcade-dock {
+    padding-left: clamp(1rem, 5vw, 1.5rem) !important;
+    padding-right: clamp(1rem, 5vw, 1.5rem) !important;
+  }
+
+  .home-page :where(.section h2, .feature-band h2, .coach-section h2, .contact-section h2),
+  .lessons-page .lesson-web > .section-heading h2,
+  .arcade-page .arcade-feature-copy h2 {
+    font-size: clamp(2rem, 10vw, 3rem) !important;
+    line-height: 1.08 !important;
+  }
+
+  .education-grid,
+  .service-grid,
+  .lesson-map,
+  .arcade-page .arcade-feature-card {
+    min-width: 0;
+  }
+
+  .education-grid article,
+  .service-card,
+  .lesson-card,
+  .arcade-feature-copy {
+    min-width: 0;
+  }
+
+  .lesson-toolbar {
+    gap: 0.9rem;
+  }
+
+  .lesson-toolbar label,
+  .contact-form label {
+    min-width: 0;
+  }
+
+  input,
+  select,
+  textarea {
+    min-height: 46px;
+    font-size: max(1rem, 16px) !important;
+    line-height: 1.35;
+  }
+
+  textarea {
+    line-height: 1.5;
+  }
+
+  .button,
+  button[type="submit"],
+  .lesson-toolbar .button,
+  .arcade-page .arcade-feature-card .button {
+    min-height: 46px;
+    padding: 0.78rem 1rem;
+    white-space: normal !important;
+    line-height: 1.2;
+    text-align: center;
+  }
+
+  .hashtag-filter {
+    gap: 0.65rem;
+  }
+
+  .hashtag-filter button,
+  .lesson-tags span {
+    font-size: 0.95rem;
+    line-height: 1.15;
+    white-space: normal;
+  }
+
+  .site-footer {
+    gap: 0.35rem;
+    text-align: center;
+  }
+}
+
+@media (max-width: 430px) {
+  .site-header {
+    display: grid !important;
+    grid-template-columns: minmax(88px, auto) minmax(0, 1fr) !important;
+    align-items: center !important;
+  }
+
+  .site-header .brand {
+    grid-column: 1 !important;
+    justify-self: start !important;
+    margin-right: 0 !important;
+  }
+
+  .site-header .primary-nav {
+    grid-column: 2 !important;
+    justify-self: end !important;
+  }
+
+  .primary-nav .home-link,
+  .primary-nav .home-link:visited {
+    font-size: clamp(0.9rem, 4.9vw, 1.12rem) !important;
+  }
+
+  .home-page .hero .eyebrow {
+    font-size: clamp(0.82rem, 3.45vw, 1rem) !important;
+    line-height: 1.12 !important;
+    white-space: nowrap;
+  }
+
+  .home-page .hero h1 {
+    font-size: clamp(2rem, 9.6vw, 2.45rem) !important;
+    line-height: 0.94 !important;
+  }
+
+  .home-page .hero-copy {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .arcade-page .arcade-landing-hero .library-title {
+    font-size: clamp(2rem, 10.8vw, 2.75rem) !important;
+    line-height: 1.02 !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  .arcade-page .arcade-landing-hero .eyebrow,
+  .arcade-page .arcade-landing-hero .hero-text {
+    font-size: clamp(0.95rem, 4.6vw, 1.08rem) !important;
+    line-height: 1.25 !important;
+  }
+
+  .lessons-page #lessons-title.manbow-title {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+    font-size: clamp(1.25rem, 7.2vw, 1.75rem) !important;
+    line-height: 1.72 !important;
+  }
+
+  .home-page .hero-actions,
+  .lesson-toolbar {
+    width: 100%;
+  }
 }
