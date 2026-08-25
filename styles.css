@@ -12289,3 +12289,39 @@ body.plantlyfe-body .site-footer p {
   border-color: transparent !important;
   box-shadow: none !important;
 }
+
+.arcade-page .arcade-landing-hero::after {
+  background:
+    linear-gradient(90deg, transparent 0 34%, rgba(0, 91, 150, 0.18) 42%, rgba(0, 91, 150, 0.96) 50%, rgba(99, 172, 229, 0.34) 58%, transparent 66%) !important;
+  filter: drop-shadow(0 0 11px rgba(0, 91, 150, 0.82)) !important;
+  opacity: 0.9 !important;
+}
+
+/* Homepage hero: preserve the full illustration like the Library hero. */
+.home-page .hero {
+  min-height: clamp(560px, 56.25vw, 1008px) !important;
+  padding-top: clamp(4rem, 7vw, 7rem) !important;
+  padding-bottom: clamp(4rem, 7vw, 7rem) !important;
+  background:
+    linear-gradient(180deg, rgba(173, 203, 227, 0) 0 72%, #adcbe3 100%),
+    linear-gradient(90deg, rgba(231, 239, 246, 0.78) 0 39%, rgba(173, 203, 227, 0.34) 60%, rgba(173, 203, 227, 0.02) 100%),
+    url("assets/HeroHumanBackground.JPG") right bottom / contain no-repeat,
+    #adcbe3 !important;
+}
+
+@media (min-width: 1800px) {
+  .home-page .hero {
+    min-height: clamp(820px, 48vw, 1240px) !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .home-page .hero {
+    min-height: clamp(520px, 72vw, 760px) !important;
+    background:
+      linear-gradient(180deg, rgba(173, 203, 227, 0) 0 72%, #adcbe3 100%),
+      linear-gradient(180deg, rgba(231, 239, 246, 0.72), rgba(173, 203, 227, 0.18)),
+      url("assets/HeroHumanBackground.JPG") center bottom / contain no-repeat,
+      #adcbe3 !important;
+  }
+}
