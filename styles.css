@@ -1179,6 +1179,43 @@ h3 {
   margin: 0 auto;
 }
 
+.lesson-placeholder {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  width: min(720px, 100%);
+  margin: clamp(1.8rem, 4vw, 3rem) auto 0;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  color: var(--library-ink);
+  text-align: center;
+  background:
+    linear-gradient(135deg, rgba(var(--color-lightest-rgb), 0.62), rgba(var(--color-light-rgb), 0.28)),
+    var(--library-card);
+  border: 1px solid var(--library-border);
+  border-radius: 8px;
+  box-shadow: 0 20px 54px rgba(var(--color-darkest-rgb), 0.08);
+}
+
+.lesson-placeholder img {
+  width: clamp(82px, 18vw, 140px);
+  height: auto;
+  object-fit: contain;
+  opacity: 0.92;
+}
+
+.lesson-placeholder p {
+  max-width: 34rem;
+  margin: 0;
+  color: var(--color-dark);
+  font-size: var(--body-medium);
+  line-height: 1.45;
+}
+
+.lesson-placeholder p:first-of-type {
+  color: var(--color-darkest);
+  font-weight: 800;
+}
+
 .hashtag-bank {
   display: grid;
   grid-template-columns: minmax(190px, 0.35fr) minmax(0, 1fr);
@@ -11741,4 +11778,514 @@ body:has(.home-page),
   .lesson-toolbar {
     width: 100%;
   }
+}
+
+/* Arcade game color identities */
+:root {
+  --alien-bright: #78ff32;
+  --alien-glow: #b9ff5f;
+  --alien-ink: #061908;
+  --alien-panel: #0b2f10;
+  --octa-ink: #03142d;
+  --octa-blue: #005b96;
+  --octa-cyan: #63ace5;
+  --plant-ink: #0f2614;
+  --plant-green: #2f6f36;
+  --plant-leaf: #9cca62;
+  --speed-ink: #330709;
+  --speed-red: #cf2432;
+  --speed-flame: #ff646d;
+}
+
+.arcade-page .alien-feature-card,
+.arcade-page .octarun-feature-card,
+.arcade-page .plantlyfe-feature-card,
+.arcade-page .speedmail-feature-card {
+  color: #f7fbff !important;
+}
+
+.arcade-page .alien-feature-card {
+  background:
+    radial-gradient(circle at 22% 18%, rgba(120, 255, 50, 0.32), transparent 30%),
+    linear-gradient(135deg, #061908 0%, #0b2f10 56%, #123a16 100%) !important;
+  border-color: rgba(120, 255, 50, 0.82) !important;
+  box-shadow: 0 20px 45px rgba(6, 25, 8, 0.25), 0 0 0 1px rgba(120, 255, 50, 0.28) !important;
+}
+
+.arcade-page .alien-feature-card .arcade-feature-art {
+  background:
+    radial-gradient(circle at 50% 45%, rgba(120, 255, 50, 0.34), transparent 36%),
+    linear-gradient(145deg, #020802, #0b2f10) !important;
+  border-color: rgba(120, 255, 50, 0.7) !important;
+}
+
+.arcade-page .alien-feature-card .arcade-feature-copy h2,
+.arcade-page .alien-feature-card .arcade-feature-copy p {
+  color: var(--alien-glow) !important;
+}
+
+.arcade-page .alien-feature-card .button.primary {
+  background: linear-gradient(180deg, var(--alien-bright), #46cf22) !important;
+  border-color: var(--alien-glow) !important;
+  color: var(--alien-ink) !important;
+}
+
+.arcade-page .octarun-feature-card {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(99, 172, 229, 0.3), transparent 32%),
+    linear-gradient(135deg, #03142d 0%, #03396c 56%, #005b96 100%) !important;
+  border-color: rgba(99, 172, 229, 0.76) !important;
+  box-shadow: 0 20px 45px rgba(3, 20, 45, 0.24), 0 0 0 1px rgba(99, 172, 229, 0.28) !important;
+}
+
+.arcade-page .octarun-feature-card .arcade-feature-art {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(99, 172, 229, 0.4), transparent 38%),
+    linear-gradient(145deg, #020816, #03396c) !important;
+  border-color: rgba(99, 172, 229, 0.72) !important;
+}
+
+.arcade-page .octarun-feature-card .arcade-feature-copy h2,
+.arcade-page .octarun-feature-card .arcade-feature-copy p {
+  color: #d8f0ff !important;
+}
+
+.arcade-page .octarun-feature-card .button.primary {
+  background: linear-gradient(180deg, var(--octa-blue), #03396c) !important;
+  border-color: var(--octa-cyan) !important;
+  color: #e7eff6 !important;
+}
+
+.arcade-page .plantlyfe-feature-card {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(156, 202, 98, 0.28), transparent 32%),
+    linear-gradient(135deg, #0f2614 0%, #1e4c27 58%, #2f6f36 100%) !important;
+  border-color: rgba(156, 202, 98, 0.72) !important;
+  box-shadow: 0 20px 45px rgba(15, 38, 20, 0.23), 0 0 0 1px rgba(156, 202, 98, 0.24) !important;
+}
+
+.arcade-page .plantlyfe-feature-card .arcade-feature-art {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(156, 202, 98, 0.35), transparent 38%),
+    linear-gradient(145deg, #0a170c, #1e4c27) !important;
+  border-color: rgba(156, 202, 98, 0.68) !important;
+}
+
+.arcade-page .plantlyfe-feature-card .arcade-feature-copy h2,
+.arcade-page .plantlyfe-feature-card .arcade-feature-copy p {
+  color: #eff8d8 !important;
+}
+
+.arcade-page .plantlyfe-feature-card .button.primary {
+  background: linear-gradient(180deg, var(--plant-green), #16391d) !important;
+  border-color: var(--plant-leaf) !important;
+  color: #f5ffe8 !important;
+}
+
+.arcade-page .speedmail-feature-card {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(255, 100, 109, 0.28), transparent 32%),
+    linear-gradient(135deg, #330709 0%, #731018 58%, #cf2432 100%) !important;
+  border-color: rgba(255, 100, 109, 0.74) !important;
+  box-shadow: 0 20px 45px rgba(51, 7, 9, 0.23), 0 0 0 1px rgba(255, 100, 109, 0.25) !important;
+}
+
+.arcade-page .speedmail-feature-card .arcade-feature-art {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255, 100, 109, 0.34), transparent 38%),
+    linear-gradient(145deg, #230407, #731018) !important;
+  border-color: rgba(255, 100, 109, 0.7) !important;
+}
+
+.arcade-page .speedmail-feature-card .arcade-feature-copy h2,
+.arcade-page .speedmail-feature-card .arcade-feature-copy p {
+  color: #fff0f1 !important;
+}
+
+.arcade-page .speedmail-feature-card .button.primary {
+  background: linear-gradient(180deg, var(--speed-red), #8d111b) !important;
+  border-color: var(--speed-flame) !important;
+  color: #fff8f8 !important;
+}
+
+.alien-body {
+  background: #020802 !important;
+}
+
+body:has(.alien-page) {
+  background: #020802 !important;
+}
+
+.alien-body .game-page {
+  background:
+    radial-gradient(circle at 20% 12%, rgba(120, 255, 50, 0.2), transparent 28%),
+    radial-gradient(circle at 84% 4%, rgba(185, 255, 95, 0.12), transparent 26%),
+    linear-gradient(180deg, #020802 0%, #061908 48%, #0b2f10 100%) !important;
+  color: #eaffdf !important;
+}
+
+.alien-body :where(.game-hero h1, .game-instructions h2, .game-overlay h3) {
+  color: var(--alien-glow) !important;
+  text-shadow: 0 0 18px rgba(120, 255, 50, 0.4) !important;
+}
+
+.alien-body :where(.game-hero p, .game-instructions p, .game-rules span, .game-overlay p, .eyebrow) {
+  color: #dfffcb !important;
+}
+
+.alien-body :where(.flight-actionbar, .space-game-shell, .game-instructions, .game-rules span) {
+  background: rgba(6, 25, 8, 0.9) !important;
+  border-color: rgba(120, 255, 50, 0.58) !important;
+  box-shadow: 0 0 24px rgba(120, 255, 50, 0.12) !important;
+}
+
+.alien-body :where(.flight-actionbar > .hud-tile, .flight-actionbar > .button, .game-audio-toggle, .mobile-keyboard button) {
+  background: linear-gradient(180deg, #123a16, #061908) !important;
+  border-color: rgba(120, 255, 50, 0.62) !important;
+  color: #eaffdf !important;
+}
+
+.alien-body :where(.flight-actionbar > .button.primary, .mobile-keyboard button:active, .mobile-keyboard button.is-hit) {
+  background: linear-gradient(180deg, var(--alien-bright), #46cf22) !important;
+  border-color: var(--alien-glow) !important;
+  color: var(--alien-ink) !important;
+}
+
+.alien-body .game-life-orb {
+  background: var(--alien-bright) !important;
+  color: var(--alien-ink) !important;
+  box-shadow: 0 0 24px rgba(120, 255, 50, 0.42) !important;
+}
+
+.octarun-body .octarun-page {
+  background:
+    radial-gradient(circle at 18% 6%, rgba(99, 172, 229, 0.18), transparent 28%),
+    linear-gradient(180deg, #020816 0%, #03142d 50%, #03396c 100%) !important;
+  padding-bottom: clamp(6rem, 12vh, 10rem) !important;
+}
+
+body:has(.octarun-page) {
+  background: #020816 !important;
+}
+
+.octarun-body :where(.octarun-shell, .octarun-hud, .octarun-stage, .octarun-overlay) {
+  border-color: rgba(99, 172, 229, 0.64) !important;
+  box-shadow: 0 0 28px rgba(99, 172, 229, 0.12) !important;
+}
+
+.octarun-body .octarun-hud,
+.octarun-body :where(.octarun-hud > span, .octarun-hud > button, .octarun-hud-actions > button, .octarun-countdown, .octarun-audio-button) {
+  background: linear-gradient(180deg, #03396c, #03142d) !important;
+  border-color: rgba(99, 172, 229, 0.7) !important;
+  color: #e7eff6 !important;
+}
+
+.octarun-body :where(.octarun-hero h1, .octarun-overlay-title, .octarun-countdown strong) {
+  color: var(--octa-cyan) !important;
+}
+
+.plantlyfe-body {
+  background: #0a170c !important;
+}
+
+body:has(.plantlyfe-page) {
+  background: #0a170c !important;
+}
+
+.plantlyfe-body .plantlyfe-page {
+  background:
+    radial-gradient(circle at 16% 8%, rgba(156, 202, 98, 0.2), transparent 30%),
+    linear-gradient(180deg, #0a170c 0%, #0f2614 52%, #1e4c27 100%) !important;
+}
+
+.plantlyfe-body :where(.plantlyfe-hero h1, .plantlyfe-hud-brand strong) {
+  color: var(--plant-leaf) !important;
+}
+
+.plantlyfe-body :where(.plantlyfe-shell, .plantlyfe-hud, .plantlyfe-stage) {
+  border-color: rgba(156, 202, 98, 0.62) !important;
+  box-shadow: 0 0 26px rgba(156, 202, 98, 0.12) !important;
+}
+
+.plantlyfe-body .plantlyfe-hud,
+.plantlyfe-body :where(.plantlyfe-hud-chip, .plantlyfe-hud-action, .plantlyfe-icon-button) {
+  background: linear-gradient(180deg, #1e4c27, #0f2614) !important;
+  border-color: rgba(156, 202, 98, 0.72) !important;
+  color: #f2ffe6 !important;
+}
+
+.plantlyfe-body :where(.plantlyfe-hud-chip strong, .plantlyfe-hud-action span, .plantlyfe-hud-user span) {
+  color: var(--plant-leaf) !important;
+}
+
+.speedmail-page {
+  background:
+    radial-gradient(circle at 14% 8%, rgba(255, 100, 109, 0.2), transparent 30%),
+    linear-gradient(180deg, #230407 0%, #330709 52%, #731018 100%) !important;
+}
+
+body:has(.speedmail-page) {
+  background: #230407 !important;
+}
+
+.speedmail-page :where(.speedmail-hero h1, .speedmail-hud-brand strong) {
+  color: var(--speed-flame) !important;
+}
+
+.speedmail-page :where(.speedmail-hero p, .speedmail-toolbar-meta, .speedmail-sidebar a, .speedmail-message-preview) {
+  color: #fff0f1 !important;
+}
+
+.speedmail-page :where(.speedmail-shell, .speedmail-hud, .speedmail-commandbar, .speedmail-sidebar, .speedmail-message-list, .speedmail-reply-panel) {
+  border-color: rgba(255, 100, 109, 0.6) !important;
+  box-shadow: 0 0 26px rgba(255, 100, 109, 0.12) !important;
+}
+
+.speedmail-page .speedmail-hud,
+.speedmail-page .speedmail-commandbar,
+.speedmail-page :where(.speedmail-hud button, .speedmail-commandbar button, .speedmail-compose-button, .speedmail-fullscreen-button) {
+  background: linear-gradient(180deg, #731018, #330709) !important;
+  border-color: rgba(255, 100, 109, 0.72) !important;
+  color: #fff8f8 !important;
+}
+
+.speedmail-page :where(.speedmail-compose-button, .speedmail-sidebar a[aria-current="page"], .speedmail-message-list button.is-active) {
+  background: linear-gradient(180deg, var(--speed-red), #8d111b) !important;
+  border-color: var(--speed-flame) !important;
+  color: #fff8f8 !important;
+}
+
+/* Speedmail legibility pass: keep red identity, restore readable mail surfaces. */
+.speedmail-page.speedmail-page {
+  background:
+    radial-gradient(circle at 18% 8%, rgba(255, 100, 109, 0.2), transparent 30%),
+    linear-gradient(180deg, #2b0609 0%, #4e0b11 38%, #7b121b 100%) !important;
+  color: #1d2630 !important;
+}
+
+.speedmail-page .speedmail-hero h1 {
+  color: #ff7880 !important;
+  text-shadow: 0 3px 18px rgba(20, 0, 3, 0.28) !important;
+}
+
+.speedmail-page .speedmail-hero p {
+  color: #fff7f7 !important;
+  text-shadow: 0 1px 8px rgba(20, 0, 3, 0.3) !important;
+}
+
+.speedmail-page .speedmail-shell {
+  background: #f8fbff !important;
+  border-color: rgba(255, 170, 176, 0.92) !important;
+  box-shadow: 0 24px 70px rgba(35, 4, 7, 0.32) !important;
+}
+
+.speedmail-page .speedmail-hud {
+  background: linear-gradient(180deg, #91131d, #650c14) !important;
+  border-color: rgba(255, 174, 180, 0.78) !important;
+  color: #fff7f7 !important;
+}
+
+.speedmail-page .speedmail-hud-brand,
+.speedmail-page .speedmail-hud-brand strong,
+.speedmail-page .speedmail-toolbar-meta,
+.speedmail-page .speedmail-toolbar-meta span {
+  color: #fff7f7 !important;
+}
+
+.speedmail-page .speedmail-menu-icon::before {
+  background: #fff7f7 !important;
+  box-shadow: 0 7px 0 #fff7f7, 0 14px 0 #fff7f7 !important;
+}
+
+.speedmail-page .speedmail-search {
+  background: #fff4f5 !important;
+  border: 1px solid rgba(255, 174, 180, 0.8) !important;
+  color: #2b0609 !important;
+}
+
+.speedmail-page .speedmail-search input {
+  color: #2b0609 !important;
+}
+
+.speedmail-page .speedmail-search input::placeholder {
+  color: #7b3e43 !important;
+}
+
+.speedmail-page .speedmail-search span::before {
+  border-color: #8d111b !important;
+}
+
+.speedmail-page .speedmail-search span::after {
+  background: #8d111b !important;
+}
+
+.speedmail-page .speedmail-commandbar {
+  background: #fff6f7 !important;
+  border-color: #f2c2c6 !important;
+  box-shadow: none !important;
+}
+
+.speedmail-page .speedmail-commandbar button {
+  background: transparent !important;
+  border-color: transparent !important;
+  color: #7b121b !important;
+}
+
+.speedmail-page .speedmail-commandbar button:hover,
+.speedmail-page .speedmail-commandbar button:focus-visible {
+  background: #f9dde0 !important;
+  color: #330709 !important;
+}
+
+.speedmail-page .speedmail-grid,
+.speedmail-page .speedmail-sidebar,
+.speedmail-page .speedmail-inbox,
+.speedmail-page .speedmail-reader,
+.speedmail-page .speedmail-message-list,
+.speedmail-page .speedmail-reply-panel {
+  box-shadow: none !important;
+}
+
+.speedmail-page .speedmail-sidebar {
+  background: #fff8f8 !important;
+  border-color: #f0c5c9 !important;
+}
+
+.speedmail-page .speedmail-sidebar a {
+  background: transparent !important;
+  border-color: transparent !important;
+  color: #5c2228 !important;
+}
+
+.speedmail-page .speedmail-sidebar a strong {
+  color: #7b121b !important;
+}
+
+.speedmail-page .speedmail-sidebar a[aria-current="page"],
+.speedmail-page .speedmail-compose-button {
+  background: linear-gradient(180deg, #d82636, #a91522) !important;
+  border-color: #ff9ca4 !important;
+  color: #ffffff !important;
+}
+
+.speedmail-page .speedmail-inbox-header,
+.speedmail-page .speedmail-reader {
+  background: #f7fbff !important;
+}
+
+.speedmail-page .speedmail-folder,
+.speedmail-page .speedmail-message-list button strong,
+.speedmail-page .speedmail-message-list button p,
+.speedmail-page .speedmail-message-list button b,
+.speedmail-page .speedmail-open-message p,
+.speedmail-page .speedmail-editor-label,
+.speedmail-page .speedmail-prompt span,
+.speedmail-page .speedmail-draft-stats span {
+  color: #4a555f !important;
+}
+
+.speedmail-page .speedmail-message-list button {
+  background: #f8fbff !important;
+  border-color: #e4edf6 !important;
+  color: #24313d !important;
+}
+
+.speedmail-page .speedmail-message-list button:hover,
+.speedmail-page .speedmail-message-list button:focus-visible {
+  background: #fff1f2 !important;
+}
+
+.speedmail-page .speedmail-message-list button.is-active {
+  background: #fff0f2 !important;
+  box-shadow: inset 4px 0 0 #cf2432 !important;
+}
+
+.speedmail-page .speedmail-message-list button.is-active strong,
+.speedmail-page .speedmail-message-list button.is-active p,
+.speedmail-page .speedmail-message-list button.is-active b {
+  color: #7b121b !important;
+}
+
+.speedmail-page .speedmail-message-list i {
+  color: #65727d !important;
+}
+
+.speedmail-page .speedmail-open-message,
+.speedmail-page .speedmail-prompt,
+.speedmail-page .speedmail-reply-panel,
+.speedmail-page .speedmail-draft-stats,
+.speedmail-page textarea {
+  background: #ffffff !important;
+  border-color: #e2ebf3 !important;
+  color: #1d2630 !important;
+}
+
+.speedmail-page .speedmail-message-head h2 {
+  color: #03396c !important;
+}
+
+.speedmail-page .speedmail-prompt p {
+  color: #1d2630 !important;
+}
+
+.speedmail-page .speedmail-draft-stats strong {
+  color: #330709 !important;
+}
+
+.speedmail-page .speedmail-progress {
+  background: #f3d7da !important;
+}
+
+.speedmail-page .speedmail-progress i {
+  background: linear-gradient(90deg, #cf2432, #ff646d) !important;
+}
+
+/* Plant Lyfe page chrome: keep the outer bars in the game palette. */
+html:has(body.plantlyfe-body),
+html:has(.plantlyfe-page),
+body.plantlyfe-body,
+body:has(.plantlyfe-page) {
+  background:
+    radial-gradient(circle at 22% 10%, rgba(156, 202, 98, 0.14), transparent 28%),
+    linear-gradient(180deg, #0a170c 0%, #081208 58%, #040904 100%) !important;
+}
+
+body.plantlyfe-body .plantlyfe-page.arcade-page {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+body.plantlyfe-body .site-header {
+  background:
+    linear-gradient(180deg, rgba(76, 126, 51, 0.98), rgba(27, 64, 31, 0.98)) !important;
+  border-bottom-color: rgba(156, 202, 98, 0.42) !important;
+  box-shadow: 0 1px 0 rgba(242, 255, 230, 0.12), 0 12px 28px rgba(4, 9, 4, 0.22) !important;
+}
+
+body.plantlyfe-body .primary-nav .home-link,
+body.plantlyfe-body .primary-nav .home-link:visited {
+  color: #f2ffe6 !important;
+}
+
+body.plantlyfe-body .primary-nav .home-link:hover,
+body.plantlyfe-body .primary-nav .home-link:focus-visible,
+body.plantlyfe-body .primary-nav .home-link[aria-current="page"] {
+  color: #9cca62 !important;
+}
+
+body.plantlyfe-body .site-footer {
+  background: linear-gradient(180deg, #0f2614, #081208) !important;
+  border-top-color: rgba(156, 202, 98, 0.42) !important;
+  color: #f2ffe6 !important;
+}
+
+body.plantlyfe-body .site-footer p {
+  color: #dfeecb !important;
+}
+
+/* Arcade page cleanup */
+.arcade-page .arcade-dock {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
 }

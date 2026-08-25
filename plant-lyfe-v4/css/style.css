@@ -210,6 +210,31 @@ header {
 }
 .btn-logout:hover { border-color: var(--rust2); color: var(--rust2); }
 
+/* Embedded arcade color pass */
+body.plantlyfe-outer-hud header,
+body.plantlyfe-outer-hud .hud,
+body.plantlyfe-outer-hud .hud-chip,
+body.plantlyfe-outer-hud .rep-bar-outer,
+body.plantlyfe-outer-hud .btn-logout,
+html.plantlyfe-outer-hud header,
+html.plantlyfe-outer-hud .hud,
+html.plantlyfe-outer-hud .hud-chip,
+html.plantlyfe-outer-hud .rep-bar-outer,
+html.plantlyfe-outer-hud .btn-logout {
+  background: linear-gradient(180deg, #1e4c27, #0f2614) !important;
+  border-color: rgba(156, 202, 98, 0.78) !important;
+  color: #f2ffe6 !important;
+}
+
+body.plantlyfe-outer-hud .logo,
+body.plantlyfe-outer-hud .hud-val,
+body.plantlyfe-outer-hud .hud-user,
+html.plantlyfe-outer-hud .logo,
+html.plantlyfe-outer-hud .hud-val,
+html.plantlyfe-outer-hud .hud-user {
+  color: #9cca62 !important;
+}
+
 /* ─── Shared labels ──────────────────────────────────────────── */
 .sec-label {
   font-size: 5px;
