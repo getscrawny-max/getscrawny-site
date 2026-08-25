@@ -12325,3 +12325,70 @@ body.plantlyfe-body .site-footer p {
       #adcbe3 !important;
   }
 }
+
+/* Full hero image rendering across browsers. */
+.home-page .hero {
+  position: relative !important;
+  min-height: max(560px, 56.25vw) !important;
+  background:
+    linear-gradient(180deg, rgba(173, 203, 227, 0) 0 72%, #adcbe3 100%),
+    linear-gradient(90deg, rgba(231, 239, 246, 0.82) 0 39%, rgba(173, 203, 227, 0.34) 60%, rgba(173, 203, 227, 0.02) 100%),
+    #adcbe3 !important;
+  isolation: isolate;
+}
+
+.home-hero-image {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: none;
+  object-fit: contain;
+  object-position: right bottom;
+  pointer-events: none;
+  user-select: none;
+}
+
+.home-page .hero-copy {
+  position: relative;
+  z-index: 1;
+}
+
+.lessons-page .library-image-hero {
+  display: block !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  background: #adcbe3 !important;
+}
+
+.lessons-page .library-image-hero .library-hero-inner {
+  display: none !important;
+}
+
+.library-hero-image {
+  display: block !important;
+  width: 100%;
+  height: auto;
+  max-width: none;
+  object-fit: contain;
+}
+
+@media (min-width: 1800px) {
+  .home-page .hero {
+    min-height: 56.25vw !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .home-page .hero {
+    min-height: max(560px, 56.25vw) !important;
+  }
+
+  .home-hero-image {
+    object-position: center bottom;
+  }
+}
