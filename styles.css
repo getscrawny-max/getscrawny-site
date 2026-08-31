@@ -1458,6 +1458,13 @@ h3 {
   list-style: none;
 }
 
+.philosophy-list > p {
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-size: var(--body-medium);
+  font-weight: 800;
+}
+
 .check-list li {
   position: relative;
   min-height: 58px;
@@ -1466,16 +1473,18 @@ h3 {
   padding: 14px 18px 14px 52px;
   background: var(--soft-card);
   border: 1px solid rgba(95, 120, 140, 0.22);
+  border-radius: 8px;
 }
 
 .check-list li::before {
   position: absolute;
-  left: 18px;
-  width: 18px;
-  height: 18px;
+  left: 16px;
+  width: 24px;
+  height: 24px;
   content: "";
-  border: 2px solid var(--accent);
-  background: linear-gradient(135deg, transparent 45%, var(--accent) 46% 70%, transparent 71%);
+  background: var(--accent);
+  -webkit-mask: url("assets/checkmark.png") center / contain no-repeat;
+  mask: url("assets/checkmark.png") center / contain no-repeat;
 }
 
 .method {
