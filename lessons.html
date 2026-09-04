@@ -8,8 +8,8 @@
       name="description"
       content="Scrawny's Library hosts Speller's Method and S2C lesson templates from Get Scrawny."
     >
-    <link rel="preload" href="styles.css?v=hero-full-image-1" as="style">
-    <link rel="stylesheet" href="styles.css?v=hero-full-image-1">
+    <link rel="preload" href="styles.css?v=library-youtube-001-1" as="style">
+    <link rel="stylesheet" href="styles.css?v=library-youtube-001-1">
   </head>
   <body>
     <header class="site-header" data-header>
@@ -44,10 +44,58 @@
           </p>
         </div>
 
-        <div class="lesson-placeholder" aria-label="Library lessons coming soon">
-          <img src="assets/library_logo.PNG" alt="" aria-hidden="true">
-          <p>New lessons are coming soon.</p>
-          <p>Stories and video links will be added here after release.</p>
+        <div class="lesson-toolbar" aria-label="Search library lessons">
+          <label>
+            Sort lessons
+            <select data-lesson-sort>
+              <option value="date-desc">Date Added - Newest First</option>
+              <option value="date-asc">Date Added - Oldest First</option>
+              <option value="alpha-asc">Title - A to Z</option>
+              <option value="pages-asc">Pages - Fewest First</option>
+              <option value="pages-desc">Pages - Most First</option>
+            </select>
+          </label>
+          <label>
+            Search titles or hashtags
+            <input data-lesson-search type="search" placeholder="water polo, #sports, #movement">
+          </label>
+          <button class="button primary submit-library" type="button" data-lesson-submit>Submit</button>
+          <button class="button secondary clear-library" type="button" data-lesson-clear>Clear</button>
+        </div>
+
+        <section class="hashtag-bank" aria-label="Browse lessons by topic">
+          <div>
+            <p>Browse by topic.</p>
+            <button class="button secondary clear-library" type="button" data-tag-clear>Clear selection</button>
+          </div>
+          <div class="hashtag-filter" data-hashtag-filter></div>
+        </section>
+
+        <p class="lesson-count" data-lesson-count>1 lesson showing</p>
+
+        <div class="lesson-map single-lesson-map" data-lesson-map aria-label="Library lessons">
+          <article class="lesson-card library-lesson-card" data-lesson-card data-title="Lesson 001: Water Polo" data-tags="lesson-001,water-polo,sports,movement,coordination,communication" data-added="2026-09-04" data-pages="9">
+            <a class="pdf-preview pdf-preview-image lesson-pdf-preview" href="assets/lessons/Lesson%20001%20Water%20Polo.pdf" aria-label="Open Lesson 001: Water Polo PDF">
+              <img src="assets/lessons/Lesson%20001%20Water%20Polo%20Thumbnail.png" alt="">
+              <span>PDF</span>
+            </a>
+            <p class="lesson-type">Lesson 001</p>
+            <h2>Lesson 001: Water Polo</h2>
+            <p class="lesson-meta">9 pages</p>
+            <div class="lesson-tags" aria-label="Lesson tags">
+              <span>#water-polo</span>
+              <span>#sports</span>
+              <span>#movement</span>
+              <span>#coordination</span>
+              <span>#communication</span>
+            </div>
+            <div class="lesson-actions" aria-label="Lesson links">
+              <a class="lesson-pdf-link" href="assets/lessons/Lesson%20001%20Water%20Polo.pdf">Open lesson PDF</a>
+              <a class="youtube-lesson-link" href="https://youtu.be/RruCYEb-5Nw" target="_blank" rel="noopener" aria-label="Watch Lesson 001: Water Polo on YouTube">
+                <img src="assets/lessons/YouTubeButton.png" alt="YouTube">
+              </a>
+            </div>
+          </article>
         </div>
       </section>
     </main>
@@ -57,6 +105,6 @@
       <p>Scrawny's Library for Speller's Method / S2C lessons.</p>
     </footer>
 
-    <script src="script.js?v=arcade-dark-only-1"></script>
+    <script src="script.js?v=library-live-001-1"></script>
   </body>
 </html>
