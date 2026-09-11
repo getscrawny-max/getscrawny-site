@@ -208,7 +208,7 @@ const clearLibraryFilters = ({ resetSort = false } = {}) => {
   activeTag = "";
   submittedTerms = [];
   if (lessonSearch) lessonSearch.value = "";
-  if (resetSort && lessonSort) lessonSort.value = "date-desc";
+  if (resetSort && lessonSort) lessonSort.value = "date-asc";
   syncLibrary();
 };
 
@@ -216,7 +216,7 @@ const syncLibrary = () => {
   if (!lessonMap || !lessonCards.length) return;
 
   const searchTerms = submittedTerms;
-  const sortMode = lessonSort ? lessonSort.value : "date-desc";
+  const sortMode = lessonSort ? lessonSort.value : "date-asc";
   const isFiltered = Boolean(activeTag || searchTerms.length);
   let visibleCount = 0;
 
