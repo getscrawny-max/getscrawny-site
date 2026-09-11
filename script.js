@@ -222,7 +222,7 @@ const syncLibrary = () => {
 
   const cardMatches = (card) => {
     const tags = getLessonTags(card);
-    const searchable = [card.dataset.title || "", ...tags].join(" ").toLowerCase();
+    const searchable = [card.dataset.title || "", card.dataset.keywords || "", ...tags].join(" ").toLowerCase();
     const matchesSearch = !searchTerms.length || searchTerms.some((term) => searchable.includes(term));
     const matchesTag = !activeTag || tags.includes(activeTag);
 
