@@ -195,6 +195,32 @@ const getLessonTags = (card) =>
     .map(normalizeTag)
     .filter(Boolean);
 
+const formatLessonTag = (tag) => `#${tag}`;
+
+const toggleLibraryTag = (tag) => {
+  activeTag = activeTag === tag ? "" : tag;
+  syncLibrary();
+};
+
+const createLessonTagButton = (tag) => {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.dataset.tag = tag;
+  button.textContent = formatLessonTag(tag);
+  button.addEventListener("click", () => toggleLibraryTag(tag));
+  return button;
+};
+
+const renderLessonCardTags = (card) => {
+  const tagList = card.querySelector(".lesson-tags");
+  if (!tagList) return;
+
+  tagList.textContent = "";
+  getLessonTags(card).forEach((tag) => {
+    tagList.append(createLessonTagButton(tag));
+  });
+};
+
 const readSearchTerms = () => {
   if (!lessonSearch) return [];
   return lessonSearch.value
@@ -278,22 +304,22 @@ const syncLibrary = () => {
       button.classList.toggle("is-active", button.dataset.tag === activeTag);
     });
   }
+
+  lessonCards.forEach((card) => {
+    card.querySelectorAll(".lesson-tags button").forEach((button) => {
+      button.classList.toggle("is-active", button.dataset.tag === activeTag);
+    });
+  });
 };
 
 if (lessonMap && lessonCards.length) {
+  lessonCards.forEach(renderLessonCardTags);
+
   const tags = [...new Set(lessonCards.flatMap(getLessonTags))].sort();
 
   if (hashtagFilter) {
     tags.forEach((tag) => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.dataset.tag = tag;
-      button.textContent = `#${tag}`;
-      button.addEventListener("click", () => {
-        activeTag = activeTag === tag ? "" : tag;
-        syncLibrary();
-      });
-      hashtagFilter.append(button);
+      hashtagFilter.append(createLessonTagButton(tag));
     });
   }
 

@@ -1136,12 +1136,14 @@ h3 {
 }
 
 .hashtag-filter button,
-.lesson-tags span {
+.lesson-tags :is(span, button) {
   display: inline-flex;
   align-items: center;
   min-height: 30px;
   padding: 5px 9px;
   color: var(--library-ink);
+  font: inherit;
+  appearance: none;
   background: transparent;
   border: 1px solid var(--library-border);
   border-radius: 999px;
@@ -1149,13 +1151,17 @@ h3 {
   font-weight: 800;
 }
 
-.hashtag-filter button {
+.hashtag-filter button,
+.lesson-tags button {
   cursor: pointer;
 }
 
 .hashtag-filter button.is-active,
 .hashtag-filter button:hover,
-.hashtag-filter button:focus-visible {
+.hashtag-filter button:focus-visible,
+.lesson-tags button.is-active,
+.lesson-tags button:hover,
+.lesson-tags button:focus-visible {
   color: var(--black);
   background: var(--accent);
   border-color: var(--accent);
@@ -1395,7 +1401,7 @@ h3 {
   margin-top: 14px;
 }
 
-.lesson-tags span {
+.lesson-tags :is(span, button) {
   min-height: 28px;
   color: var(--accent-dark);
   font-size: 0.72rem;
@@ -1423,8 +1429,8 @@ h3 {
 .library-lesson-card h2 {
   margin: 0;
   color: var(--color-darkest);
-  font-size: clamp(1.9rem, 5vw, 3rem);
-  line-height: 1.05;
+  font-size: clamp(1.45rem, 3.3vw, 2.2rem);
+  line-height: 1.08;
 }
 
 .lesson-pdf-preview {
@@ -11815,7 +11821,7 @@ body:has(.home-page),
   }
 
   .hashtag-filter button,
-  .lesson-tags span {
+  .lesson-tags :is(span, button) {
     font-size: 0.95rem;
     line-height: 1.15;
     white-space: normal;
@@ -12548,7 +12554,7 @@ body.plantlyfe-body .site-footer p {
 }
 
 .lessons-page .hashtag-filter button,
-.lessons-page .lesson-tags span {
+.lessons-page .lesson-tags :is(span, button) {
   color: var(--color-darkest);
   background: rgba(var(--color-lightest-rgb), 0.54);
   border-color: rgba(var(--color-dark-rgb), 0.24);
@@ -12556,7 +12562,10 @@ body.plantlyfe-body .site-footer p {
 
 .lessons-page .hashtag-filter button.is-active,
 .lessons-page .hashtag-filter button:hover,
-.lessons-page .hashtag-filter button:focus-visible {
+.lessons-page .hashtag-filter button:focus-visible,
+.lessons-page .lesson-tags button.is-active,
+.lessons-page .lesson-tags button:hover,
+.lessons-page .lesson-tags button:focus-visible {
   color: var(--color-lightest);
   background: var(--color-dark);
   border-color: var(--color-dark);
@@ -12567,7 +12576,7 @@ body.plantlyfe-body .site-footer p {
 }
 
 .lessons-page .library-lesson-map {
-  grid-template-columns: repeat(2, minmax(0, 520px));
+  grid-template-columns: repeat(3, minmax(0, 380px));
   justify-content: center;
 }
 
@@ -12618,7 +12627,17 @@ body.plantlyfe-body .site-footer p {
   flex: 0 0 auto;
 }
 
+@media (max-width: 1120px) {
+  .lessons-page .library-lesson-map {
+    grid-template-columns: repeat(2, minmax(0, 440px));
+  }
+}
+
 @media (max-width: 760px) {
+  .lessons-page .library-lesson-map {
+    grid-template-columns: 1fr;
+  }
+
   .lessons-page .lesson-toolbar,
   .lessons-page .hashtag-bank {
     grid-template-columns: 1fr;
