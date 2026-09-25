@@ -195,6 +195,67 @@ const getLessonTags = (card) =>
     .map(normalizeTag)
     .filter(Boolean);
 
+const normalizeSearchText = (value) =>
+  String(value || "")
+    .toLowerCase()
+    .replace(/[’']/g, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+
+const relevanceAliases = {
+  sport: ["sport", "sports", "football", "soccer", "athlete", "athletes"],
+  sports: ["sport", "sports", "football", "soccer", "athlete", "athletes"],
+  soccer: ["soccer", "football"],
+  football: ["football", "soccer"],
+  athlete: ["athlete", "athletes", "sport", "sports"],
+  athletes: ["athlete", "athletes", "sport", "sports"],
+  city: ["city", "manchester city", "man city"],
+  sd: ["sd", "san diego"],
+  disney: ["disney", "stitch", "lilo"],
+  travel: ["travel", "places", "restaurants", "san diego"],
+};
+
+const expandSearchTerm = (term) => relevanceAliases[term] || [term];
+
+const getLessonSearchParts = (card) => {
+  const tags = getLessonTags(card);
+  return {
+    title: normalizeSearchText(card.dataset.title),
+    keywords: normalizeSearchText(card.dataset.keywords),
+    tags,
+    tagText: normalizeSearchText(tags.join(" ")),
+  };
+};
+
+const getLessonTermScore = (parts, term) => {
+  let termScore = 0;
+
+  const wholeLesson = [parts.title, parts.keywords, parts.tagText].join(" ");
+
+  if (parts.title.includes(term)) termScore += 10;
+  if (parts.tags.some((tag) => normalizeSearchText(tag) === term)) termScore += 8;
+  if (parts.tagText.includes(term)) termScore += 5;
+  if (parts.keywords.includes(term)) termScore += 3;
+  if (wholeLesson.includes(term)) termScore += 1;
+
+  return termScore;
+};
+
+const getLessonRelevance = (card, searchGroups) => {
+  if (!searchGroups.length) return 0;
+
+  const parts = getLessonSearchParts(card);
+  let score = 0;
+
+  for (const group of searchGroups) {
+    const groupScore = Math.max(...group.map((term) => getLessonTermScore(parts, term)));
+    if (groupScore <= 0) return 0;
+    score += groupScore;
+  }
+
+  return score;
+};
+
 const formatLessonTag = (tag) => `#${tag}`;
 
 const toggleLibraryTag = (tag) => {
@@ -223,33 +284,34 @@ const renderLessonCardTags = (card) => {
 
 const readSearchTerms = () => {
   if (!lessonSearch) return [];
-  return lessonSearch.value
+  const terms = lessonSearch.value
     .replace(/#/g, " #")
     .split(/[,\s]+/)
-    .map(normalizeTag)
+    .map((term) => normalizeSearchText(normalizeTag(term)))
     .filter((term) => term.length > 1);
+
+  return terms.map((term) => [...new Set(expandSearchTerm(term).map(normalizeSearchText).filter(Boolean))]);
 };
 
 const clearLibraryFilters = ({ resetSort = false } = {}) => {
   activeTag = "";
   submittedTerms = [];
   if (lessonSearch) lessonSearch.value = "";
-  if (resetSort && lessonSort) lessonSort.value = "date-asc";
+  if (resetSort && lessonSort) lessonSort.value = "date-desc";
   syncLibrary();
 };
 
 const syncLibrary = () => {
   if (!lessonMap || !lessonCards.length) return;
 
-  const searchTerms = submittedTerms;
-  const sortMode = lessonSort ? lessonSort.value : "date-asc";
-  const isFiltered = Boolean(activeTag || searchTerms.length);
+  const searchGroups = submittedTerms;
+  const sortMode = lessonSort ? lessonSort.value : "date-desc";
+  const isFiltered = Boolean(activeTag || searchGroups.length);
   let visibleCount = 0;
 
   const cardMatches = (card) => {
     const tags = getLessonTags(card);
-    const searchable = [card.dataset.title || "", card.dataset.keywords || "", ...tags].join(" ").toLowerCase();
-    const matchesSearch = !searchTerms.length || searchTerms.some((term) => searchable.includes(term));
+    const matchesSearch = !searchGroups.length || getLessonRelevance(card, searchGroups) > 0;
     const matchesTag = !activeTag || tags.includes(activeTag);
 
     return matchesSearch && matchesTag;
@@ -277,6 +339,9 @@ const syncLibrary = () => {
 
   const sortedCards = [...lessonCards].sort((a, b) => {
     if (isFiltered) {
+      const relevanceRank = getLessonRelevance(b, searchGroups) - getLessonRelevance(a, searchGroups);
+      if (relevanceRank !== 0) return relevanceRank;
+
       const matchRank = Number(cardMatches(b)) - Number(cardMatches(a));
       if (matchRank !== 0) return matchRank;
     }
@@ -296,7 +361,7 @@ const syncLibrary = () => {
   if (lessonCount) {
     const totalCount = lessonCards.length;
     const noun = totalCount === 1 ? "lesson" : "lessons";
-    lessonCount.textContent = isFiltered ? `${visibleCount}/${totalCount} matching ${noun}` : `${visibleCount}/${totalCount} ${noun} showing`;
+    lessonCount.textContent = isFiltered ? `${visibleCount}/${totalCount} relevant ${noun}` : `${visibleCount}/${totalCount} ${noun} showing`;
   }
 
   if (hashtagFilter) {
@@ -336,6 +401,11 @@ if (lessonMap && lessonCards.length) {
       submittedTerms = readSearchTerms();
       syncLibrary();
     }
+  });
+  lessonSearch?.addEventListener("input", () => {
+    activeTag = "";
+    submittedTerms = readSearchTerms();
+    syncLibrary();
   });
   lessonClear?.addEventListener("click", () => {
     clearLibraryFilters({ resetSort: true });
