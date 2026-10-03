@@ -202,6 +202,13 @@ const normalizeSearchText = (value) =>
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
 
+const escapeSearchPattern = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const includesSearchTerm = (text, term) => {
+  if (!text || !term) return false;
+  return new RegExp(`(^|\\s)${escapeSearchPattern(term)}(?=\\s|$)`).test(text);
+};
+
 const relevanceAliases = {
   sport: ["sport", "sports", "football", "soccer", "athlete", "athletes"],
   sports: ["sport", "sports", "football", "soccer", "athlete", "athletes"],
@@ -209,10 +216,16 @@ const relevanceAliases = {
   football: ["football", "soccer"],
   athlete: ["athlete", "athletes", "sport", "sports"],
   athletes: ["athlete", "athletes", "sport", "sports"],
+  camp: ["camp", "camping", "campsite", "tent", "outdoors"],
+  camping: ["camping", "camp", "campsite", "tent", "glamping", "outdoors", "wilderness"],
+  outdoors: ["outdoors", "outdoor", "nature", "wilderness", "environment", "camping"],
+  nature: ["nature", "outdoors", "outdoor", "environment", "wilderness", "ecology"],
+  vacation: ["vacation", "trip", "travel", "resort", "camping", "glamping"],
+  luxury: ["luxury", "glamping", "resort", "amenities", "concierge"],
   city: ["city", "manchester city", "man city"],
   sd: ["sd", "san diego"],
   disney: ["disney", "stitch", "lilo"],
-  travel: ["travel", "places", "restaurants", "san diego"],
+  travel: ["travel", "trip", "places", "restaurants", "san diego", "camping", "glamping"],
 };
 
 const expandSearchTerm = (term) => relevanceAliases[term] || [term];
@@ -232,11 +245,11 @@ const getLessonTermScore = (parts, term) => {
 
   const wholeLesson = [parts.title, parts.keywords, parts.tagText].join(" ");
 
-  if (parts.title.includes(term)) termScore += 10;
+  if (includesSearchTerm(parts.title, term)) termScore += 10;
   if (parts.tags.some((tag) => normalizeSearchText(tag) === term)) termScore += 8;
-  if (parts.tagText.includes(term)) termScore += 5;
-  if (parts.keywords.includes(term)) termScore += 3;
-  if (wholeLesson.includes(term)) termScore += 1;
+  if (includesSearchTerm(parts.tagText, term)) termScore += 5;
+  if (includesSearchTerm(parts.keywords, term)) termScore += 3;
+  if (includesSearchTerm(wholeLesson, term)) termScore += 1;
 
   return termScore;
 };
