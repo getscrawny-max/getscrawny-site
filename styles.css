@@ -11381,11 +11381,13 @@ body:has(.muscle-map-page) .site-header .site-nav a[aria-current="page"] {
 
 .site-header .brand-logo {
   display: block;
-  width: clamp(170px, 22vw, 292px);
+  width: clamp(210px, 28vw, 360px);
   height: auto;
-  max-width: clamp(170px, 22vw, 292px);
+  max-width: clamp(210px, 28vw, 360px);
   max-height: 62px;
   object-fit: contain;
+  transform: scale(1.08);
+  transform-origin: left center;
 }
 
 .theme-toggle {
@@ -11755,9 +11757,10 @@ body:has(.home-page),
   }
 
   .site-header .brand-logo {
-    width: clamp(106px, 30vw, 142px) !important;
-    max-width: clamp(106px, 30vw, 142px) !important;
+    width: clamp(132px, 38vw, 178px) !important;
+    max-width: clamp(132px, 38vw, 178px) !important;
     max-height: 44px !important;
+    transform: scale(1.08);
   }
 
   .site-header .primary-nav {
