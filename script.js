@@ -1,5 +1,3 @@
-const form = document.querySelector("[data-contact-form]");
-const formNote = document.querySelector("[data-form-note]");
 const lessonMap = document.querySelector("[data-lesson-map]");
 const lessonCards = Array.from(document.querySelectorAll("[data-lesson-card]"));
 const lessonSort = document.querySelector("[data-lesson-sort]");
@@ -855,33 +853,6 @@ if (speedmailApp) {
   syncSpeedmailQueueCount();
   loadSpeedmailMessage(0);
   syncFullscreenButton();
-}
-
-if (form && formNote) {
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const formData = new FormData(form);
-    const name = String(formData.get("name") || "").trim();
-    const email = String(formData.get("email") || "").trim();
-    const phone = String(formData.get("phone") || "").trim();
-    const relationship = String(formData.get("relationship") || "").trim();
-    const message = String(formData.get("message") || "").trim();
-    const subjectName = name || "Get Scrawny inquiry";
-    const body = [
-      "New Get Scrawny inquiry",
-      "",
-      "Name: " + name,
-      "Email: " + email,
-      "Phone: " + phone,
-      "Reaching out as: " + relationship,
-      "",
-      "Message:",
-      message,
-    ].join("\n");
-    const mailto = "mailto:getscrawny@gmail.com?subject=" + encodeURIComponent("Get Scrawny inquiry from " + subjectName) + "&body=" + encodeURIComponent(body);
-    formNote.textContent = "Opening your email app with a formatted inquiry.";
-    window.location.href = mailto;
-  });
 }
 
 const gameCanvas = document.querySelector("[data-game-canvas]");

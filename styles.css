@@ -12804,3 +12804,32 @@ body.plantlyfe-body .site-footer p {
     flex: 1 1 120px;
   }
 }
+
+/* SimplePractice contact form widget */
+.home-page .simplepractice-contact {
+  min-width: 0;
+  gap: 18px;
+}
+
+.simplepractice-contact h3,
+.simplepractice-contact p {
+  margin: 0;
+}
+
+.simplepractice-contact .spwidget-button-wrapper {
+  text-align: center;
+}
+
+.simplepractice-contact .spwidget-button {
+  width: 100%;
+}
+
+.simplepractice-contact-fallback {
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.simplepractice-contact-fallback a {
+  color: inherit;
+  text-underline-offset: 0.2em;
+}
