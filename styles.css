@@ -12965,3 +12965,12 @@ body.plantlyfe-body .site-footer p {
     box-shadow: none;
   }
 }
+
+.lessons-page .lesson-actions .youtube-lesson-link:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.lessons-page .lesson-actions .youtube-lesson-link:disabled .lesson-video-icon {
+  color: var(--color-dark);
+}

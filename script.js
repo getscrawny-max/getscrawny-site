@@ -228,8 +228,21 @@ const relevanceAliases = {
   physical: ["physical", "vinyl", "cassette", "cd", "dvd", "blu ray", "paperback"],
   copyright: ["copyright", "rights", "licensing", "license"],
   music: ["music", "album", "vinyl", "cassette", "cd", "spotify"],
-  movie: ["movie", "movies", "dvd", "blu ray", "streaming", "netflix"],
-  movies: ["movie", "movies", "dvd", "blu ray", "streaming", "netflix"],
+  movie: ["movie", "movies", "film", "films", "cinema", "dvd", "blu ray", "streaming", "netflix"],
+  movies: ["movie", "movies", "film", "films", "cinema", "dvd", "blu ray", "streaming", "netflix"],
+  film: ["film", "films", "movie", "movies", "cinema"],
+  films: ["film", "films", "movie", "movies", "cinema"],
+  cinema: ["cinema", "film", "films", "movie", "movies"],
+  actor: ["actor", "actors", "performer", "performers"],
+  actors: ["actor", "actors", "performer", "performers"],
+  extra: ["extra", "extras", "background actor", "background actors"],
+  extras: ["extra", "extras", "background actor", "background actors"],
+  tv: ["tv", "television"],
+  television: ["television", "tv"],
+  costume: ["costume", "costumes", "wardrobe"],
+  costumes: ["costume", "costumes", "wardrobe"],
+  spy: ["spy", "spies", "spying", "espionage"],
+  spies: ["spy", "spies", "spying", "espionage"],
   book: ["book", "books", "ebook", "audiobook", "kindle", "paperback"],
   books: ["book", "books", "ebook", "audiobook", "kindle", "paperback"],
   ai: ["ai", "artificial intelligence", "anthropic", "claude", "digitization"],
@@ -248,6 +261,7 @@ const getLessonSearchParts = (card) => {
   return {
     title: normalizeSearchText(card.dataset.title),
     keywords: normalizeSearchText(card.dataset.keywords),
+    content: normalizeSearchText(card.dataset.searchText),
     tags,
     tagText: normalizeSearchText(tags.join(" ")),
   };
@@ -262,6 +276,7 @@ const getLessonTermScore = (parts, term) => {
   if (parts.tags.some((tag) => normalizeSearchText(tag) === term)) termScore += 8;
   if (includesSearchTerm(parts.tagText, term)) termScore += 5;
   if (includesSearchTerm(parts.keywords, term)) termScore += 3;
+  if (includesSearchTerm(parts.content, term)) termScore += 1;
   if (includesSearchTerm(wholeLesson, term)) termScore += 1;
 
   return termScore;
@@ -311,10 +326,17 @@ const renderLessonCardTags = (card) => {
 const readSearchTerms = () => {
   if (!lessonSearch) return [];
   const terms = lessonSearch.value
+    .replace(/^\s*#?(\d{1,3})\s*$/, (query, number) => {
+      const lessonNumber = number.padStart(3, "0");
+      return lessonCards.some((card) => includesSearchTerm(normalizeSearchText(card.dataset.keywords), lessonNumber))
+        ? lessonNumber
+        : query;
+    })
+    .replace(/\blesson[\s-]*0*(\d{1,3})\b/gi, (_, number) => `lesson ${number.padStart(3, "0")}`)
     .replace(/#/g, " #")
     .split(/[,\s]+/)
     .map((term) => normalizeSearchText(normalizeTag(term)))
-    .filter((term) => term.length > 1);
+    .filter((term) => term.length > 1 || term === "q" || term === "m");
 
   return terms.map((term) => [...new Set(expandSearchTerm(term).map(normalizeSearchText).filter(Boolean))]);
 };
