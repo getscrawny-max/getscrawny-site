@@ -12974,3 +12974,15 @@ body.plantlyfe-body .site-footer p {
 .lessons-page .lesson-actions .youtube-lesson-link:disabled .lesson-video-icon {
   color: var(--color-dark);
 }
+
+/* Let the service headline wrap naturally while staying over the hero. */
+.home-page .hero h1 {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  font-size: clamp(2rem, 4.4vw, 4.7rem) !important;
+  line-height: 1 !important;
+  white-space: normal;
+  overflow-wrap: normal;
+  text-wrap: balance;
+}
