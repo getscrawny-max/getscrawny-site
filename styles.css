@@ -12986,3 +12986,54 @@ body.plantlyfe-body .site-footer p {
   overflow-wrap: normal;
   text-wrap: balance;
 }
+
+/* Keep the homepage hero copy and actions anchored to the left. */
+.home-page .hero {
+  justify-items: start;
+  text-align: left;
+}
+
+.home-page .hero-copy {
+  justify-self: start;
+  justify-items: start;
+  margin-inline: 0;
+  text-align: left;
+}
+
+.home-page .hero h1,
+.home-page .hero-text {
+  justify-self: start;
+  text-align: left;
+}
+
+.home-page .hero-actions {
+  justify-self: start;
+  justify-content: start;
+}
+
+/* Accessible page titles for image-led sections. */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.speedmail-sidebar a[aria-disabled="true"] {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* Use the full section width for the coaching introduction. */
+.home-page #what-we-do > .section-heading,
+.home-page #what-we-do > .section-heading h2,
+.home-page #what-we-do > .section-heading p {
+  width: 100%;
+  max-width: none;
+  text-align: left;
+}
