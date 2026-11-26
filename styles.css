@@ -13106,3 +13106,32 @@ body.plantlyfe-body .site-footer p {
   margin-top: 0;
   margin-bottom: 0;
 }
+
+/* A quiet blue shade behind each lesson's contents. */
+.lessons-page .library-lesson-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: rgba(var(--color-dark-rgb), 0.07);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease;
+}
+
+@media (hover: hover) {
+  .lessons-page .library-lesson-card:hover::after {
+    opacity: 1;
+  }
+}
+
+.lessons-page .library-lesson-card:focus-within::after {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lessons-page .library-lesson-card::after {
+    transition: none;
+  }
+}
