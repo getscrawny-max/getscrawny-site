@@ -13041,3 +13041,68 @@ body.plantlyfe-body .site-footer p {
 .home-page #what-we-do .education-grid article > span {
   margin-bottom: 12px;
 }
+
+/* A solid, compact service headline. */
+.home-page .hero h1 {
+  max-width: 11ch;
+  font-family: "Arial Black", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 900;
+  font-style: italic;
+  font-size: clamp(2.75rem, 5.2vw, 5.5rem) !important;
+  line-height: 0.94 !important;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+  text-shadow: none;
+  filter: none;
+  -webkit-text-stroke: 0;
+}
+
+/* Center the two-line headline inside a left-anchored block. */
+.home-page .hero h1 {
+  display: grid;
+  justify-items: center;
+  justify-self: start;
+  width: max-content;
+  max-width: 100%;
+  font-size: clamp(1.65rem, 4.2vw, 4.4rem) !important;
+  line-height: 1 !important;
+  text-align: center;
+}
+
+.home-page .hero h1 span {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  margin: 0;
+  white-space: nowrap;
+  text-align: center;
+}
+
+@media (max-width: 360px) {
+  .home-page .hero h1 {
+    font-size: 1.5rem !important;
+  }
+}
+
+/* Let the headline set the shared width of the hero copy. */
+.home-page .hero-copy {
+  width: min-content;
+  max-width: 100%;
+}
+
+.home-page .hero-text {
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+}
+
+/* One consistent rhythm between the headline, caption, and actions. */
+.home-page .hero-copy {
+  row-gap: clamp(18px, 1.5vw, 24px);
+}
+
+.home-page .hero-copy > .hero-text,
+.home-page .hero-copy > .hero-actions {
+  margin-top: 0;
+  margin-bottom: 0;
+}
