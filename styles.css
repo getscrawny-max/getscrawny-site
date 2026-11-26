@@ -13037,3 +13037,7 @@ body.plantlyfe-body .site-footer p {
   max-width: none;
   text-align: left;
 }
+
+.home-page #what-we-do .education-grid article > span {
+  margin-bottom: 12px;
+}
